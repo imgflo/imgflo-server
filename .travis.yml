@@ -14,7 +14,7 @@ deploy:
   strategy: git
   app: imgflo
   on:
-    repo: jonnor/imgflo
+    repo: jonnor/imgflo-server
     all_branches: true
     tags: true
   api_key:
