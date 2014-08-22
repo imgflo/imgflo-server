@@ -17,3 +17,5 @@ deploy:
     repo: jonnor/imgflo
     all_branches: true
     tags: true
+  api_key:
+    secure: io2ZtKL/3I5T7vYhKQYqWZtv+lCojqvXXH25UZNWq82MuQlLRdPuKUxvFfv2js1zzEMDmFho4OCm5mVWswdaKJsd+uUrf29+z99WJgsMOwJK5nt1TtFJ5VaoeieGsGjbTk7qe0IEU3xMvDIf3Otf9iwpT9JiuzXrbMHp0Cy+LPI=
