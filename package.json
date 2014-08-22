@@ -1,5 +1,5 @@
 {
-  "name": "imgflo",
+  "name": "imgflo-server",
   "version": "0.0.3",
   "description": "",
   "keywords": [
@@ -14,9 +14,9 @@
   "author": "Jon Nordby <jononor@gmail.com> (http://www.jonnor.com)",
   "repository": {
     "type": "git",
-    "url": "http://github.com/jonnor/imgflo.git"
+    "url": "http://github.com/jonnor/imgflo-server.git"
   },
-  "bugs": "http://github.com/jonnor/imgflo/issues",
+  "bugs": "http://github.com/jonnor/imgflo-server/issues",
   "homepage": "http://imgflo.org",
   "license": "MIT",
   "main": "index.js",
