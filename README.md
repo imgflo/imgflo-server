@@ -1,11 +1,9 @@
 [![Build Status](https://travis-ci.org/jonnor/imgflo.svg?branch=master)](https://travis-ci.org/jonnor/imgflo)
 
-imgflo
+imgflo-server
 ==========
-imgflo is an image-processing server build on top of [GEGL](http://gegl.org)
-which can be visually programmed using [Flowhub.io](http://flowhub.io).
-
-imgflo is pronounced "Imageflo(w)".
+imgflo-server is an image-processing server with HTTP built using the
+[imgflo](http://github.com/jonnor/imgflo) dataflow runtime.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
@@ -20,15 +18,7 @@ MIT
 Note: GEGL itself is under LGPLv3.
 
 
-Design
-==========
-
-imgflo is split into two parts:
-
-1. A [HTTP server](./server.coffee), implemented with CoffeeScript and node.js
-2. A [Flowhub.io runtime](./lib), implemented in C using GEGL and libsoup
-
-server
+About
 -------
 The imgflo server provides a HTTP API for processing images: 
 
@@ -48,29 +38,6 @@ In the future, the runtime will be a long-running worker, and communication done
 
 In addition to supporting the native imgflo runtime, the server can also execute graphs
 built with NoFlo and noflo-canvas. See [creating new graphs for server](#creating-new-graphs-for-server).
-
-runtime
---------
-The imgflo runtime implements the [FBP runtime protocol]
-(http://noflojs.org/documentation/protocol) over WebSockets.
-It also provides an executable that can load and run a FBP graph defined as
-[JSON]((http://noflojs.org/documentation/json).
-
-The runtime uses GEGLs native graph structure, wrapped to be compatible with
-FBP conventions and protocols:
-
-* All *GEGL operations* are automatically made available as *imgflo components*
-* Each *imgflo process* is a *GeglNode*
-* *imgflo edges* can pass data flowing between *GeglPad*
-
-The edge limitation means that only ports with type *GeglBuffer* (image data) can be connected together.
-Other data-types are in GEGL exposed as a *GProperty*, and can currently only be set it to a *FBP IIP* literal.
-In the future, support for streaming property changes from outside is planned.
-
-One exception is for the special *Processor* component, which is specific to imgflo.
-This component is attached to outputs which are to be computed interactively.
-Because GEGL does processing fully *on-demand*, something needs to *pull* at the edges
-where image data should be realized.
 
 
 Deploying to Heroku
@@ -95,30 +62,6 @@ Deploy, will take ~1 minute
 You should now see the imgflo server running at http://YOURAPP.herokuapps.com
 
 
-Runtime
---------
-Follow the same steps as for the server, and then
-
-Change Procfile to contain
-
-    web: make run-noinstall PORT=$PORT HOST=$HOSTNAME EXTPORT=80
-
-Commit the change to git, and push
-
-    git commit Procfile -m "Enabling runtime"
-
-Configure. Flowhub user id is found in the Flowhub user interface (Settings or Register runtime)
-
-    heroku config:set HOSTNAME=YOURAPP.herokuapp.com
-    heroku config:set FLOWHUB_USER_ID=MYUSERID
-
-Check the log that the initial registration was successful, and then save the runtime ID permanently
-
-    heroku logs
-    heroku config:set IMGFLO_RUNTIME_ID=MYRUNTIMEID
-
-See "Run the runtime" for more detail
-
 Developing and running locally
 ==========================
 Note: imgflo has only been tested on GNU/Linux systems.
@@ -129,7 +72,7 @@ Pre-requisites
 imgflo requires git master of GEGL and BABL, as well as a custom version of libsoup.
 It is recommended to let make setup this for you, but you can use existing checkouts
 by customizing PREFIX.
-You only need to install the dependencies once, or when they have changed, see 'git log -- thirdparty'
+You only need to install the dependencies once, or when they have changed.
 
     git submodule update --init
     make dependencies
@@ -152,33 +95,6 @@ To verify that things are working, run the test suite
 
     make check
 
-Run the runtime
-----------------
-
-To actually be able to use it from Flowhub, you need to register the runtime (once).
-* Open [Flowhub](http://app.flowhub.io)
-* Login with your Github account
-* Click "Register" under "runtimes" to find your user ID. Copy it and paste in command below
-
-Set up registration
-
-    export FLOWHUB_USER_ID=MYUSERID
-
-Finally, to run the Flowhub.io runtime use.
-You can customize the port used by setting PORT=3322
-
-    make run
-
-If successful, you should see a message 'Registered runtime' with the new id.
-You should save this, and on subsequent runs on same machine use this id.
-
-    export IMGFLO_RUNTIME_ID=MYID
-
-In Flowhub, refresh the runtimes and you should see your new "imgflo" instance. 
-Note: sometimes a page refresh is needed.
-
-You should now be able to create a new project in Flowhub of the "imgflo" type,
-select your local runtime and create image processing graphs!
 
 Running server
 ----------------
