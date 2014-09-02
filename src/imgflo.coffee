@@ -7,6 +7,18 @@ common = require './common'
 fs = require 'fs'
 child_process = require 'child_process'
 
+enrichGraphDefinition = (graph, publicOnly) ->
+    # All imgflo graphs take height+width, set up by ImgfloProcessor
+    # This is wired up using an internal GEGL scaling node
+    if not graph.inports?
+        graph.inports = {}
+    graph.inports.height =
+        process: 'rescale'
+        port: 'y'
+    graph.inports.width =
+        process: 'rescale'
+        port: 'x'
+
 class ImgfloProcessor extends common.Processor
 
     constructor: (verbose, installdir) ->
@@ -37,6 +49,20 @@ class ImgfloProcessor extends common.Processor
         process.stdin.write s
         process.stdin.end()
 
+# srcnode PORT -> PORT tgtnode
+fbpConn = (str) ->
+    tok = str.split ' '
+    if not tok.length == 5 and tok[2] == '->'
+        throw new Error 'fbpConn: Invalid input'
+    conn =
+        src:
+            process: tok[0]
+            port: tok[1].toLowerCase()
+        tgt:
+            port: tok[3].toLowerCase()
+            process: tok[4]
+    return conn
+
 prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
 
     # Avoid mutating original
@@ -55,7 +81,15 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     out = def.outports.output
     inp = def.inports.input
 
-    def.connections.push { src: {process: 'load', port: 'output'}, tgt: inp }
+    if attributes.width? or attributes.height?
+        rescale = 'rescale'
+        def.processes.rescale = { component: 'gegl/scale-size' }
+        def.connections.push fbpConn "load OUTPUT -> INPUT #{rescale}"
+        def.connections.push { src: {process: rescale, port: 'output'}, tgt: inp }
+    else
+        # Connect directly
+        def.connections.push { src: {process: 'load', port: 'output'}, tgt: inp }
+
     def.connections.push { src: out, tgt: {process: 'save', port: 'input'} }
     def.connections.push { src: {process: 'save', port: 'output'}, tgt: {process: 'proc', port: 'node'} }
 
@@ -75,3 +109,4 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     return def
 
 exports.Processor = ImgfloProcessor
+exports.enrichGraphDefinition = enrichGraphDefinition

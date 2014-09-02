@@ -103,15 +103,10 @@ runtimeForGraph = (g) ->
 enrichGraphDefinition = (graph, publicOnly) ->
     runtime = runtimeForGraph graph
     if (runtime.indexOf 'noflo') != -1
-        # All noflo-canvas graphs take height+width, set up by NoFloProcessor
-        # This is wired up using an internal canvas inport
-        delete graph.inports.canvas if publicOnly
-        graph.inports.height =
-            process: 'canvas'
-            port: 'height'
-        graph.inports.width =
-            process: 'canvas'
-            port: 'width'
+        noflo.enrichGraphDefinition graph, publicOnly
+    else if (runtime.indexOf 'imgflo') != -1
+        imgflo.enrichGraphDefinition graph, publicOnly
+
 
 parseRequestUrl = (u) ->
     parsedUrl = url.parse u, true

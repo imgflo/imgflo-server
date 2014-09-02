@@ -8,6 +8,17 @@ fs = require 'fs'
 child_process = require 'child_process'
 tmp = require 'tmp'
 
+enrichGraphDefinition = (graph, publicOnly) ->
+    # All noflo-canvas graphs take height+width, set up by NoFloProcessor
+    # This is wired up using an internal canvas inport
+    delete graph.inports.canvas if publicOnly
+    graph.inports.height =
+        process: 'canvas'
+        port: 'height'
+    graph.inports.width =
+        process: 'canvas'
+        port: 'width'
+
 class NoFloProcessor extends common.Processor
     constructor: (verbose) ->
         @verbose = verbose
@@ -87,3 +98,4 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
     return def
 
 exports.Processor = NoFloProcessor
+exports.enrichGraphDefinition = enrichGraphDefinition

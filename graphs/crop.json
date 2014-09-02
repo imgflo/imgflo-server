@@ -32,11 +32,11 @@
       "process": "crop",
       "port": "y"
     },
-    "height": {
+    "cropheight": {
       "process": "crop",
       "port": "height"
     },
-    "width": {
+    "cropwidth": {
       "process": "crop",
       "port": "width"
     }

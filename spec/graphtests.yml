@@ -10,8 +10,8 @@
     _name: 'crop_all_options'
     _graph: "crop"
     input: "demo/grid-toastybob.jpg"
-    height: 110
-    width: 130
+    cropheight: 110
+    cropwidth: 130
     x: 200
     y: 230
 -
@@ -63,6 +63,18 @@
     stop2: 1.0
     opacity: 0.8
     srgb: True
+-
+    _name: gradient_scaled
+    _graph: gradientmap
+    input: "demo/gradient-black-white.png"
+    color1: '#0A2A2F'
+    color2: '#FDE7A0'
+    stop1: 0.0
+    stop2: 1.0
+    opacity: 0.8
+    srgb: True
+    height: 50
+    width: 100
 -
     _name: regcheck_https_protocol
     _url: '/graph/gradientmap?input=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FBo5budLIcAAWEAB.jpg%3Alarge&color1=%23082A31&color2=%23FFE79B'
