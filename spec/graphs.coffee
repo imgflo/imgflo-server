@@ -2,7 +2,7 @@
 #     (c) 2014 The Grid
 #     imgflo may be freely distributed under the MIT license
 
-server = require '../server'
+server = require '../src/server'
 chai = require 'chai'
 yaml = require 'js-yaml'
 request = require 'request'

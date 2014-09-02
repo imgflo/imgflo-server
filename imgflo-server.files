@@ -5,15 +5,11 @@ graphs/crop.json
 examples/demo.js
 examples/index.html
 examples/style.css
-lib/graph.c
-lib/network.c
-lib/processor.c
-lib/ui.c
 Makefile
 package.json
 README.md
 CHANGES.md
-server.coffee
+src/server.coffee
 spec/server.coffee
 spec/websocket.coffee
 spec/graphs.coffee

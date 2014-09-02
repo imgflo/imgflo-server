@@ -43,7 +43,7 @@
 # introspection
 #  w - list available graphs, and their properties
 
-server = require '../server'
+server = require '../src/server'
 chai = require 'chai'
 http = require 'http'
 fs = require 'fs'
