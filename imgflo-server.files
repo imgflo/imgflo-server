@@ -14,3 +14,6 @@ spec/server.coffee
 spec/websocket.coffee
 spec/graphs.coffee
 spec/graphtests.yml
+src/noflo.coffee
+src/imgflo.coffee
+src/common.coffee

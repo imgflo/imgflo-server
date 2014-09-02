@@ -1,3 +1,10 @@
+#     imgflo-server - Image-processing server
+#     (c) 2014 The Grid
+#     imgflo-server may be freely distributed under the MIT license
+
+noflo = require './noflo'
+imgflo = require './imgflo'
+common = require './common'
 
 http = require 'http'
 fs = require 'fs'
@@ -8,190 +15,13 @@ querystring = require 'querystring'
 path = require 'path'
 crypto = require 'crypto'
 request = require 'request'
-tmp = require 'tmp'
 
 node_static = require 'node-static'
 async = require 'async'
 
-clone = (obj) ->
-  if not obj? or typeof obj isnt 'object'
-    return obj
-
-  if obj instanceof Date
-    return new Date(obj.getTime())
-
-  if obj instanceof RegExp
-    flags = ''
-    flags += 'g' if obj.global?
-    flags += 'i' if obj.ignoreCase?
-    flags += 'm' if obj.multiline?
-    flags += 'y' if obj.sticky?
-    return new RegExp(obj.source, flags)
-
-  newInstance = new obj.constructor()
-
-  for key of obj
-    newInstance[key] = clone obj[key]
-
-  return newInstance
-
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control
 
-installdir = __dirname + '/install/'
-
-class Processor
-    constructor: (verbose) ->
-        @verbose = verbose
-
-    # FIXME: clean up interface
-    # callback should be called with (err, error_string)
-    process: (outputFile, outType, graph, iips, inputFile, inputType, callback) ->
-        throw new Error 'Processor.process() not implemented'
-
-class NoFloProcessor extends Processor
-    constructor: (verbose) ->
-        @verbose = verbose
-
-    process: (outputFile, outputType, graph, iips, inputFile, inputType, callback) ->
-        g = prepareNoFloGraph graph, iips, inputFile, outputFile, inputType
-        @run g, callback
-
-    run: (graph, callback) ->
-        s = JSON.stringify graph, null, "  "
-        cmd = 'node_modules/noflo-canvas/node_modules/.bin/noflo'
-        console.log s if @verbose
-
-        # TODO: add support for reading from stdin to NoFlo?
-        tmp.file {postfix: '.json'}, (err, graphPath) =>
-            return callback err, null if err
-            fs.writeFile graphPath, s, () =>
-                @execute cmd, [ graphPath ], callback
-
-    execute: (cmd, args, callback) ->
-        console.log 'executing', cmd, args if @verbose
-        stderr = ""
-        process = child_process.spawn cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] }
-        process.on 'close', (exitcode) ->
-            err = if exitcode then new Error "processor returned exitcode: #{exitcode}" else null
-            return callback err, stderr
-        process.stdout.on 'data', (d) =>
-            console.log d.toString() if @verbose
-        process.stderr.on 'data', (d)->
-            stderr += d.toString()
-
-prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
-
-    # Avoid mutating original
-    def = clone basegraph
-
-    # Note: We drop inpath on the floor, only support pure generative for now
-
-    # Add a input node
-    def.processes.canvas = { component: 'canvas/CreateCanvas' }
-
-    # Add a output node
-    def.processes.repeat = { component: 'core/RepeatAsync' }
-    def.processes.save = { component: 'canvas/SavePNG' }
-
-    # Attach filepaths as IIPs
-    def.connections.push { data: outpath, tgt: { process: 'save', port: 'filename'} }
-
-    # Connect to actual graph
-    canvas = def.inports.canvas
-    def.connections.push { src: {process: 'canvas', port: 'canvas'}, tgt: canvas }
-
-    out = def.outports.output
-    def.connections.push { src: out, tgt: {process: 'repeat', port: 'in'} }
-    def.connections.push { src: {process: 'repeat', port: 'out'}, tgt: {process: 'save', port: 'canvas'} }
-
-    # Defaults
-    if attributes.height?
-        attributes.height = parseInt attributes.height
-    else
-        attributes.height = 400
-
-    if attributes.width?
-        attributes.width = parseInt attributes.width
-    else
-        attributes.width = 600
-
-    # Attach processing parameters as IIPs
-    for k, v of attributes
-        tgt = def.inports[k]
-        def.connections.push { data: v, tgt: tgt }
-
-    # Clean up
-    delete def.inports
-    delete def.outports
-
-    return def
-
-
-class ImgfloProcessor extends Processor
-
-    constructor: (verbose) ->
-        @verbose = verbose
-
-    process: (outputFile, outputType, graph, iips, inputFile, inputType, callback) ->
-        g = prepareImgfloGraph graph, iips, inputFile, outputFile, inputType, outputType
-        @run g, callback
-
-    run: (graph, callback) ->
-
-        s = JSON.stringify graph, null, "  "
-        cmd = installdir+'env.sh'
-        args = [ installdir+'bin/imgflo', "-"]
-
-        console.log 'executing', cmd, args if @verbose
-        stderr = ""
-        process = child_process.spawn cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] }
-        process.on 'close', (exitcode) ->
-            err = if exitcode then new Error "processor returned exitcode: #{exitcode}" else null
-            return callback err, stderr
-        process.stdout.on 'data', (d) =>
-            console.log d.toString() if @verbose
-        process.stderr.on 'data', (d)->
-            stderr += d.toString()
-        console.log s if @verbose
-        process.stdin.write s
-        process.stdin.end()
-
-prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
-
-    # Avoid mutating original
-    def = clone basegraph
-
-    loader = 'gegl/load'
-    if type
-        loader = "gegl/#{type}-load"
-
-    # Add load, save, process nodes
-    def.processes.load = { component: loader }
-    def.processes.save = { component: "gegl/#{outtype}-save" }
-    def.processes.proc = { component: 'Processor' }
-
-    # Connect them to actual graph
-    out = def.outports.output
-    inp = def.inports.input
-
-    def.connections.push { src: {process: 'load', port: 'output'}, tgt: inp }
-    def.connections.push { src: out, tgt: {process: 'save', port: 'input'} }
-    def.connections.push { src: {process: 'save', port: 'output'}, tgt: {process: 'proc', port: 'node'} }
-
-    # Attach filepaths as IIPs
-    def.connections.push { data: inpath, tgt: { process: 'load', port: 'path'} }
-    def.connections.push { data: outpath, tgt: { process: 'save', port: 'path'} }
-
-    # Attach processing parameters as IIPs
-    for k, v of attributes
-        tgt = def.inports[k]
-        def.connections.push { data: v, tgt: tgt }
-
-    # Clean up
-    delete def.inports
-    delete def.outports
-
-    return def
+installdir = __dirname + '/../install/'
 
 downloadFile = (src, out, callback) ->
     req = request src, (error, response) ->
@@ -325,9 +155,9 @@ class Server extends EventEmitter
         @httpserver = http.createServer @handleHttpRequest
         @port = null
 
-        n = new NoFloProcessor verbose
+        n = new noflo.Processor verbose
         @processors =
-            imgflo: new ImgfloProcessor verbose
+            imgflo: new imgflo.Processor verbose, installdir
             'noflo-browser': n
             'noflo-nodejs': n
 
@@ -454,7 +284,6 @@ class Server extends EventEmitter
                 inputFile = if downloads.input? then downloads.input.path else null
                 processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, callback
 
-exports.Processor = Processor
 exports.Server = Server
 
 exports.main = ->

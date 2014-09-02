@@ -1,6 +1,6 @@
-#     imgflo - Flowhub.io Image-processing runtime
+#     imgflo-server - Image-processing server
 #     (c) 2014 The Grid
-#     imgflo may be freely distributed under the MIT license
+#     imgflo-server may be freely distributed under the MIT license
 
 # TODO: add more tests
 # processing new (200 or 301 to image/ ? )
