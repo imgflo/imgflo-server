@@ -13,6 +13,8 @@
     float: left;
     width: 200px;
     height: 250px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 #propertiesSection {
