@@ -1,14 +1,13 @@
 bin/imgflo
 bin/imgflo-runtime
-testtemp/
 install/
 *~
 out.png
 node_modules
 *.creator.user
-graphteststemp/
+*teststemp/
 temp/
-testtemp/
 spec/data/*.out.png
 spec/data/*-diff.png
 spec/data/*.out.jpg
+testout.png
