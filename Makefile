@@ -2,6 +2,11 @@
 VERSION=$(shell echo `git describe --tags`)
 #PREFIX=/opt/imgflo
 PREFIX=$(shell echo `pwd`/install)
+#TESTS=
+
+ifdef TESTS
+TEST_ARGUMENTS=--grep $(TESTS)
+endif
 
 TRAVIS_DEPENDENCIES=$(shell echo `cat .vendor_urls | sed -e "s/heroku/travis/" | tr -d '\n'`)
 
@@ -34,7 +39,7 @@ libsoup:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) libsoup
 
 check: install
-	$(PREFIX)/env.sh npm test
+	./node_modules/.bin/mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee $(TEST_ARGUMENTS)
 
 clean:
 	git clean -dfx --exclude node_modules --exclude install
