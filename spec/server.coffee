@@ -44,14 +44,19 @@
 #  w - list available graphs, and their properties
 
 server = require '../src/server'
+utils = require './utils'
 chai = require 'chai'
 http = require 'http'
 fs = require 'fs'
 path = require 'path'
 url = require 'url'
 
-urlbase = 'localhost:8889'
-port = 8889
+urlbase = process.env.IMGFLO_TESTS_TARGET
+urlbase = 'localhost:8889' if not urlbase
+port = (urlbase.split ':')[1]
+verbose = process.env.IMGFLO_TESTS_VERBOSE?
+startServer = (urlbase.indexOf 'localhost') == 0
+itSkipRemote = if not startServer then it.skip else it
 
 graph_url = (graph, props) ->
     return url.format { protocol: 'http:', host: urlbase, pathname: '/graph/'+graph, query: props }
@@ -64,11 +69,13 @@ describe 'Server', ->
         if fs.existsSync wd
             for f in fs.readdirSync wd
                 fs.unlinkSync path.join wd, f
-        s = new server.Server wd
-        s.listen port
+        if startServer
+            s = new server.Server wd, null, null, verbose
+            l = new utils.LogHandler s
+            s.listen port
 
     after ->
-        s.close()
+        s.close() if startServer
 
     describe 'List graphs', ->
         expected = []
