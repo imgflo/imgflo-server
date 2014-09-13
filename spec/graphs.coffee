@@ -109,6 +109,7 @@ describe 'Graphs', ->
                     req.pipe fs.createWriteStream output
 
                 it 'results should be equal to reference', (done) ->
+                    @timeout 4000
                     compareImages output, reference, (error, stderr, stdout) ->
                         msg = "image comparison failed\n#{stderr}\n#{stdout}"
                         chai.assert not error?, msg
