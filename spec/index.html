@@ -21,10 +21,72 @@ body {
   shape-rendering: crispEdges;
 }
 
+
+.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+  fill: #fff;
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+.box .outlier {
+  fill: none;
+  stroke: #ccc;
+}
+
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="box.js"></script>
 <script>
+
+// Returns a function to compute the interquartile range.
+function iqr(k) {
+  return function(d, i) {
+    var q1 = d.quartiles[0],
+        q3 = d.quartiles[2],
+        iqr = (q3 - q1) * k,
+        i = -1,
+        j = d.length;
+    while (d[++i] < q1 - iqr);
+    while (d[--j] > q3 + iqr);
+    return [i, j];
+  };
+}
+
+var addBox = function(container, data, min, max) {
+
+    console.log(data, min, max);
+
+    var margin = {top: 10, right: 50, bottom: 10, left: 50},
+        width = 120 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var chart = d3.box()
+        .width(width)
+        .height(height);
+
+    chart.domain([min, max]);
+
+    var svg = container.append("svg")
+      .data(data)
+    .enter().append("svg")
+      .attr("class", "box")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.bottom + margin.top)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+      .call(chart);
+}
 
 var createHistogram = function(container, title, values, _min, _max) {
     // A formatter for counts.
@@ -89,8 +151,6 @@ var createHistogram = function(container, title, values, _min, _max) {
         .text(title);
 }
 
-// Generate a Bates distribution of 10 random variables.
-// var values = d3.range(1000).map(d3.random.bates(10));
 var files = [
     "stress.cached.1.json",
     "stress.cached.10.json",
@@ -98,11 +158,38 @@ var files = [
     "stress.cached.1000.json"
 ];
 var resultDir = 'out'
+var all = [];
 files.forEach(function (file, i) {
     var path = resultDir + '/' + file;
     console.log(path);
     d3.json(path, function (err, json) {
         createHistogram(d3.select("body"), file.replace('.json', ''), json.values, json.min, json.max);
+        all.push(json.values);
+        if (i === files.length-1) {
+            console.log('addbox', all.length);
+            var newvalues = [[0]];
+            for (var k=0; k<files.length; k++) {
+                var row = [];
+                for (var j=0; j<json.values.length; j++) {
+                    var n = all[k][j];
+                    row.push(Math.floor(n));
+                }
+                newvalues.push(row);
+            }
+
+            var min = Infinity,
+                max = -Infinity;
+                newvalues.forEach(function(r) {
+                    r.forEach(function(s) {
+                        if (s > max) max = s;
+                        if (s < min) min = s;
+                });
+            });
+
+            addBox(d3.select("body"), newvalues, min, max);
+        }
     });
+
 });
+
 </script>
