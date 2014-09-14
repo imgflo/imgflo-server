@@ -57,6 +57,16 @@ requestRecordTime = (reqUrl, callback) ->
 identicalRequests = (u, number) ->
     return (u for n in [0...number])
 
+describeTimings = (times) ->
+    r =
+        values: times
+        mean: statistics.mean(times)
+        stddev: statistics.standard_deviation(times)
+        min: statistics.min(times)
+        max: statistics.max(times)
+    r['stddev-perc'] = r.stddev/r.mean*100
+    return r
+
 # End-to-end stress-tests of image processing server, particularly performance
 describeSkipPerformance 'Stress', ->
     s = null
@@ -76,6 +86,7 @@ describeSkipPerformance 'Stress', ->
 
 
     describe "Cached graph", ->
+        outdir = "spec/out"
         requestUrl = utils.formatRequest urlbase, 'gradientmap', {input: 'demo/gradient-black-white.png'}
         testcases = {
             concurrent: [1, 10, 100, 1000]
@@ -100,13 +111,14 @@ describeSkipPerformance 'Stress', ->
 
                 it "average response time should be below #{expect} ms", (done) ->
                     @timeout 5*60*1000
-                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, results) ->
+                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
                         chai.expect(err).to.not.exist
-                        mean = statistics.mean(results)
-                        stddev = statistics.standard_deviation(results)
-                        perc = stddev/mean * 100
-                        console.log 'Mean, dev, dev-perc', mean, stddev, perc
-                        chai.expect(mean).to.be.below expect
-                        done()
+                        results = describeTimings times
+                        fname = outdir+"/stress.cached.#{concurrent}.json"
+                        c = JSON.stringify results
+                        fs.writeFile fname, c, (err) ->
+                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
+                            chai.expect(results.mean).to.be.below expect
+                            done()
 
 
