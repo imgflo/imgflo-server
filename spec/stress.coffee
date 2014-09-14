@@ -18,7 +18,6 @@ url = require 'url'
 # TODO:
 #
 # 1, 10, 100 concurrent requests of different (unprocessed) graphs
-# 10, 100, 1000, 10k concurrent requests of cached graphs ^10
 # 50, 100, 200, 400, 800, 1600 px width/height ^2
 # lowest series indicating latency lower boundary, slope indicating scaling
 # will need to do multiple rounds on each test series to get enough data
@@ -39,6 +38,7 @@ url = require 'url'
 urlbase = process.env.IMGFLO_TESTS_TARGET
 urlbase = 'localhost:8888' if not urlbase
 port = (urlbase.split ':')[1]
+host = (urlbase.split ':')[0]
 verbose = process.env.IMGFLO_TESTS_VERBOSE?
 startServer = (urlbase.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
@@ -79,7 +79,10 @@ describeSkipPerformance 'Stress', ->
         requestUrl = utils.formatRequest urlbase, 'gradientmap', {input: 'demo/gradient-black-white.png'}
         testcases = {
             concurrent: [1, 10, 100, 1000]
-            expected: [20, 200, 2000, 10000]
+            expected: {
+                'localhost': [20, 200, 2000, 10000]
+                'imgflo.herokuapp.com': [1500, 1500, 6000]
+            }
         }
 
         it 'generating cache', (done) ->
@@ -88,11 +91,11 @@ describeSkipPerformance 'Stress', ->
                 chai.expect(err).to.not.exist;
                 done()
 
-        testcases.concurrent.forEach (concurrent, i) ->
+        testcases.expected[host].forEach (expect, i) ->
+            concurrent = testcases.concurrent[i]
 
             describe "#{concurrent} concurrent requests", (done) ->
-                total = testcases.concurrent[testcases.concurrent.length-1]
-                expect = testcases.expected[i]
+                total = testcases.concurrent[testcases.expected[host].length-1]
                 requestUrls = identicalRequests requestUrl, total
 
                 it "average response time should be below #{expect} ms", (done) ->
@@ -103,7 +106,7 @@ describeSkipPerformance 'Stress', ->
                         stddev = statistics.standard_deviation(results)
                         perc = stddev/mean * 100
                         console.log 'Mean, dev, dev-perc', mean, stddev, perc
-                        chai.expect(mean).to.be.below
+                        chai.expect(mean).to.be.below expect
                         done()
 
 
