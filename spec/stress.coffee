@@ -54,12 +54,8 @@ requestRecordTime = (reqUrl, callback) ->
 
     return req
 
-createRequests = (number) ->
-    f = (n) ->
-        p =
-            input: 'demo/gradient-black-white.png'
-        utils.formatRequest urlbase, 'gradientmap', p
-    return (f(n) for n in [0...number])
+identicalRequests = (u, number) ->
+    return (u for n in [0...number])
 
 # End-to-end stress-tests of image processing server, particularly performance
 describeSkipPerformance 'Stress', ->
@@ -79,26 +75,35 @@ describeSkipPerformance 'Stress', ->
         s.close() if startServer
 
 
-    describe "Concurrent requests of cached graphs", ->
-        results = null
-        requestUrls = createRequests 1000
+    describe "Cached graph", ->
+        requestUrl = utils.formatRequest urlbase, 'gradientmap', {input: 'demo/gradient-black-white.png'}
+        testcases = {
+            concurrent: [1, 10, 100, 1000]
+            expected: [20, 200, 2000, 10000]
+        }
 
         it 'generating cache', (done) ->
-            cacheUrl = requestUrls[0]
+            cacheUrl = requestUrl
             requestRecordTime cacheUrl, (err, res) ->
                 chai.expect(err).to.not.exist;
                 done()
 
-        it 'executing test', (done) ->
-            @timeout 5*60*1000
+        testcases.concurrent.forEach (concurrent, i) ->
 
-            limit = 100
-            async.mapLimit requestUrls, limit, requestRecordTime, (err, res) ->
-                results = res
-                chai.expect(err).to.not.exist
-                done()
+            describe "#{concurrent} concurrent requests", (done) ->
+                total = testcases.concurrent[testcases.concurrent.length-1]
+                expect = testcases.expected[i]
+                requestUrls = identicalRequests requestUrl, total
 
-        it 'do statistics', (done) ->
-            console.log statistics.mean(results)
-            done()
+                it "average response time should be below #{expect} ms", (done) ->
+                    @timeout 5*60*1000
+                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, results) ->
+                        chai.expect(err).to.not.exist
+                        mean = statistics.mean(results)
+                        stddev = statistics.standard_deviation(results)
+                        perc = stddev/mean * 100
+                        console.log 'Mean, dev, dev-perc', mean, stddev, perc
+                        chai.expect(mean).to.be.below
+                        done()
+
 
