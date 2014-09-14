@@ -1,3 +1,11 @@
+#     imgflo-server - Image-processing server
+#     (c) 2014 The Grid
+#     imgflo-server may be freely distributed under the MIT license
+
+url = require 'url'
+child = require 'child_process'
+path = require 'path'
+
 class LogHandler
     @errors = null
     constructor: (server) ->
@@ -12,6 +20,8 @@ class LogHandler
                     @errors.push e if e
             if data.err
                 @errors.push data.err
+        else if id == 'serve-from-cache'
+            #
         else if (id.indexOf 'error') != -1
             if data.err
                 @errors.push data
@@ -26,3 +36,19 @@ class LogHandler
         return errors
 
 exports.LogHandler = LogHandler
+
+exports.compareImages = (actual, expected, callback) ->
+    cmd = "./install/env.sh ./install/bin/gegl-imgcmp #{actual} #{expected}"
+    options =
+        timeout: 2000
+    child.exec cmd, options, (error, stdout, stderr) ->
+        return callback error, stderr, stdout
+
+exports.requestFileFormat = (u) ->
+    parsed = url.parse u
+    graph = parsed.pathname.replace '/graph/', ''
+    ext = (path.extname graph).replace '.', ''
+    return ext || 'png'
+
+exports.formatRequest = (host, graph, params) ->
+    return url.format { protocol: 'http:', host: host, pathname: '/graph/'+graph, query: params }

@@ -59,7 +59,7 @@ startServer = (urlbase.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
 
 graph_url = (graph, props) ->
-    return url.format { protocol: 'http:', host: urlbase, pathname: '/graph/'+graph, query: props }
+    return utils.formatRequest urlbase, graph, props
 
 describe 'Server', ->
     s = null

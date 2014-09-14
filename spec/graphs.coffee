@@ -21,13 +21,6 @@ verbose = process.env.IMGFLO_TESTS_VERBOSE?
 startServer = (urlbase.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
 
-compareImages = (actual, expected, callback) ->
-    cmd = "./install/env.sh ./install/bin/gegl-imgcmp #{actual} #{expected}"
-    options =
-        timeout: 2000
-    child.exec cmd, options, (error, stdout, stderr) ->
-        return callback error, stderr, stdout
-
 requestUrl = (testcase) ->
     u = null
     if testcase._url
@@ -37,14 +30,8 @@ requestUrl = (testcase) ->
         props = {}
         for key of testcase
             props[key] = testcase[key] if key != '_name' and key != '_graph'
-        u = url.format { protocol: 'http:', host: urlbase, pathname: '/graph/'+graph, query: props}
+        u = utils.formatRequest urlbase, graph, props
     return u
-
-requestFileFormat = (u) ->
-    parsed = url.parse u
-    graph = parsed.pathname.replace '/graph/', ''
-    ext = (path.extname graph).replace '.', ''
-    return ext || 'png'
 
 # End-to-end tests of image processing pipeline and included graphs
 describe 'Graphs', ->
@@ -68,7 +55,7 @@ describe 'Graphs', ->
 
         describe "#{testcase._name}", ->
             reqUrl = requestUrl testcase
-            ext = requestFileFormat reqUrl
+            ext = utils.requestFileFormat reqUrl
             datadir = 'spec/data/'
             reference = path.join datadir, "#{testcase._name}.reference.#{ext}"
             output = path.join datadir, "#{testcase._name}.out.#{ext}"
@@ -88,7 +75,7 @@ describe 'Graphs', ->
 
                 it 'results should be equal to reference', (done) ->
                     @timeout 4000
-                    compareImages output, reference, (error, stderr, stdout) ->
+                    utils.compareImages output, reference, (error, stderr, stdout) ->
                         msg = "image comparison failed\n#{stderr}\n#{stdout}"
                         chai.assert not error?, msg
                         done()
