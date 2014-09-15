@@ -100,7 +100,7 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     # Attach processing parameters as IIPs
     for k, v of attributes
         tgt = def.inports[k]
-        def.connections.push { data: v, tgt: tgt }
+        def.connections.push { data: v, tgt: tgt } if tgt.port and tgt.process
 
     # Clean up
     delete def.inports
