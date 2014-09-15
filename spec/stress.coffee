@@ -140,7 +140,7 @@ describeSkipPerformance 'Stress', ->
             concurrent = testcases.concurrent[i]
 
             describe "#{concurrent} concurrent requests", (done) ->
-                total = testcases.concurrent[testcases.expected[host].length-1]*2
+                total = testcases.concurrent[testcases.expected[host].length-1]*10
                 requestUrls = randomRequests 'passthrough', {input: 'demo/grid-toastybob.jpg'}, total, 'ignored'
 
                 it "average response time should be below #{expect} ms", (done) ->
