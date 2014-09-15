@@ -16,11 +16,14 @@ path = require 'path'
 url = require 'url'
 
 # TODO:
+# add cases
+# - concurrent requests processing different inputs through same graph
+# - for noflo-canvas
 #
-# 50, 100, 200, 400, 800, 1600 px width/height ^2
 # lowest series indicating latency lower boundary, slope indicating scaling
 # will need to do multiple rounds on each test series to get enough data
 # add a way to clean cache between each round?
+# add a way to generate images which can be used as inputs
 #
 # Measure processing time per request. Store raw data as .json
 # URL + time(s)
@@ -149,6 +152,32 @@ describeSkipPerformance 'Stress', ->
                         chai.expect(err).to.not.exist
                         results = describeTimings times
                         fname = outdir+"/stress.#{testid}.#{concurrent}.json"
+                        c = JSON.stringify results
+                        fs.writeFile fname, c, (err) ->
+                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
+                            chai.expect(results.mean).to.be.below expect
+                            done()
+
+    # FIXME: should be different sizes of input image
+    describe "Processing same input at different sizes", ->
+        testid = 'process_different_sizes'
+        testcases = stresstests[testid]
+        concurrent = 2
+
+        testcases.expected[host].forEach (expect, i) ->
+            size = testcases.sizes[i]
+
+            describe "#{size}x#{size} pixels", (done) ->
+                total = concurrent*5
+                props = {input: 'demo/mountains.png', height: size, width: size}
+                requestUrls = randomRequests 'passthrough', props, total, 'ignored'
+
+                it "average response time should be below #{expect} ms", (done) ->
+                    @timeout 5*60*1000
+                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
+                        chai.expect(err).to.not.exist
+                        results = describeTimings times
+                        fname = outdir+"/stress.#{testid}.#{size}.json"
                         c = JSON.stringify results
                         fs.writeFile fname, c, (err) ->
                             console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
