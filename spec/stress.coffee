@@ -17,7 +17,6 @@ url = require 'url'
 
 # TODO:
 #
-# 1, 10, 100 concurrent requests of different (unprocessed) graphs
 # 50, 100, 200, 400, 800, 1600 px width/height ^2
 # lowest series indicating latency lower boundary, slope indicating scaling
 # will need to do multiple rounds on each test series to get enough data
@@ -54,8 +53,22 @@ requestRecordTime = (reqUrl, callback) ->
 
     return req
 
+randomString = (n) ->
+    text = "";
+    possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    for i in [0...n]
+        idx = Math.floor Math.random()*possible.length
+        text += possible.charAt idx
+    return text;
+
 identicalRequests = (u, number) ->
     return (u for n in [0...number])
+
+randomRequests = (graph, props, number, randomprop) ->
+    f = () ->
+        props[randomprop] = randomString 5+(number/10)
+        return utils.formatRequest urlbase, graph, props
+    return (f() for n in [0...number])
 
 describeTimings = (times) ->
     r =
@@ -72,6 +85,7 @@ describeSkipPerformance 'Stress', ->
     s = null
     l = null
     stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yml', 'utf-8'
+    outdir = "spec/out"
 
     before ->
         wd = './stressteststemp'
@@ -87,7 +101,6 @@ describeSkipPerformance 'Stress', ->
 
 
     describe "Cached graph", ->
-        outdir = "spec/out"
         requestUrl = utils.formatRequest urlbase, 'gradientmap', {input: 'demo/gradient-black-white.png'}
         testcases = stresstests.cached_graph
 
@@ -117,3 +130,24 @@ describeSkipPerformance 'Stress', ->
                             done()
 
 
+    describe "Processing same input with different attributes", ->
+        testcases = stresstests.process_same_input
+
+        testcases.expected[host].forEach (expect, i) ->
+            concurrent = testcases.concurrent[i]
+
+            describe "#{concurrent} concurrent requests", (done) ->
+                total = testcases.concurrent[testcases.expected[host].length-1]
+                requestUrls = randomRequests 'passthrough', {input: 'demo/grid-toastybob.jpg'}, total, 'ignored'
+
+                it "average response time should be below #{expect} ms", (done) ->
+                    @timeout 1*60*1000
+                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
+                        chai.expect(err).to.not.exist
+                        results = describeTimings times
+                        fname = outdir+"/stress.processing.sameinput.#{concurrent}.json"
+                        c = JSON.stringify results
+                        fs.writeFile fname, c, (err) ->
+                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
+                            chai.expect(results.mean).to.be.below expect
+                            done()
