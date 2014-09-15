@@ -84,8 +84,9 @@ describeTimings = (times) ->
 describeSkipPerformance 'Stress', ->
     s = null
     l = null
-    stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yml', 'utf-8'
     outdir = "spec/out"
+    stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yml', 'utf-8'
+    fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
 
     before ->
         wd = './stressteststemp'
@@ -101,8 +102,9 @@ describeSkipPerformance 'Stress', ->
 
 
     describe "Cached graph", ->
+        testid = 'cached_graph'
         requestUrl = utils.formatRequest urlbase, 'gradientmap', {input: 'demo/gradient-black-white.png'}
-        testcases = stresstests.cached_graph
+        testcases = stresstests[testid]
 
         it 'generating cache', (done) ->
             cacheUrl = requestUrl
@@ -122,7 +124,7 @@ describeSkipPerformance 'Stress', ->
                     async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
                         chai.expect(err).to.not.exist
                         results = describeTimings times
-                        fname = outdir+"/stress.cached.#{concurrent}.json"
+                        fname = outdir+"/stress.#{testid}.#{concurrent}.json"
                         c = JSON.stringify results
                         fs.writeFile fname, c, (err) ->
                             console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
@@ -131,13 +133,14 @@ describeSkipPerformance 'Stress', ->
 
 
     describe "Processing same input with different attributes", ->
-        testcases = stresstests.process_same_input
+        testid = 'process_same_input'
+        testcases = stresstests[testid]
 
         testcases.expected[host].forEach (expect, i) ->
             concurrent = testcases.concurrent[i]
 
             describe "#{concurrent} concurrent requests", (done) ->
-                total = testcases.concurrent[testcases.expected[host].length-1]
+                total = testcases.concurrent[testcases.expected[host].length-1]*2
                 requestUrls = randomRequests 'passthrough', {input: 'demo/grid-toastybob.jpg'}, total, 'ignored'
 
                 it "average response time should be below #{expect} ms", (done) ->
@@ -145,7 +148,7 @@ describeSkipPerformance 'Stress', ->
                     async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
                         chai.expect(err).to.not.exist
                         results = describeTimings times
-                        fname = outdir+"/stress.processing.sameinput.#{concurrent}.json"
+                        fname = outdir+"/stress.#{testid}.#{concurrent}.json"
                         c = JSON.stringify results
                         fs.writeFile fname, c, (err) ->
                             console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
