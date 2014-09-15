@@ -151,6 +151,14 @@ var createHistogram = function(container, title, values, _min, _max) {
         .text(title);
 }
 
+var scaledArray = function(input, factor) {
+    var out = new Array(input.length);
+    for (var i=0; i<input.length; i++) {
+        out[i] = input[i]*factor;
+    }
+    return out;
+};
+
 var resultDir = 'out';
 
 d3.json(resultDir+'/stresstests.json', function (err, json) {
@@ -159,18 +167,20 @@ d3.json(resultDir+'/stresstests.json', function (err, json) {
         var expected = testinfo.expected.localhost;
 
         var series = [ [0] ];
+        var received = 0;
 
         expected.forEach(function(ignore, i) {
             var concurrent = testinfo.concurrent[i];
             var resultPath = resultDir+'/stress.'+testid+'.'+concurrent+'.json';
 
             d3.json(resultPath, function (err, result) {
-                series.push(result.values);
+                series.push(scaledArray(result.values, 1/concurrent));
                 var prettyName = resultPath.replace('.json', '').replace('out/stress.', '');
                 createHistogram(d3.select("body"), prettyName,
                         result.values, result.min, result.max);
 
-                if (i === expected.length-1) {
+                received++;
+                if (received === expected.length) {
                     var min = Infinity,
                         max = -Infinity;
                     series.forEach(function(r) {
