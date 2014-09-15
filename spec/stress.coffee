@@ -140,11 +140,11 @@ describeSkipPerformance 'Stress', ->
             concurrent = testcases.concurrent[i]
 
             describe "#{concurrent} concurrent requests", (done) ->
-                total = testcases.concurrent[testcases.expected[host].length-1]*10
-                requestUrls = randomRequests 'passthrough', {input: 'demo/grid-toastybob.jpg'}, total, 'ignored'
+                total = testcases.concurrent[testcases.expected[host].length-1]*2
+                requestUrls = randomRequests 'delaunay_triangles', {}, total, 'seed'
 
                 it "average response time should be below #{expect} ms", (done) ->
-                    @timeout 1*60*1000
+                    @timeout 10*60*1000
                     async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
                         chai.expect(err).to.not.exist
                         results = describeTimings times
