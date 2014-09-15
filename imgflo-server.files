@@ -22,3 +22,4 @@ src/imgflo.coffee
 src/common.coffee
 spec/utils.coffee
 spec/stress.coffee
+spec/stresstests.yml

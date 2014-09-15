@@ -71,6 +71,7 @@ describeTimings = (times) ->
 describeSkipPerformance 'Stress', ->
     s = null
     l = null
+    stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yml', 'utf-8'
 
     before ->
         wd = './stressteststemp'
@@ -88,13 +89,7 @@ describeSkipPerformance 'Stress', ->
     describe "Cached graph", ->
         outdir = "spec/out"
         requestUrl = utils.formatRequest urlbase, 'gradientmap', {input: 'demo/gradient-black-white.png'}
-        testcases = {
-            concurrent: [1, 10, 100, 1000]
-            expected: {
-                'localhost': [20, 200, 2000, 10000]
-                'imgflo.herokuapp.com': [1500, 1500, 6000]
-            }
-        }
+        testcases = stresstests.cached_graph
 
         it 'generating cache', (done) ->
             cacheUrl = requestUrl

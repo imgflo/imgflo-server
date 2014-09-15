@@ -1,0 +1,5 @@
+cached_graph:
+    concurrent: [1, 10, 100, 1000]
+    expected:
+        'localhost': [20, 200, 2000, 10000]
+        'imgflo.herokuapp.com': [1500, 1500, 6000]
