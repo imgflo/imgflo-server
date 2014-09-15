@@ -131,7 +131,7 @@ parseRequestUrl = (u) ->
     outtype = (path.extname p).replace '.', ''
     graph = path.basename p, path.extname p
     if not outtype
-        outtype = 'png'
+        outtype = 'jpg'
 
     out =
         graph: graph

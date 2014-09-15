@@ -8,7 +8,7 @@
     height: 100
 -
     _name: 'crop_all_options'
-    _graph: "crop"
+    _graph: "crop.png"
     input: "demo/grid-toastybob.jpg"
     cropheight: 110
     cropwidth: 130
@@ -16,7 +16,7 @@
     y: 230
 -
     _name: 'crop_default'
-    _graph: "crop"
+    _graph: "crop.png"
     input: "demo/grid-toastybob.jpg"
 -
     _name: 'crop_default_jpeg'
@@ -24,13 +24,13 @@
     input: "demo/grid-toastybob.jpg"
 -
     _name: 'gradient_unused_params'
-    _graph: gradientmap
+    _graph: 'gradientmap.png'
     input: http://s.radar.oreilly.com/wp-files/8/2013/10/noflo-jekyll-700x456.jpg
     color1: '#87a9a7'
     color2: '#b3dedc'
 -
     _name: 'gradient_multiple_stops'
-    _graph: gradientmap
+    _graph: 'gradientmap.png'
     input: "demo/gradient-black-white.png"
     color1: '#555555'
     color2: '#ff0000'
@@ -46,7 +46,7 @@
     opacity: 0.9
 -
     _name: gradient_pscompat_bw100
-    _graph: gradientmap
+    _graph: 'gradientmap.png'
     input: "demo/gradient-black-white.png"
     color1: '#0A2A2F'
     color2: '#FDE7A0'
@@ -55,7 +55,7 @@
     srgb: True
 -
     _name: gradient_pscompat_bw80
-    _graph: gradientmap
+    _graph: 'gradientmap.png'
     input: "demo/gradient-black-white.png"
     color1: '#0A2A2F'
     color2: '#FDE7A0'
@@ -65,7 +65,7 @@
     srgb: True
 -
     _name: gradient_scaled
-    _graph: gradientmap
+    _graph: 'gradientmap.png'
     input: "demo/gradient-black-white.png"
     color1: '#0A2A2F'
     color2: '#FDE7A0'
@@ -77,17 +77,17 @@
     width: 100
 -
     _name: regcheck_https_protocol
-    _url: '/graph/gradientmap?input=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FBo5budLIcAAWEAB.jpg%3Alarge&color1=%23082A31&color2=%23FFE79B'
+    _url: '/graph/gradientmap.png?input=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FBo5budLIcAAWEAB.jpg%3Alarge&color1=%23082A31&color2=%23FFE79B'
 -
     _name: regcheck_colon_in_input_extension
-    _url: '/graph/gradientmap?input=https%3A%2F%2Fs3.amazonaws.com%2Fksr%2Fassets%2F000%2F921%2F889%2F0f93b56c15adf6737b7f725162851e50_large.png%3F1379220875&color1=%23082A31&color2=%23FFE79B'
+    _url: '/graph/gradientmap.png?input=https%3A%2F%2Fs3.amazonaws.com%2Fksr%2Fassets%2F000%2F921%2F889%2F0f93b56c15adf6737b7f725162851e50_large.png%3F1379220875&color1=%23082A31&color2=%23FFE79B'
 -
     _name: regcheck_unsniffable_png
-    _url: '/graph/gradientmap?input=http%3A%2F%2Febmedia.eventbrite.com%2Fs3-build%2Fimages%2F4783149%2F5973734463%2F1%2Flogo.png&color1=%23082A31&color2=%23FFE79B'
+    _url: '/graph/gradientmap.png?input=http%3A%2F%2Febmedia.eventbrite.com%2Fs3-build%2Fimages%2F4783149%2F5973734463%2F1%2Flogo.png&color1=%23082A31&color2=%23FFE79B'
 -
     _name: regcheck_canvas
-    _url: '/graph/canvas?color=%2387a9a7'
+    _url: '/graph/canvas.png?color=%2387a9a7'
 -
     _name: regcheck_cmyk_jpeg
-    _url: '/graph/passthrough?input=http%3A%2F%2Fi1.sndcdn.com%2Fartworks-000082002645-fhibur-t500x500.jpg'
+    _url: '/graph/passthrough.png?input=http%3A%2F%2Fi1.sndcdn.com%2Fartworks-000082002645-fhibur-t500x500.jpg'
 
