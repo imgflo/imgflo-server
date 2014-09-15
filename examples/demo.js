@@ -15,6 +15,23 @@ var getDemoData = function(callback) {
     req.send();
 }
 
+var getVersionInfo = function(callback) {
+    req=new XMLHttpRequest();
+    req.onreadystatechange = function() {
+        if (req.readyState === 4) {
+            if (req.status === 200) {
+                var d = JSON.parse(req.responseText);
+                return callback(null, d);
+            } else {
+                var e = new Error(req.status);
+                return callback(e, null);
+            }
+        }
+    }
+    req.open("GET", "/version", true);
+    req.send();
+}
+
 var createGraphProperties = function(name, graph) {
     if (typeof graph.inports === 'undefined') {
         return null;
@@ -161,6 +178,10 @@ var main = function() {
         res.images.forEach(function(image) {
             addEntry(image);
         });
+    });
+
+    getVersionInfo(function(err, res) {
+        id('version').innerHTML = 'imgflo-server: ' + res.server.toString();
     });
 
 }

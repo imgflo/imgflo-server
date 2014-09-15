@@ -15,7 +15,7 @@ querystring = require 'querystring'
 path = require 'path'
 crypto = require 'crypto'
 request = require 'request'
-
+pkginfo = (require 'pkginfo')(module, 'version')
 node_static = require 'node-static'
 async = require 'async'
 
@@ -140,6 +140,11 @@ parseRequestUrl = (u) ->
         outtype: outtype
     return out
 
+gitDescribe = (path, callback) ->
+    cmd = 'git describe --tags'
+    child_process.exec cmd, { cwd: path }, (err, stdout, stderr) ->
+        return callback err, stdout.replace '\n', ''
+
 class Server extends EventEmitter
     constructor: (workdir, resourcedir, graphdir, verbose) ->
         @workdir = workdir
@@ -177,6 +182,8 @@ class Server extends EventEmitter
 
             if (u.pathname.indexOf "/demo") == 0
                 @serveDemoPage request, response
+            else if (u.pathname.indexOf "/version") == 0
+                @handleVersionRequest request, response
             else if (u.pathname.indexOf "/graph") == 0
                 @handleGraphRequest request, response
             else
@@ -217,6 +224,22 @@ class Server extends EventEmitter
             def = JSON.parse contents
             enrichGraphDefinition def
             return callback null, def
+
+    handleVersionRequest: (request, response) ->
+        info =
+             npm: module.exports.version
+
+        names = [ 'server', 'runtime', 'dependencies', 'gegl', 'babl']
+        paths = [ './', 'runtime',
+                'runtime/dependencies',
+                'runtime/dependencies/gegl',
+                'runtime/dependencies/babl'
+        ]
+        async.map paths, gitDescribe, (err, results) ->
+            for i in [0...results.length]
+                name = names[i]
+                info[name] = results[i]
+            response.end JSON.stringify info
 
     handleGraphRequest: (request, response) ->
         u = url.parse request.url, true

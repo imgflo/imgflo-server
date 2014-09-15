@@ -45,11 +45,13 @@
 
 server = require '../src/server'
 utils = require './utils'
-chai = require 'chai'
 http = require 'http'
 fs = require 'fs'
 path = require 'path'
 url = require 'url'
+
+chai = require 'chai'
+request = require 'request'
 
 urlbase = process.env.IMGFLO_TESTS_TARGET
 urlbase = 'localhost:8889' if not urlbase
@@ -76,6 +78,25 @@ describe 'Server', ->
 
     after ->
         s.close() if startServer
+
+    describe 'Get version info', ->
+        info = null
+        it 'returns valid data', (done) ->
+            u = url.format {protocol:'http:',host: urlbase, pathname:'/version'}
+            request u, (err, response, body) ->
+                chai.expect(err).to.not.exist
+                info = JSON.parse body
+                done()
+        it 'gives NPM version', ->
+            chai.expect(info.npm).to.equal '0.0.3'
+        it 'gives server version', ->
+            chai.expect(info.server).to.be.a.string
+        it 'gives runtime version', ->
+            chai.expect(info.runtime).to.be.a.string
+        it 'gives GEGL version', ->
+            chai.expect(info.gegl).to.be.a.string
+        it 'gives BABL version', ->
+            chai.expect(info.babl).to.be.a.string
 
     describe 'List graphs', ->
         expected = []

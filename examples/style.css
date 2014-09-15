@@ -5,6 +5,11 @@
     width: 800px;
 }
 
+#version {
+    float: right;
+    width: 800px;
+}
+
 #topSection {
     width: 800px;
 }
