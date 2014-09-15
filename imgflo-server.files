@@ -1,7 +1,10 @@
-graphs/first.fbp
-graphs/first.json
-graphs/crop.fbp
+graphs/canvas.json
 graphs/crop.json
+graphs/delaunay_triangles.json
+graphs/desaturate.json
+graphs/gaussianblur.json
+graphs/gradientmap.json
+graphs/passthrough.json
 examples/demo.js
 examples/index.html
 examples/style.css
