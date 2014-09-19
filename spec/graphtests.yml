@@ -76,6 +76,13 @@
     height: 50
     width: 100
 -
+    _name: gaussian
+    _graph: gaussianblur.png
+    input: "demo/mountains.png"
+    'std-dev-x': 60
+    'std-dev-y': 60
+    #'abyss-policy': none
+-
     _name: regcheck_https_protocol
     _url: '/graph/gradientmap.png?input=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FBo5budLIcAAWEAB.jpg%3Alarge&color1=%23082A31&color2=%23FFE79B'
 -
