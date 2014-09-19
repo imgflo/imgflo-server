@@ -70,14 +70,17 @@ describe 'Graphs', ->
                 it 'should output a file', (done) ->
                     @timeout 8000
                     req = request reqUrl, (err, response) ->
-                        done()
+                        chai.expect(err).to.be.a 'null'
                     req.pipe fs.createWriteStream output
+                    req.on 'end', () ->
+                        done()
 
                 it 'results should be equal to reference', (done) ->
-                    @timeout 4000
-                    utils.compareImages output, reference, (error, stderr, stdout) ->
-                        msg = "image comparison failed\n#{stderr}\n#{stdout}"
-                        chai.assert not error?, msg
+                    timeout = 4000
+                    @timeout timeout
+                    utils.compareImages output, reference, timeout*2, (error, stderr, stdout) ->
+                        msg = "image comparison failed code=#{error?.code}\n#{stderr}\n#{stdout}"
+                        chai.expect(error).to.be.a 'null', msg
                         done()
 
                 itSkipRemote 'should not cause errors', ->

@@ -37,10 +37,10 @@ class LogHandler
 
 exports.LogHandler = LogHandler
 
-exports.compareImages = (actual, expected, callback) ->
+exports.compareImages = (actual, expected, timeout, callback) ->
     cmd = "./install/env.sh ./install/bin/gegl-imgcmp #{actual} #{expected}"
     options =
-        timeout: 2000
+        timeout: timeout
     child.exec cmd, options, (error, stdout, stderr) ->
         return callback error, stderr, stdout
 
