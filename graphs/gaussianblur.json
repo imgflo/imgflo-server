@@ -1,60 +1,18 @@
 {
     "properties": {
-        "name": "blur",
-        "id": "r6630",
-        "project": "blur",
+        "name": "gaussianblur",
         "environment": {
             "type": "imgflo",
             "content": ""
         }
     },
     "inports": {
-        "crop-x": {
-            "process": "gegl/crop_qge9s",
-            "port": "x",
-            "metadata": {
-                "x": 900,
-                "y": -72,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "crop-y": {
-            "process": "gegl/crop_qge9s",
-            "port": "y",
-            "metadata": {
-                "x": 1044,
-                "y": -72,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "crop-width": {
-            "process": "gegl/crop_qge9s",
-            "port": "width",
-            "metadata": {
-                "x": 900,
-                "y": 36,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "crop-height": {
-            "process": "gegl/crop_qge9s",
-            "port": "height",
-            "metadata": {
-                "x": 1044,
-                "y": 36,
-                "width": 72,
-                "height": 72
-            }
-        },
         "std-dev-x": {
             "process": "gegl/gaussian-blur-iir_d4sgv",
             "port": "std-dev-x",
             "metadata": {
-                "x": 432,
-                "y": -72,
+                "x": 396,
+                "y": 0,
                 "width": 72,
                 "height": 72
             }
@@ -73,8 +31,8 @@
             "process": "gegl/gaussian-blur-iir_d4sgv",
             "port": "std-dev-y",
             "metadata": {
-                "x": 540,
-                "y": -72,
+                "x": 468,
+                "y": -108,
                 "width": 72,
                 "height": 72
             }
@@ -92,11 +50,11 @@
     },
     "outports": {
         "output": {
-            "process": "gegl/crop_qge9s",
+            "process": "gegl/gaussian-blur-iir_d4sgv",
             "port": "output",
             "metadata": {
-                "x": 1296,
-                "y": 180,
+                "x": 900,
+                "y": 144,
                 "width": 72,
                 "height": 72
             }
@@ -104,55 +62,18 @@
     },
     "groups": [],
     "processes": {
-        "gegl/crop_qge9s": {
-            "component": "gegl/crop",
-            "metadata": {
-                "label": "gegl/crop",
-                "x": 1044,
-                "y": 180,
-                "width": 72,
-                "height": 72
-            }
-        },
         "gegl/gaussian-blur-iir_d4sgv": {
             "component": "gegl/gaussian-blur-iir",
             "metadata": {
                 "label": "gegl/gaussian-blur-iir",
                 "x": 648,
-                "y": 180,
+                "y": 144,
                 "width": 72,
                 "height": 72
             }
         }
     },
     "connections": [
-        {
-            "src": {
-                "process": "gegl/gaussian-blur-iir_d4sgv",
-                "port": "output"
-            },
-            "tgt": {
-                "process": "gegl/crop_qge9s",
-                "port": "input"
-            },
-            "metadata": {
-                "route": null
-            }
-        },
-        {
-            "data": 1400,
-            "tgt": {
-                "process": "gegl/crop_qge9s",
-                "port": "width"
-            }
-        },
-        {
-            "data": 1000,
-            "tgt": {
-                "process": "gegl/crop_qge9s",
-                "port": "height"
-            }
-        },
         {
             "data": 1.5,
             "tgt": {
@@ -179,20 +100,6 @@
             "tgt": {
                 "process": "gegl/gaussian-blur-iir_d4sgv",
                 "port": "abyss-policy"
-            }
-        },
-        {
-            "data": 0,
-            "tgt": {
-                "process": "gegl/crop_qge9s",
-                "port": "y"
-            }
-        },
-        {
-            "data": 0,
-            "tgt": {
-                "process": "gegl/crop_qge9s",
-                "port": "x"
             }
         }
     ]
