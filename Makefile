@@ -38,7 +38,7 @@ glib:
 libsoup:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) libsoup
 
-check: install
+check: install runtime-check
 	./node_modules/.bin/mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee $(TEST_ARGUMENTS)
 
 runtime-check:
