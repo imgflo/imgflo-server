@@ -41,6 +41,9 @@ libsoup:
 check: install
 	./node_modules/.bin/mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee $(TEST_ARGUMENTS)
 
+runtime-check:
+	./node_modules/.bin/mocha --reporter spec --compilers .coffee:coffee-script/register ./runtime/spec/*.coffee $(TEST_ARGUMENTS)
+
 clean:
 	git clean -dfx --exclude node_modules --exclude install
 
