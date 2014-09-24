@@ -59,9 +59,9 @@ getGitVersions = (callback) ->
           'babl'
   ]
   paths = [ './', 'runtime',
-          'runtime/dependencies',
-          'runtime/dependencies/gegl',
-          'runtime/dependencies/babl'
+#          'runtime/dependencies',
+#          'runtime/dependencies/gegl',
+#          'runtime/dependencies/babl'
   ]
   paths = (path.join projectdir, p for p in paths)
 
