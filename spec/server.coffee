@@ -135,9 +135,27 @@ describe 'Server', ->
                 chai.expect(Object.keys(d.inports)).to.deep.equal
 
     describe 'Get image', ->
+        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        res = null
+        location = null
+
         it 'should be created on demand', (done) ->
-            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            @timeout 4000
+            checkProcessed = (id) ->
+                chai.expect(id).to.not.contain 'error'
+                if id == 'serve-processed-file'
+                    s.removeListener 'logevent', checkProcessed
+                    done()
+            s.on 'logevent', checkProcessed # NOTE: Grey-box
             http.get u, (response) ->
+                res = response
+
+        it 'should redirect to cached file', () ->
+            chai.expect(res.statusCode).to.equal 301
+            location = res.headers['location']
+            chai.expect(location).to.contain '/cache/' # TODO: make stricter
+        it 'redirect should point to created image', (done) ->
+            http.get location, (response) ->
                 chai.expect(response.statusCode).to.equal 200
                 response.on 'data', (chunk) ->
                     fs.appendFile 'testout.png', chunk, ->
@@ -147,4 +165,12 @@ describe 'Server', ->
                         chai.assert exists, 'testout.png does not exist'
                         done()
 
+    describe 'Get existing image', ->
+        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
 
+        it 'existing graph should be cached and redirected', (done) ->
+            http.get u, (response) ->
+                chai.expect(response.statusCode).to.equal 301
+                response.on 'end', ->
+                    # console.log response.headers
+                    done()
