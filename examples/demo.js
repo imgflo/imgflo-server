@@ -1,5 +1,5 @@
 var getDemoData = function(callback) {
-    req=new XMLHttpRequest();
+    var req=new XMLHttpRequest();
     req.onreadystatechange = function() {
         if (req.readyState === 4) {
             if (req.status === 200) {
@@ -16,7 +16,7 @@ var getDemoData = function(callback) {
 }
 
 var getVersionInfo = function(callback) {
-    req=new XMLHttpRequest();
+    var req=new XMLHttpRequest();
     req.onreadystatechange = function() {
         if (req.readyState === 4) {
             if (req.status === 200) {
@@ -165,23 +165,27 @@ var main = function() {
         setActiveGraph(name);
     }
 
-    getDemoData(function(err, res) {
+    getDemoData(function(err, demo) {
         if (err) {
             throw err;
         }
 
-        availableGraphs = res.graphs;
-        setActiveGraph('crop');
+        availableGraphs = demo.graphs;
+        setActiveGraph(Object.keys(availableGraphs)[0]);
 
-        var l = createGraphList(res.graphs, onGraphClicked);
+        var l = createGraphList(demo.graphs, onGraphClicked);
         id('graphList').appendChild(l);
-        res.images.forEach(function(image) {
+        demo.images.forEach(function(image) {
             addEntry(image);
         });
     });
 
     getVersionInfo(function(err, res) {
-        id('version').innerHTML = 'imgflo-server: ' + res.server.toString();
+        var version = "Unknown";
+        if (!err && res.server) {
+            version = res.server.toString();
+        }
+        id('version').innerHTML = 'imgflo-server: ' + version;
     });
 
 }
