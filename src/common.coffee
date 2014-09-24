@@ -9,6 +9,7 @@ child_process = require 'child_process'
 fs = require 'fs'
 
 installdir = __dirname + '/../install/'
+projectdir = __dirname + '/..'
 
 # Interface for Processors
 class Processor
@@ -62,6 +63,8 @@ getGitVersions = (callback) ->
           'runtime/dependencies/gegl',
           'runtime/dependencies/babl'
   ]
+  paths = (path.join projectdir, p for p in paths)
+
   async.map paths, gitDescribe, (err, results) ->
       for i in [0...results.length]
           name = names[i]
