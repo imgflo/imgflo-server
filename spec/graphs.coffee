@@ -47,7 +47,7 @@ describe 'Graphs', ->
         if startServer
             s = new server.Server wd, null, null, verbose
             l = new utils.LogHandler s
-            s.listen 'localhost', port, done
+            s.listen urlbase, port, done
     after ->
         s.close() if startServer
 

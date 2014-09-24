@@ -239,7 +239,7 @@ class Server extends EventEmitter
         @cacheserver.serveFile filepath, 200, {}, request, response
 
     redirectToCache: (file, response) ->
-        target = "http://#{@host}:#{@port}/cache/#{file}"
+        target = "http://#{@host}/cache/#{file}"
         response.writeHead 301, { 'Location': target }
         response.end()
 
