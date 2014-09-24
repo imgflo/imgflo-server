@@ -165,10 +165,20 @@ describe 'Server', ->
 
     describe 'Get existing image', ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        response = null
 
-        it 'existing graph should be cached and redirected', (done) ->
-            http.get u, (response) ->
-                chai.expect(response.statusCode).to.equal 301
-                response.on 'end', ->
-                    # console.log response.headers
+        it 'should be in cache', (done) ->
+            checkProcessed = (id) ->
+                console.log 'checking', id, id == 'graph-in-cache'
+                chai.expect(id).to.not.contain 'error'
+                if id == 'graph-in-cache'
+                    s.removeListener 'logevent', checkProcessed
                     done()
+            s.on 'logevent', checkProcessed
+            http.get u, (res) ->
+                response = res
+
+        it 'should be a redirect', () ->
+            chai.expect(response.statusCode).to.equal 301
+            location = response.headers['location']
+            chai.expect(location).to.contain '/cache/' # TODO: make stricter
