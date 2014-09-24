@@ -18,7 +18,10 @@ run: install
 runtime:
 	cd runtime && make PREFIX=$(PREFIX) install
 
-install: env runtime
+version:
+	node update-version-info.js
+
+install: env version runtime
 
 env:
 	mkdir -p $(PREFIX) || true

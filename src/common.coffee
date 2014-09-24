@@ -2,6 +2,14 @@
 #     (c) 2014 The Grid
 #     imgflo-server may be freely distributed under the MIT license
 
+async = require 'async'
+pkginfo = (require 'pkginfo')(module, 'version')
+path = require 'path'
+child_process = require 'child_process'
+fs = require 'fs'
+
+installdir = __dirname + '/../install/'
+
 # Interface for Processors
 class Processor
     constructor: (verbose) ->
@@ -34,5 +42,53 @@ clone = (obj) ->
 
   return newInstance
 
+
+gitDescribe = (path, callback) ->
+    cmd = 'git describe --tags'
+    child_process.exec cmd, { cwd: path }, (err, stdout, stderr) ->
+        stdout = stdout.replace '\n', ''
+        return callback err, stdout
+
+getGitVersions = (callback) ->
+  info =
+       npm: module.exports.version
+  names = [ 'server', 'runtime',
+          'dependencies',
+          'gegl',
+          'babl'
+  ]
+  paths = [ './', 'runtime',
+          'runtime/dependencies',
+          'runtime/dependencies/gegl',
+          'runtime/dependencies/babl'
+  ]
+  async.map paths, gitDescribe, (err, results) ->
+      for i in [0...results.length]
+          name = names[i]
+          info[name] = results[i]
+
+      callback err, info
+
+getInstalledVersions = (callback) ->
+    p = path.join installdir, 'imgflo.versions.json'
+    fs.readFile p, (err, content) ->
+        return callback err, null if err
+        try
+            callback null, JSON.parse content
+        catch e
+            callback e, null
+
+updateInstalledVersions = (callback) ->
+    p = path.join installdir, 'imgflo.versions.json'
+    getGitVersions (err, info) ->
+      return callback err, null if err
+      c = JSON.stringify info
+      fs.writeFile p, c, (err) ->
+          return callback err, null if err
+          return callback null, p
+
 exports.clone = clone
 exports.Processor = Processor
+exports.getInstalledVersions = getInstalledVersions
+exports.updateInstalledVersions = updateInstalledVersions
+exports.installdir = installdir

@@ -15,13 +15,10 @@ querystring = require 'querystring'
 path = require 'path'
 crypto = require 'crypto'
 request = require 'request'
-pkginfo = (require 'pkginfo')(module, 'version')
 node_static = require 'node-static'
 async = require 'async'
 
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control
-
-installdir = __dirname + '/../install/'
 
 downloadFile = (src, out, callback) ->
     req = request src, (error, response) ->
@@ -140,10 +137,7 @@ parseRequestUrl = (u) ->
         outtype: outtype
     return out
 
-gitDescribe = (path, callback) ->
-    cmd = 'git describe --tags'
-    child_process.exec cmd, { cwd: path }, (err, stdout, stderr) ->
-        return callback err, stdout.replace '\n', ''
+
 
 class Server extends EventEmitter
     constructor: (workdir, resourcedir, graphdir, verbose) ->
@@ -157,7 +151,7 @@ class Server extends EventEmitter
 
         n = new noflo.Processor verbose
         @processors =
-            imgflo: new imgflo.Processor verbose, installdir
+            imgflo: new imgflo.Processor verbose, common.installdir
             'noflo-browser': n
             'noflo-nodejs': n
 
@@ -226,19 +220,11 @@ class Server extends EventEmitter
             return callback null, def
 
     handleVersionRequest: (request, response) ->
-        info =
-             npm: module.exports.version
-
-        names = [ 'server', 'runtime', 'dependencies', 'gegl', 'babl']
-        paths = [ './', 'runtime',
-                'runtime/dependencies',
-                'runtime/dependencies/gegl',
-                'runtime/dependencies/babl'
-        ]
-        async.map paths, gitDescribe, (err, results) ->
-            for i in [0...results.length]
-                name = names[i]
-                info[name] = results[i]
+        common.getInstalledVersions (err, info) ->
+            if err
+                response.writeHead 500
+                response.end JSON.stringify { 'err': err }
+                return
             response.end JSON.stringify info
 
     handleGraphRequest: (request, response) ->
