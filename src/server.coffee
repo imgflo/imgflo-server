@@ -158,9 +158,9 @@ class Server extends EventEmitter
         if not fs.existsSync workdir
             fs.mkdirSync workdir
 
-    listen: (port) ->
+    listen: (port, cb) ->
         @port = port
-        @httpserver.listen port
+        @httpserver.listen port, cb
     close: ->
         @httpserver.close()
 

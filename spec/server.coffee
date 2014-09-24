@@ -66,7 +66,7 @@ graph_url = (graph, props) ->
 describe 'Server', ->
     s = null
 
-    before ->
+    before (done) ->
         wd = './testtemp'
         if fs.existsSync wd
             for f in fs.readdirSync wd
@@ -74,7 +74,8 @@ describe 'Server', ->
         if startServer
             s = new server.Server wd, null, null, verbose
             l = new utils.LogHandler s
-            s.listen port
+            s.listen port, () ->
+                done()
 
     after ->
         s.close() if startServer
