@@ -19,7 +19,7 @@ runtime:
 	cd runtime && make PREFIX=$(PREFIX) install
 
 version:
-	node update-version-info.js
+	npm run update-version-info
 
 install: env version runtime
 
