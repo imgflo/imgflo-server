@@ -82,8 +82,9 @@ getInstalledVersions = (callback) ->
             callback e, null
 
 updateInstalledVersions = (callback) ->
+
     fs.mkdir installdir, (err) ->
-        return callback err, null if err
+        return callback err, null if err and err.code != 'EEXIST'
         p = path.join installdir, 'imgflo.versions.json'
         getGitVersions (err, info) ->
           return callback err, null if err
