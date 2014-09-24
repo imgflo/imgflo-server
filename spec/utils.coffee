@@ -10,9 +10,12 @@ class LogHandler
     @errors = null
     constructor: (server) ->
         @errors = []
+        @server = server
         server.on 'logevent', @logEvent
 
     logEvent: (id, data) =>
+        console.log 'LOG:', id, data if @server.verbose
+
         if id == 'process-request-end'
             if data.stderr
                 for e in data.stderr.split '\n'

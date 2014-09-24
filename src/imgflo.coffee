@@ -38,12 +38,15 @@ class ImgfloProcessor extends common.Processor
         console.log 'executing', cmd, args if @verbose
         stderr = ""
         process = child_process.spawn cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] }
+        process.on 'error', (err) ->
+            return callback err, null
         process.on 'close', (exitcode) ->
             err = if exitcode then new Error "processor returned exitcode: #{exitcode}" else null
             return callback err, stderr
         process.stdout.on 'data', (d) =>
             console.log d.toString() if @verbose
         process.stderr.on 'data', (d)->
+            console.log d.toString() if @verbose
             stderr += d.toString()
         console.log s if @verbose
         process.stdin.write s

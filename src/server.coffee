@@ -148,6 +148,7 @@ class Server extends EventEmitter
         @fileserver = new node_static.Server workdir
         @httpserver = http.createServer @handleHttpRequest
         @port = null
+        @verbose = verbose
 
         n = new noflo.Processor verbose
         @processors =
