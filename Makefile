@@ -19,7 +19,7 @@ runtime:
 	cd runtime && make PREFIX=$(PREFIX) install
 
 version:
-	npm run update-version-info
+	npm run update-version-info || echo 'WARN: unable to update version'
 
 install: env version runtime
 
