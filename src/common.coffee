@@ -82,13 +82,15 @@ getInstalledVersions = (callback) ->
             callback e, null
 
 updateInstalledVersions = (callback) ->
-    p = path.join installdir, 'imgflo.versions.json'
-    getGitVersions (err, info) ->
-      return callback err, null if err
-      c = JSON.stringify info
-      fs.writeFile p, c, (err) ->
+    fs.mkdir installdir, (err) ->
+        return callback err, null if err
+        p = path.join installdir, 'imgflo.versions.json'
+        getGitVersions (err, info) ->
           return callback err, null if err
-          return callback null, p
+          c = JSON.stringify info
+          fs.writeFile p, c, (err) ->
+              return callback err, null if err
+              return callback null, p
 
 exports.clone = clone
 exports.Processor = Processor
