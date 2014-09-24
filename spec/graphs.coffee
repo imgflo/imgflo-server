@@ -39,7 +39,7 @@ describe 'Graphs', ->
     testcases = yaml.safeLoad fs.readFileSync 'spec/graphtests.yml', 'utf-8'
     l = null
 
-    before ->
+    before (done) ->
         wd = './graphteststemp'
         if fs.existsSync wd
             for f in fs.readdirSync wd
@@ -47,7 +47,7 @@ describe 'Graphs', ->
         if startServer
             s = new server.Server wd, null, null, verbose
             l = new utils.LogHandler s
-            s.listen port
+            s.listen 'localhost', port, done
     after ->
         s.close() if startServer
 

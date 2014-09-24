@@ -91,7 +91,7 @@ describeSkipPerformance 'Stress', ->
     stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yml', 'utf-8'
     fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
 
-    before ->
+    before (done) ->
         wd = './stressteststemp'
         if fs.existsSync wd
             for f in fs.readdirSync wd
@@ -99,7 +99,7 @@ describeSkipPerformance 'Stress', ->
         if startServer
             s = new server.Server wd, null, null, verbose
             l = new utils.LogHandler s
-            s.listen port
+            s.listen 'localhost', port, done
     after ->
         s.close() if startServer
 

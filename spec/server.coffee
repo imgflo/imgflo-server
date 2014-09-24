@@ -74,9 +74,7 @@ describe 'Server', ->
         if startServer
             s = new server.Server wd, null, null, verbose
             l = new utils.LogHandler s
-            s.listen port, () ->
-                done()
-
+            s.listen 'localhost', port, done()
     after ->
         s.close() if startServer
 

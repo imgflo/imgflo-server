@@ -148,6 +148,7 @@ class Server extends EventEmitter
         @cacheserver = new node_static.Server workdir
         @httpserver = http.createServer @handleHttpRequest
         @port = null
+        @host = null
         @verbose = verbose
 
         n = new noflo.Processor verbose
@@ -159,7 +160,8 @@ class Server extends EventEmitter
         if not fs.existsSync workdir
             fs.mkdirSync workdir
 
-    listen: (port, cb) ->
+    listen: (host, port, cb) ->
+        @host = host
         @port = port
         @httpserver.listen port, cb
     close: ->
@@ -309,11 +311,12 @@ exports.main = ->
         console.log 'Uncaught exception: ', err
 
     port = process.env.PORT || 8080
+    host = process.env.HOST || 'localhost'
     workdir = './temp'
 
     server = new Server workdir
-    server.listen port
+    server.listen host, port, () ->
+        console.log 'Server listening at port', port, "with workdir", workdir
     server.on 'logevent', (id, data) ->
         console.log "EVENT: #{id}:", data
-
-    console.log 'Server listening at port', port, "with workdir", workdir
+    
