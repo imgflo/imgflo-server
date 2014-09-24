@@ -145,7 +145,7 @@ class Server extends EventEmitter
         @resourcedir = resourcedir || './examples'
         @graphdir = graphdir || './graphs'
         @resourceserver = new node_static.Server resourcedir
-        @fileserver = new node_static.Server workdir
+        @cacheserver = new node_static.Server workdir
         @httpserver = http.createServer @handleHttpRequest
         @port = null
         @verbose = verbose
@@ -181,6 +181,8 @@ class Server extends EventEmitter
                 @handleVersionRequest request, response
             else if (u.pathname.indexOf "/graph") == 0
                 @handleGraphRequest request, response
+            else if (u.pathname.indexOf "/cache") == 0
+                @handleCacheRequest request, response
             else
                 @logEvent 'unknown-request', { request: request.url, path: u.pathname }
                 response.statusCode = 404
@@ -228,6 +230,17 @@ class Server extends EventEmitter
                 return
             response.end JSON.stringify info
 
+    handleCacheRequest: (request, response) ->
+        u = url.parse request.url, true
+        filepath = u.pathname.replace 'cache/', ''
+        @logEvent 'serve-from-cache', { request: request.url, file: filepath }
+        @cacheserver.serveFile filepath, 200, {}, request, response
+
+    redirectToCache: (file, response) ->
+        target = "http://#{@host}:#{@port}/cache/#{file}"
+        response.writeHead 301, { 'Location': target }
+        response.end()
+
     handleGraphRequest: (request, response) ->
         u = url.parse request.url, true
         filepath = hashFile u.path
@@ -235,8 +248,8 @@ class Server extends EventEmitter
 
         fs.exists workdir_filepath, (exists) =>
             if exists
-                @logEvent 'serve-from-cache', { request: request.url, file: filepath }
-                @fileserver.serveFile filepath, 200, {}, request, response
+                @logEvent 'graph-in-cache', { request: request.url, file: filepath }
+                @redirectToCache filepath, response
             else
                 @processGraphRequest workdir_filepath, request.url, (err, stderr) =>
                     @logEvent 'process-request-end', { request: request.url, err: err, stderr: stderr }
@@ -248,9 +261,9 @@ class Server extends EventEmitter
                             response.writeHead 500
                             response.end()
                     else
-                        # requested file shall now be present
+                        # requested file shall now be present, redirect
                         @logEvent 'serve-processed-file', { request: request.url, file: filepath }
-                        @fileserver.serveFile filepath, 200, {}, request, response
+                        @redirectToCache filepath, response
 
     processGraphRequest: (outf, request_url, callback) =>
         req = parseRequestUrl request_url
