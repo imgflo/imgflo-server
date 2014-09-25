@@ -26,3 +26,4 @@ spec/stresstests.yml
 spec/index.html
 update-version-info.js
 src/local.coffee
+src/s3.coffee
