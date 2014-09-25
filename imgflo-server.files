@@ -25,3 +25,4 @@ spec/stress.coffee
 spec/stresstests.yml
 spec/index.html
 update-version-info.js
+src/local.coffee

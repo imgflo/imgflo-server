@@ -21,6 +21,21 @@ class Processor
     process: (outputFile, outType, graph, iips, inputFile, inputType, callback) ->
         throw new Error 'Processor.process() not implemented'
 
+# Interfaces for caching
+class CacheServer
+    constructor: (options) ->
+        #
+
+    # callback (err, url)
+    putFile: (path, key, callback) ->
+        #
+
+    # callback (err, url)
+    keyExists: (key, callback) ->
+        #
+
+
+
 clone = (obj) ->
   if not obj? or typeof obj isnt 'object'
     return obj
@@ -98,3 +113,4 @@ exports.Processor = Processor
 exports.getInstalledVersions = getInstalledVersions
 exports.updateInstalledVersions = updateInstalledVersions
 exports.installdir = installdir
+exports.CacheServer = CacheServer
