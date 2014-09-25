@@ -38,7 +38,7 @@ class Cache extends common.CacheServer
             callback err, null
         to.on 'error', (err) ->
             callback err, null
-        to.on 'finish', () =>
+        from.on 'close', () =>
             callback null, @urlForKey key
 
     handleRequest: (request, response) ->

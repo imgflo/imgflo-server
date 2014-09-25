@@ -5,6 +5,7 @@
 noflo = require './noflo'
 imgflo = require './imgflo'
 common = require './common'
+local = require './local'
 
 http = require 'http'
 fs = require 'fs'
@@ -66,7 +67,7 @@ getGraphs = (directory, callback) ->
 
             return callback null, graphs
 
-
+# Key used in cache
 hashFile = (path) ->
     hash = crypto.createHash 'sha1'
     hash.update path
@@ -145,7 +146,8 @@ class Server extends EventEmitter
         @resourcedir = resourcedir || './examples'
         @graphdir = graphdir || './graphs'
         @resourceserver = new node_static.Server resourcedir
-        @cacheserver = new node_static.Server workdir
+        cachedir = @workdir+'cache'
+        @cache = new local.Cache cachedir, {}
         @httpserver = http.createServer @handleHttpRequest
         @port = null
         @host = null
@@ -163,6 +165,7 @@ class Server extends EventEmitter
     listen: (host, port, cb) ->
         @host = host
         @port = port
+        @cache.options.baseurl = @host # TEMP
         @httpserver.listen port, cb
     close: ->
         @httpserver.close()
@@ -176,15 +179,14 @@ class Server extends EventEmitter
             u = url.parse request.url, true
             if u.pathname == '/'
                 u.pathname = '/demo/index.html'
-
             if (u.pathname.indexOf "/demo") == 0
                 @serveDemoPage request, response
+            else if (u.pathname.indexOf "/cache") == 0
+                @cache.handleRequest? request, response
             else if (u.pathname.indexOf "/version") == 0
                 @handleVersionRequest request, response
             else if (u.pathname.indexOf "/graph") == 0
                 @handleGraphRequest request, response
-            else if (u.pathname.indexOf "/cache") == 0
-                @handleCacheRequest request, response
             else
                 @logEvent 'unknown-request', { request: request.url, path: u.pathname }
                 response.statusCode = 404
@@ -232,40 +234,43 @@ class Server extends EventEmitter
                 return
             response.end JSON.stringify info
 
-    handleCacheRequest: (request, response) ->
-        u = url.parse request.url, true
-        filepath = u.pathname.replace 'cache/', ''
-        @logEvent 'serve-from-cache', { request: request.url, file: filepath }
-        @cacheserver.serveFile filepath, 200, {}, request, response
-
-    redirectToCache: (file, response) ->
-        target = "http://#{@host}/cache/#{file}"
+    redirectToCache: (target, response) ->
         response.writeHead 301, { 'Location': target }
         response.end()
 
     handleGraphRequest: (request, response) ->
         u = url.parse request.url, true
-        filepath = hashFile u.path
-        workdir_filepath = path.join @workdir, filepath
+        key = hashFile u.path
 
-        fs.exists workdir_filepath, (exists) =>
-            if exists
-                @logEvent 'graph-in-cache', { request: request.url, file: filepath }
-                @redirectToCache filepath, response
+        @cache.keyExists key, (err, cached) =>
+            if cached
+                @logEvent 'graph-in-cache', { request: request.url, key: key, url: cached }
+                @redirectToCache cached, response
             else
-                @processGraphRequest workdir_filepath, request.url, (err, stderr) =>
-                    @logEvent 'process-request-end', { request: request.url, err: err, stderr: stderr }
+                @processAndCache request.url, key, response, (err, cached) ->
+                    @redirectToCache cached, response
+
+    processAndCache: (request_url, key, response) ->
+        workdir_filepath = path.join @workdir, key
+        @processGraphRequest workdir_filepath, request_url, (err, stderr) =>
+            @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, file: workdir_filepath }
+            if err
+                if err.code?
+                    response.writeHead err.code, { 'Content-Type': 'application/json' }
+                    response.end JSON.stringify err.result
+                else
+                    response.writeHead 500
+                    response.end()
+            else
+                # FIXME: remove file from workdir
+                @logEvent 'put-into-cache', { request: request_url, path: workdir_filepath, key: key }
+                @cache.putFile workdir_filepath, key, (err, cached) =>
+                    # requested file shall now be present, redirect
+                    @logEvent 'serve-processed-file', { request: request_url, url: cached, err: err }
                     if err
-                        if err.code?
-                            response.writeHead err.code, { 'Content-Type': 'application/json' }
-                            response.end JSON.stringify err.result
-                        else
-                            response.writeHead 500
-                            response.end()
-                    else
-                        # requested file shall now be present, redirect
-                        @logEvent 'serve-processed-file', { request: request.url, file: filepath }
-                        @redirectToCache filepath, response
+                        response.writeHead 500
+                        return response.end JSON.stringify err
+                    @redirectToCache cached, response
 
     processGraphRequest: (outf, request_url, callback) =>
         req = parseRequestUrl request_url
