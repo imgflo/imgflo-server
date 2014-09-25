@@ -6,7 +6,8 @@ out.png
 node_modules
 *.creator.user
 *teststemp/
-testtemp
+testtemp*
+*cache/
 temp/
 spec/data/*.out.png
 spec/data/*-diff.png
