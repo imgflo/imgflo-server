@@ -16,6 +16,13 @@ class LogHandler
     logEvent: (id, data) =>
         console.log 'LOG:', id, data if @server.verbose
 
+        ignored = [
+            'request-received'
+            'serve-processed-file'
+            'graph-in-cache'
+            'put-into-cache'
+        ]
+
         if id == 'process-request-end'
             if data.stderr
                 for e in data.stderr.split '\n'
@@ -28,7 +35,7 @@ class LogHandler
         else if (id.indexOf 'error') != -1
             if data.err
                 @errors.push data
-        else if id == 'request-received' or id == 'serve-processed-file' or id == 'graph-in-cache'
+        else if id in ignored
             #
         else
             console.log 'WARNING: unhandled log event', id

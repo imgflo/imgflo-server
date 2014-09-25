@@ -169,7 +169,6 @@ describe 'Server', ->
 
         it 'should be in cache', (done) ->
             checkProcessed = (id) ->
-                console.log 'checking', id, id == 'graph-in-cache'
                 chai.expect(id).to.not.contain 'error'
                 if id == 'graph-in-cache'
                     s.removeListener 'logevent', checkProcessed
