@@ -6,6 +6,7 @@ noflo = require './noflo'
 imgflo = require './imgflo'
 common = require './common'
 local = require './local'
+s3 = require './s3'
 
 http = require 'http'
 fs = require 'fs'
@@ -141,13 +142,28 @@ parseRequestUrl = (u) ->
 
 
 class Server extends EventEmitter
-    constructor: (workdir, resourcedir, graphdir, verbose) ->
+
+    constructor: (workdir, resourcedir, graphdir, verbose, cachetype) ->
         @workdir = workdir
         @resourcedir = resourcedir || './examples'
         @graphdir = graphdir || './graphs'
         @resourceserver = new node_static.Server resourcedir
         cachedir = @workdir+'cache'
-        @cache = new local.Cache cachedir, {}
+        cachetype = 'local' if not cachetype
+
+        options = {}
+        if cachetype == 's3'
+            options =
+                key: process.env.AMAZON_API_ID
+                secret: process.env.AMAZON_API_TOKEN
+                region: process.env.AMAZON_API_REGION
+                bucket: process.env.AMAZON_API_BUCKET
+            @cache = new s3.Cache cachedir, options
+        else if cachetype == 'local'
+            @cache = new local.Cache cachedir, options
+        else
+            @cache = new common.Cache cachedir, options
+
         @httpserver = http.createServer @handleHttpRequest
         @port = null
         @host = null
