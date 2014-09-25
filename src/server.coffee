@@ -311,12 +311,12 @@ exports.main = ->
         console.log 'Uncaught exception: ', err
 
     port = process.env.PORT || 8080
-    host = process.env.HOST || 'localhost'
+    host = process.env.HOSTNAME || 'localhost'
     workdir = './temp'
 
     server = new Server workdir
     server.listen host, port, () ->
-        console.log 'Server listening at port', port, "with workdir", workdir
+        console.log 'Server listening at port', port, "with workdir", workdir, "on host", host
     server.on 'logevent', (id, data) ->
         console.log "EVENT: #{id}:", data
     
