@@ -9,6 +9,13 @@ path = require 'path'
 url = require 'url'
 node_static = require 'node-static'
 
+class FsyncedWriteStream extends fs.WriteStream
+    close: (cb) ->
+        fs.fsync @fd, (err) =>
+            @emit 'error', err if err
+            @emit 'synced' if not err
+            super cb
+
 class Cache extends common.CacheServer
     constructor: (dir, options) ->
         @dir = dir
@@ -32,14 +39,17 @@ class Cache extends common.CacheServer
     putFile: (source, key, callback) ->
         target = path.join @dir, key
         from = fs.createReadStream source
-        to = fs.createWriteStream target
+        to = new FsyncedWriteStream target
         from.pipe to
         from.on 'error', (err) ->
             callback err, null
         to.on 'error', (err) ->
             callback err, null
-        from.on 'close', () =>
-            callback null, @urlForKey key
+        to.on 'synced', () =>
+            # Somehow even waiting for fsync is not enough...
+            setTimeout () =>
+                callback null, @urlForKey key
+            , 100
 
     handleRequest: (request, response) ->
         u = url.parse request.url, true
