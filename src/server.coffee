@@ -338,7 +338,7 @@ exports.main = ->
     host = process.env.HOSTNAME || 'localhost'
     workdir = './temp'
 
-    server = new Server workdir
+    server = new Server workdir, null, null, false, 's3'
     server.listen host, port, () ->
         console.log 'Server listening at port', port, "with workdir", workdir, "on host", host
     server.on 'logevent', (id, data) ->

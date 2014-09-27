@@ -63,6 +63,12 @@ itSkipRemote = if not startServer then it.skip else it
 graph_url = (graph, props) ->
     return utils.formatRequest urlbase, graph, props
 
+cache = 'local'
+#cache = 's3'
+
+cacheurl = '/cache/' if cache == 'local'
+cacheurl = 'amazonaws.com' if cache == 's3'
+
 describe 'Server', ->
     s = null
 
@@ -70,7 +76,7 @@ describe 'Server', ->
         wd = './testtemp'
         utils.rmrf wd
         if startServer
-            s = new server.Server wd, null, null, verbose
+            s = new server.Server wd, null, null, verbose, cache
             l = new utils.LogHandler s
             s.listen urlbase, port, done()
     after ->
@@ -149,7 +155,7 @@ describe 'Server', ->
         it 'should redirect to cached file', () ->
             chai.expect(res.statusCode).to.equal 301
             location = res.headers['location']
-            chai.expect(location).to.contain '/cache/' # TODO: make stricter
+            chai.expect(location).to.contain cacheurl
         it 'redirect should end with .jpg', () ->
             chai.expect(location).to.contain '.jpg'
         it 'key should be deterministic', () ->
@@ -184,7 +190,7 @@ describe 'Server', ->
         it 'should be a redirect', () ->
             chai.expect(response.statusCode).to.equal 301
             location = response.headers['location']
-            chai.expect(location).to.contain '/cache/' # TODO: make stricter
+            chai.expect(location).to.contain cacheurl
 
         it 'should end with .jpg', () ->
             chai.expect(location).to.contain '.jpg'
