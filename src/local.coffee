@@ -50,7 +50,7 @@ class Cache extends common.CacheServer
             # Somehow even waiting for fsync is not enough...
             setTimeout () =>
                 callback null, @urlForKey key
-            , 100
+            , 300
 
     handleRequest: (request, response) ->
         u = url.parse request.url, true

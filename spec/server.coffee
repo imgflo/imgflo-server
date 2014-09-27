@@ -150,6 +150,11 @@ describe 'Server', ->
             chai.expect(res.statusCode).to.equal 301
             location = res.headers['location']
             chai.expect(location).to.contain '/cache/' # TODO: make stricter
+        it 'redirect should end with .jpg', () ->
+            chai.expect(location).to.contain '.jpg'
+        it 'key should be deterministic', () ->
+            basename = path.basename (url.parse location).pathname, '.jpg'
+            chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
         it 'redirect should point to created image', (done) ->
             http.get location, (response) ->
                 chai.expect(response.statusCode).to.equal 200
@@ -164,6 +169,7 @@ describe 'Server', ->
     describe 'Get existing image', ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
         response = null
+        location = null
 
         it 'should be in cache', (done) ->
             checkProcessed = (id) ->
@@ -179,3 +185,6 @@ describe 'Server', ->
             chai.expect(response.statusCode).to.equal 301
             location = response.headers['location']
             chai.expect(location).to.contain '/cache/' # TODO: make stricter
+
+        it 'should end with .jpg', () ->
+            chai.expect(location).to.contain '.jpg'

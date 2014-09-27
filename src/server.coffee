@@ -258,7 +258,8 @@ class Server extends EventEmitter
 
     handleGraphRequest: (request, response) ->
         u = url.parse request.url, true
-        key = hashFile u.path
+        req = parseRequestUrl request.url
+        key = (hashFile u.path) + '.' + req.outtype
 
         @cache.keyExists key, (err, cached) =>
             if cached
