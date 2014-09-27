@@ -11,9 +11,10 @@ node_static = require 'node-static'
 
 class FsyncedWriteStream extends fs.WriteStream
     close: (cb) ->
+        return super cb if not @fd
         fs.fsync @fd, (err) =>
             @emit 'error', err if err
-            @emit 'synced' if not err
+            @emit 'fsynced' if not err
             super cb
 
 class Cache extends common.CacheServer
@@ -45,7 +46,7 @@ class Cache extends common.CacheServer
             callback err, null
         to.on 'error', (err) ->
             callback err, null
-        to.on 'synced', () =>
+        to.on 'fsynced', () =>
             # Somehow even waiting for fsync is not enough...
             setTimeout () =>
                 callback null, @urlForKey key
