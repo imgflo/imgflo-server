@@ -145,10 +145,12 @@ class Server extends EventEmitter
 
     constructor: (workdir, resourcedir, graphdir, verbose, cachetype) ->
         @workdir = workdir
+        if not fs.existsSync workdir
+            fs.mkdirSync workdir
         @resourcedir = resourcedir || './examples'
         @graphdir = graphdir || './graphs'
         @resourceserver = new node_static.Server resourcedir
-        cachedir = @workdir+'cache'
+        cachedir = path.join @workdir, 'cache'
         cachetype = 'local' if not cachetype
 
         options = {}

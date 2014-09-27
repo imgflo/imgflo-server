@@ -68,9 +68,7 @@ describe 'Server', ->
 
     before (done) ->
         wd = './testtemp'
-        if fs.existsSync wd
-            for f in fs.readdirSync wd
-                fs.unlinkSync path.join wd, f
+        utils.rmrf wd
         if startServer
             s = new server.Server wd, null, null, verbose
             l = new utils.LogHandler s

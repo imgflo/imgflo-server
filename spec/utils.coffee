@@ -5,6 +5,20 @@
 url = require 'url'
 child = require 'child_process'
 path = require 'path'
+fs = require 'fs'
+
+rmrf = (dir) ->
+    if fs.existsSync dir
+        for f in fs.readdirSync dir
+            f = path.join dir, f
+            try
+                fs.unlinkSync f
+            catch e
+                if e.code == 'EISDIR'
+                    rmrf f
+                else
+                    throw e
+
 
 class LogHandler
     @errors = null
@@ -62,3 +76,5 @@ exports.requestFileFormat = (u) ->
 
 exports.formatRequest = (host, graph, params) ->
     return url.format { protocol: 'http:', host: host, pathname: '/graph/'+graph, query: params }
+
+exports.rmrf = rmrf
