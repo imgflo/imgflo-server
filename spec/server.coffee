@@ -143,7 +143,7 @@ describe 'Server', ->
         location = null
 
         it 'should be created on demand', (done) ->
-            @timeout 4000
+            @timeout 15000
             checkProcessed = (id) ->
                 chai.expect(id).to.not.contain 'error'
                 if id == 'serve-processed-file'
