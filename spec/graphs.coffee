@@ -21,6 +21,8 @@ verbose = process.env.IMGFLO_TESTS_VERBOSE?
 startServer = (urlbase.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
 
+cache = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
+
 requestUrl = (testcase) ->
     u = null
     if testcase._url
@@ -43,9 +45,11 @@ describe 'Graphs', ->
         wd = './graphteststemp'
         utils.rmrf wd
         if startServer
-            s = new server.Server wd, null, null, verbose
+            s = new server.Server wd, null, null, verbose, { type: cache }
             l = new utils.LogHandler s
             s.listen urlbase, port, done
+        else
+            done()
     after ->
         s.close() if startServer
 

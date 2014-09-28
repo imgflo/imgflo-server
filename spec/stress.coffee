@@ -37,6 +37,8 @@ url = require 'url'
 # also run with a mix of local input images and remote
 # Verify correctness of images against eachohter. SHA sum based on first
 
+cache = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
+
 urlbase = process.env.IMGFLO_TESTS_TARGET
 urlbase = 'localhost:8888' if not urlbase
 port = (urlbase.split ':')[1]
@@ -95,7 +97,7 @@ describeSkipPerformance 'Stress', ->
         wd = './stressteststemp'
         utils.rmrf wd
         if startServer
-            s = new server.Server wd, null, null, verbose
+            s = new server.Server wd, null, null, verbose, { type: cache }
             l = new utils.LogHandler s
             s.listen urlbase, port, done
     after ->
