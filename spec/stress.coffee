@@ -100,6 +100,8 @@ describeSkipPerformance 'Stress', ->
             s = new server.Server wd, null, null, verbose, { type: cache }
             l = new utils.LogHandler s
             s.listen urlbase, port, done
+        else
+            done()
     after ->
         s.close() if startServer
 
@@ -147,7 +149,7 @@ describeSkipPerformance 'Stress', ->
                 requestUrls = randomRequests 'passthrough', {input: 'demo/grid-toastybob.jpg'}, total, 'ignored'
 
                 it "average response time should be below #{expect} ms", (done) ->
-                    @timeout 1*60*1000
+                    @timeout 5*60*1000
                     async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
                         chai.expect(err).to.not.exist
                         results = describeTimings times
