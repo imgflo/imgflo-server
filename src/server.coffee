@@ -143,7 +143,7 @@ parseRequestUrl = (u) ->
 
 class Server extends EventEmitter
 
-    constructor: (workdir, resourcedir, graphdir, verbose, cachetype) ->
+    constructor: (workdir, resourcedir, graphdir, verbose, cacheoptions) ->
         @workdir = workdir
         if not fs.existsSync workdir
             fs.mkdirSync workdir
@@ -153,18 +153,17 @@ class Server extends EventEmitter
         cachedir = path.join @workdir, 'cache'
         cachetype = 'local' if not cachetype
 
-        options = {}
-        if cachetype == 's3'
-            options =
-                key: process.env.AMAZON_API_ID
-                secret: process.env.AMAZON_API_TOKEN
-                region: process.env.AMAZON_API_REGION
-                bucket: process.env.AMAZON_API_BUCKET
-            @cache = new s3.Cache cachedir, options
-        else if cachetype == 'local'
-            @cache = new local.Cache cachedir, options
+        defaultcacheoptions =
+            type: 'local'
+        cache = common.clone defaultcacheoptions
+        for k,v of cacheoptions
+            cache[k] = v if v
+        if cache.type == 's3'
+            @cache = new s3.Cache cachedir, cache
+        else if cache.type == 'local'
+            @cache = new local.Cache cachedir, cache
         else
-            @cache = new common.Cache cachedir, options
+            @cache = new common.Cache cachedir, cache
 
         @httpserver = http.createServer @handleHttpRequest
         @port = null
@@ -337,8 +336,12 @@ exports.main = ->
     port = process.env.PORT || 8080
     host = process.env.HOSTNAME || 'localhost'
     workdir = './temp'
+    cache =
+        #type: 's3'
+        region: process.env.AMAZON_API_REGION
+        prefix: 'p'
 
-    server = new Server workdir, null, null, false, 's3'
+    server = new Server workdir, null, null, false, cache
     server.listen host, port, () ->
         console.log 'Server listening at port', port, "with workdir", workdir, "on host", host
     server.on 'logevent', (id, data) ->

@@ -76,7 +76,7 @@ describe 'Server', ->
         wd = './testtemp'
         utils.rmrf wd
         if startServer
-            s = new server.Server wd, null, null, verbose, cache
+            s = new server.Server wd, null, null, verbose, { type: cache }
             l = new utils.LogHandler s
             s.listen urlbase, port, done()
     after ->
