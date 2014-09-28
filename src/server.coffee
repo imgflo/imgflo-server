@@ -337,7 +337,7 @@ exports.main = ->
     host = process.env.HOSTNAME || 'localhost'
     workdir = './temp'
     cache =
-        #type: 's3'
+        type: 's3'
         region: process.env.AMAZON_API_REGION
         prefix: 'p'
 
