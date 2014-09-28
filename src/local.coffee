@@ -35,7 +35,6 @@ class Cache extends common.CacheServer
         fs.exists target, (exists) =>
             cached = if exists then @urlForKey key else null
             callback null, cached
-        fs.exists target, callback
 
     putFile: (source, key, callback) ->
         target = path.join @dir, key
