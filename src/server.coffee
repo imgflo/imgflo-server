@@ -126,17 +126,27 @@ parseRequestUrl = (u) ->
     for key, value of parsedUrl.query
         iips[key] = value if key != 'input'
 
-    p = parsedUrl.pathname.replace '/graph/', ''
+    pathComponents = parsedUrl.pathname.split '/'
+    pathComponents = pathComponents.splice(1)
+
+    p = pathComponents[pathComponents.length-1]
     outtype = (path.extname p).replace '.', ''
     graph = path.basename p, path.extname p
     if not outtype
         outtype = 'jpg'
+    apikey = if pathComponents.length > 2 then pathComponents[1] else null
+    token = if pathComponents.length > 3 then pathComponents[2] else null
+    cachekey = (hashFile "/graph/#{graph}#{parsedUrl.search}") + '.'+outtype
 
     out =
         graph: graph
         files: files
         iips: iips
         outtype: outtype
+        apikey: apikey
+        token: token
+        cachekey: cachekey
+        query: parsedUrl.search
     return out
 
 
@@ -150,8 +160,14 @@ class Server extends EventEmitter
         @resourcedir = resourcedir || './examples'
         @graphdir = graphdir || './graphs'
         @resourceserver = new node_static.Server resourcedir
+        @authdb = null
         cachedir = path.join @workdir, 'cache'
         cachetype = 'local' if not cachetype
+
+        apikey = process.env.IMGFLO_API_KEY
+        secret = process.env.IMGFLO_API_SECRET
+        if apikey or secret
+            @authdb = { apikey: secret }
 
         defaultcacheoptions =
             type: 'local'
@@ -255,17 +271,32 @@ class Server extends EventEmitter
         response.writeHead 301, { 'Location': target }
         response.end()
 
+    checkAuth: (req) ->
+        return true if not @authdb # Authentication disabled
+
+        secret = @authdb[req.apikey]
+        return false if not secret
+
+        hash = crypto.createHash 'md5'
+        hash.update req.query+secret
+        expectedToken = hash.digest 'hex'
+        return req.token == expectedToken
+
     handleGraphRequest: (request, response) ->
         u = url.parse request.url, true
         req = parseRequestUrl request.url
-        key = (hashFile u.path) + '.' + req.outtype
 
-        @cache.keyExists key, (err, cached) =>
+        authenticated = @checkAuth req
+        if not authenticated
+            response.writeHead 403
+            return response.end()
+
+        @cache.keyExists req.cachekey, (err, cached) =>
             if cached
-                @logEvent 'graph-in-cache', { request: request.url, key: key, url: cached }
+                @logEvent 'graph-in-cache', { request: request.url, key: req.cachekey, url: cached }
                 @redirectToCache cached, response
             else
-                @processAndCache request.url, key, response, (err, cached) ->
+                @processAndCache request.url, req.cachekey, response, (err, cached) ->
                     @redirectToCache cached, response
 
     processAndCache: (request_url, key, response) ->

@@ -6,6 +6,8 @@ url = require 'url'
 child = require 'child_process'
 path = require 'path'
 fs = require 'fs'
+crypto = require 'crypto'
+querystring = require 'querystring'
 
 rmrf = (dir) ->
     if fs.existsSync dir
@@ -74,7 +76,16 @@ exports.requestFileFormat = (u) ->
     ext = (path.extname graph).replace '.', ''
     return ext || 'png'
 
-exports.formatRequest = (host, graph, params) ->
-    return url.format { protocol: 'http:', host: host, pathname: '/graph/'+graph, query: params }
+exports.formatRequest = (host, graph, params, key, secret) ->
+    if key and secret
+        query = '?'+querystring.stringify params
+        hash = crypto.createHash 'md5'
+        hash.update query+secret
+        token = hash.digest 'hex'
+        p = "/graph/#{key}/#{token}/#{graph}"
+        u = url.format { protocol: 'http:', host: host, pathname: p, search: query }
+        return u
+    else
+        return url.format { protocol: 'http:', host: host, pathname: '/graph/'+graph, query: params }
 
 exports.rmrf = rmrf

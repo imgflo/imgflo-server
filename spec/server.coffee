@@ -53,6 +53,8 @@ url = require 'url'
 chai = require 'chai'
 request = require 'request'
 
+http.globalAgent.maxSockets = 10
+
 urlbase = process.env.IMGFLO_TESTS_TARGET
 urlbase = 'localhost:8889' if not urlbase
 port = (urlbase.split ':')[1]
@@ -60,8 +62,8 @@ verbose = process.env.IMGFLO_TESTS_VERBOSE?
 startServer = (urlbase.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
 
-graph_url = (graph, props) ->
-    return utils.formatRequest urlbase, graph, props
+graph_url = (graph, props, key, secret) ->
+    return utils.formatRequest urlbase, graph, props, key, secret
 
 cache = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
 
@@ -195,3 +197,74 @@ describe 'Server', ->
 
         it 'should end with .jpg', () ->
             chai.expect(location).to.contain '.jpg'
+
+    describe 'Missing authentication', ->
+        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+
+        it 'should fail with a 403', (done) ->
+            # Enable auth
+            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Correct authentication', ->
+        location = null
+
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
+
+        it 'request should succeed with redirect to file', (done) ->
+            # Enable auth
+            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 301
+                location = res.headers['location']
+                chai.expect(location).to.contain cacheurl
+                done()
+        it 'file should be same as for non-authed request', () ->
+            chai.expect(location).to.be.a 'string'
+            basename = path.basename (url.parse location).pathname, '.jpg'
+            chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
+
+    describe 'Providing auth when not needed', ->
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
+
+        it 'request should succeed with redirect to file', (done) ->
+            # Disable auth
+            s.authdb = null
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 301
+                location = res.headers['location']
+                chai.expect(location).to.contain cacheurl
+                done()
+
+    describe 'Incorrect secret', ->
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
+
+        it 'should fail with a 403', (done) ->
+            # Enable auth
+            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Invalid apikey', ->
+
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'apikey?', 'mysecret?'
+
+        it 'should fail with a 403', (done) ->
+            @timeout 5000
+            # Enable auth
+            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
