@@ -80,7 +80,7 @@ exports.formatRequest = (host, graph, params, key, secret) ->
     if key and secret
         query = '?'+querystring.stringify params
         hash = crypto.createHash 'md5'
-        hash.update query+secret
+        hash.update graph+query+secret
         token = hash.digest 'hex'
         p = "/graph/#{key}/#{token}/#{graph}"
         u = url.format { protocol: 'http:', host: host, pathname: p, search: query }

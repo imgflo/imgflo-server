@@ -139,6 +139,7 @@ parseRequestUrl = (u) ->
     cachekey = (hashFile "/graph/#{graph}#{parsedUrl.search}") + '.'+outtype
 
     out =
+        graphspec: path.basename p
         graph: graph
         files: files
         iips: iips
@@ -278,7 +279,7 @@ class Server extends EventEmitter
         return false if not secret
 
         hash = crypto.createHash 'md5'
-        hash.update req.query+secret
+        hash.update req.graphspec+req.query+secret
         expectedToken = hash.digest 'hex'
         return req.token == expectedToken
 
