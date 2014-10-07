@@ -4,11 +4,25 @@
     <meta charset="utf-8">
     <title>imgflo: Demos</title>
     <link rel="stylesheet" href="demo/style.css">
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
   </head>
   <body>
     <div id="app">
         <div id="topSection">
+
             <p id="version"></p>
+
+            <div id="apiSection">
+                <div class="line">
+                    <label>API key</label>
+                    <input id="apiKey"></input>
+                </div>
+                <div class="line">
+                    <label>API secret</label>
+                    <input id="apiSecret"></input>
+                </div>
+            </div>
+
             <div id="graphsSection">
                 <h3>Graphs</h3>
                 <div id="graphList"></div>

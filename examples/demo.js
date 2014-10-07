@@ -100,16 +100,25 @@ var createLogEntry = function(url) {
     return div;
 }
 
-var createRequestUrl = function(graphname, parameters) {
+var createRequestUrl = function(graphname, parameters, apiKey, apiSecret) {
     var hasQuery = Object.keys(parameters).length > 0;
-    var url = '/graph/'+graphname+(hasQuery ? '?' : '');
+    var search = graphname + (hasQuery ? '?' : '');
     for (var key in parameters) {
         var value = encodeURIComponent(parameters[key]);
-        url += key+'='+value+'&';
+        search += key+'='+value+'&';
     }
     if (hasQuery) {
-        url = url.substring(0, url.length-1); // strip trailing &
+        search = search.substring(0, search.length-1); // strip trailing &
     }
+
+    var url = '/graph/'+search;
+    if (apiKey || apiSecret) {
+        // FIXME: implement md5 hashing of search
+        var base = search+apiSecret;
+        var token = CryptoJS.MD5(base);
+        url = '/graph/'+apiKey+'/'+token+'/'+search;
+    }
+
     return url;
 }
 
@@ -142,7 +151,9 @@ var main = function() {
     id('runButton').onclick = function () {
         var graph = activeGraphName;
         var props = getGraphProperties(id('graphProperties'), graph, availableGraphs[graph]);
-        var u = createRequestUrl(graph, props);
+        var apiKey = id("apiKey").value;
+        var apiSecret = id("apiSecret").value;
+        var u = createRequestUrl(graph, props, apiKey, apiSecret);
         addEntry(u);
     };
 
