@@ -38,6 +38,6 @@ class Cache extends common.CacheServer
     fullKey: (key) ->
         return "#{@options.prefix}/#{key}"
     urlForKey: (key) ->
-        return "http://#{@options.bucket}.s3-#{@options.region}.amazonaws.com/#{@options.prefix}/#{key}"
+        return "https://s3-#{@options.region}.amazonaws.com/#{@options.bucket}/#{@options.prefix}/#{key}"
 
 exports.Cache = Cache
