@@ -367,16 +367,20 @@ exports.main = ->
         console.log 'Uncaught exception: ', err
 
     port = process.env.PORT || 8080
-    host = process.env.HOSTNAME || 'localhost'
+    host = process.env.HOSTNAME || "localhost:#{port}"
     workdir = './temp'
     cache =
         type: 's3'
         region: process.env.AMAZON_API_REGION
         prefix: 'p'
 
+    if process.env.IMGFLO_CACHE? and process.env.IMGFLO_CACHE == 'local'
+        cache =
+            type: 'local'
+
     server = new Server workdir, null, null, false, cache
     server.listen host, port, () ->
-        console.log 'Server listening at port', port, "with workdir", workdir, "on host", host
+        console.log 'Server listening at port', port, "with workdir", workdir, "on host", host, "with cache", cache.type
     server.on 'logevent', (id, data) ->
         console.log "EVENT: #{id}:", data
     
