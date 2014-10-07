@@ -168,7 +168,8 @@ class Server extends EventEmitter
         apikey = process.env.IMGFLO_API_KEY
         secret = process.env.IMGFLO_API_SECRET
         if apikey or secret
-            @authdb = { apikey: secret }
+            @authdb = {}
+            @authdb[apikey] = secret
 
         defaultcacheoptions =
             type: 'local'
