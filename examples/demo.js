@@ -175,7 +175,10 @@ var main = function() {
 
         var l = createGraphList(demo.graphs, onGraphClicked);
         id('graphList').appendChild(l);
-        demo.images.forEach(function(image) {
+        var images = [
+            "demo/grid-toastybob.jpg"
+        ];
+        images.forEach(function(image) {
             addEntry(image);
         });
     });

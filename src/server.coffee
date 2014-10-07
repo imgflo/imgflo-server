@@ -229,12 +229,12 @@ class Server extends EventEmitter
 
     getDemoData: (callback) ->
 
+        # TODO: this should be GET /graphs, useful not limited to demo page
         getGraphs @graphdir, (err, res) =>
             if err
                 throw err
             d =
                 graphs: res
-                images: ["demo/grid-toastybob.jpg", "http://thegrid.io/img/thegrid-overlay.png"]
             return callback null, d
 
     serveDemoPage: (request, response) ->
