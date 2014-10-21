@@ -40,6 +40,16 @@ In addition to supporting the native imgflo runtime, the server can also execute
 built with NoFlo and noflo-canvas. See [creating new graphs for server](#creating-new-graphs-for-server).
 
 
+API usage
+======================
+
+JavaScript helpers
+--------------------
+
+1. Forming valid imgflo urls: [imgflo-url](https://www.npmjs.org/package/imgflo-url)
+2. Creating responsive images using media-query: [rig](https://www.npmjs.org/package/rig-up)
+
+
 Deploying to Heroku
 ==========================
 
