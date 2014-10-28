@@ -1,19 +1,69 @@
-imgflo 0.2.0
-=============
-Released: N/A
+imgflo-server 0.2.0
+==================
+Released: October 28th, 2014
+
+imgflo-server has now been stress-tested and improved to be good enough for a typical website,
+meaning one which does not change/add images more than a couple times a day.
+It is now used in production at [thegrid.io](http://thegrid.io), serving 10k++ visits/day.
 
 runtime
 --------
-Registration as Flowhub.io runtime now done in main executable, use environment variables to specify.
-Support for running on Heroku as a runtime, not just as a server.
+Moved to separate git repository [jonnor/imgflo](https://github.com/jonnor/imgflo)
 
-Added annotations for many more port types; including number, enums, colors.
-This lets Flowhub bring up more suitable UIs than the general string input.
-Added support for default values for IIPs.
+clients
+-------
+New JavaScript helper libraries by [Paul Young](https://github.com/paulyoung) are now available:
+
+[imgflo-url](https://www.npmjs.org/package/imgflo-url) and [rig](https://www.npmjs.org/package/rig-up)
 
 server
 -------
-Improvements to API stability, many tests added
+
+Added support for more IIP types in HTTP API,
+including enums, booleans and CSS-compliant colors on format `#RGB[A] and #RRGGBB[AA]`
+
+Added support for processing images through graphs made with [NoFlo](http://noflojs.org)
+with [noflo-canvas](http://github.com/noflo/noflo-canvas) and [noflo-image](http://github.com/noflo/noflo-image).
+See the README for details on adding new graphs for the different runtimes.
+
+Added support for optionally specifying desired output image format,
+using `/graph/mine.png|jpg` instead of `/graph/mine`.
+Default image format has changed from PNG to JPEG.
+
+All `GET /graph` requests now support `height` and `width` query parameters,
+which will rescale the image to requested size.
+NB: Specifying *only height/width not supported*.
+
+Added support for authenticated requests using API key + secret.
+Use envvars `IMGFLO_API_KEY=some-key` and `IMGFLO_API_SECRET=some-secret` to enable.
+The full syntax of API requests is now:
+
+    GET /graph[/$APIKEY][/$TOKEN]/$GRAPHNAME[.png]?[key1=val,key2=val]
+
+Where $APIKEY is the configured IMGFLO_API_KEY for the server, and
+$TOKEN is the md5sum of `$SECRET$GRAPHNAME[.png]?$key1=val,key2=val`
+
+`GET /graph` requests will now return a `301 REDIRECT` to the processed result,
+which may be already computed and cached.
+
+An Amazon S3 bucket can be used as as cache instead of caching on same host.
+Use envvar `IMGFLO_CACHE=s3` to enable, and
+`AMAZON_API_ID`, `AMAZON_API_TOKEN`, `AMAZON_API_BUCKET`, `AMAZON_API_REGION` to configure.
+
+HTTPS is now supported and, used by default with Heroku and Amazon S3 cache.
+
+Graphs are now stored in /graphs directory instead of /examples, which means that
+the project can be imported directly into Flowhub and one can push new graphs from there.
+
+Default GEGL build now includes the 'workshop' operations.
+
+New graphs included:
+
+* gaussianblur
+* passthrough
+* delaunay_triangles
+
+`gradientmap` now supports 5 stops instead of 1.
 
 
 imgflo 0.1.0
@@ -21,7 +71,7 @@ imgflo 0.1.0
 Released: April 30th, 2014
 
 imgflo now consists of two complimentary parts:
-a Flowhub-compatible runtime for interactively building image processing graphs,
+a [Flowhub](http://flowhub.io)-compatible runtime for interactively building image processing graphs,
 and an image processing server for image processing on the web.
 
 The runtime combined with the Flowhub IDE allows to visually create image
@@ -30,7 +80,7 @@ Live image output is displayed in the preview area in Flowhub, and will
 update automatically when changing the graph.
 
 The server provides a HTTP API for processing an input image with an imgflo graph.
-GET /graph/mygraph?input=urlencode(http://example.com/input-image.jpeg)&param1=foo&param2=bar
+    GET /graph/mygraph?input=urlencode(http://example.com/input-image.jpeg)&param1=foo&param2=bar
 
 The input and processed image result will be cached on disk.
 On later requests to the same URL, the image will be served from cache.
