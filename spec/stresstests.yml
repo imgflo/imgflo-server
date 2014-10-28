@@ -6,7 +6,7 @@ cached_graph:
 process_same_input:
     concurrent: [1, 2, 4]
     expected:
-        'localhost': [1000, 1000, 2000]
+        'localhost': [1200, 1200, 2000]
         'imgflo.herokuapp.com': [6000, 6000, 6000]
 process_different_sizes:
     sizes: [50, 200, 800, 1600, 3200]
