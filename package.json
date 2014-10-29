@@ -34,6 +34,7 @@
     "commander": "~2.1.0",
     "flowhub-registry": "0.0.2",
     "knox": "^0.9.1",
+    "newrelic": "^1.12.2",
     "node-static": "^0.7.3",
     "node-uuid": "^1.4.1",
     "noflo-canvas": "^0.1.8",
