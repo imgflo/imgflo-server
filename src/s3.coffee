@@ -31,7 +31,10 @@ class Cache extends common.CacheServer
             return callback null, cached
 
     putFile: (source, key, callback) ->
-        @client.putFile source, @fullKey(key), (err, res) =>
+        maxAge = 60*60*24 # seconds
+        headers =
+            'Cache-Control': "max-age=#{maxAge}"
+        @client.putFile source, @fullKey(key), headers, (err, res) =>
             return callback err, null if err
             return callback null, @urlForKey key
 
