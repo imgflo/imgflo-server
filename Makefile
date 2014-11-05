@@ -23,7 +23,7 @@ runtime:
 version:
 	npm run update-version-info || echo 'WARN: unable to update version'
 
-install: env version runtime
+install: env version runtime components
 
 env:
 	mkdir -p $(PREFIX) || true
