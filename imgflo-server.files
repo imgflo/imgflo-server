@@ -27,3 +27,4 @@ spec/index.html
 update-version-info.js
 src/local.coffee
 src/s3.coffee
+components/example.c

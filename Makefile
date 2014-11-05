@@ -4,6 +4,8 @@ VERSION=$(shell echo `git describe --tags`)
 PREFIX=$(shell echo `pwd`/install)
 #TESTS=
 
+PROJECTDIR=$(shell echo `pwd`)
+
 ifdef TESTS
 TEST_ARGUMENTS=--grep $(TESTS)
 endif
@@ -31,6 +33,9 @@ env:
 travis-deps:
 	wget -O imgflo-dependencies.tgz $(TRAVIS_DEPENDENCIES)
 	tar -xf imgflo-dependencies.tgz
+
+components: env
+	cd runtime && make components PREFIX=$(PREFIX) COMPONENTDIR=$(PROJECTDIR)/components
 
 dependencies:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) dependencies

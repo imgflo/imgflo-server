@@ -97,4 +97,7 @@
 -
     _name: regcheck_cmyk_jpeg
     _url: '/graph/passthrough.png?input=http%3A%2F%2Fi1.sndcdn.com%2Fartworks-000082002645-fhibur-t500x500.jpg'
-
+-
+    _name: custom_component
+    _graph: customgrey.jpg
+    input: "demo/grid-toastybob.jpg"
