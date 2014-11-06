@@ -7,7 +7,6 @@
 #else
 
 #define GEGL_OP_POINT_FILTER
-#define GEGL_OP_C_FILE "example.c"
 
 #include "gegl-op.h"
 
