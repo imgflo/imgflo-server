@@ -8,6 +8,10 @@
 
 #define GEGL_OP_POINT_FILTER
 
+#ifndef IMGFLO_OP_NAME
+#define IMGFLO_OP_NAME(orig) orig
+#endif
+
 #include "gegl-op.h"
 
 static void prepare (GeglOperation *operation)
@@ -43,7 +47,7 @@ gegl_op_class_init (GeglOpClass *klass)
   operation_class->prepare = prepare;
 
   gegl_operation_class_set_keys (operation_class,
-      "name",        "imgflo:example",
+      "name",        IMGFLO_OP_NAME("imgflo:example"),
       "title",       "imgflo: Make Grey",
       "categories" , "grayscale:color",
       "description", "Turns the image grayscale",
