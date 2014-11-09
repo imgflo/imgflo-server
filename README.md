@@ -57,20 +57,37 @@ Server
 --------
 Register/log-in with [Heroku](http://heroku.com), and create a new app. First one is free.
 
+First of all, login at Heroku:
+
+    heroku login
+
+Clone `imgflo-server`:
+
+    git clone https://github.com/jonnor/imgflo-server.git
+    cd imgflo-server
+
+Add YOURAPP as remote:
+
+    heroku git:remote -a YOURAPP
+
 Specify the multi buildpack with build-env support, either at app creation time, in Heroku webui or using
 
     heroku config:set BUILDPACK_URL=https://github.com/mojodna/heroku-buildpack-multi.git#build-env
 
-In your git checkout of imgflo, add your Heroku app as a remote.
+Configure some environment variables (hostname, port and local image cache):
 
-    git remote add heroku git@heroku.com:YOURAPP.git
+    heroku config:set HOSTNAME=YOURAPP.herokuapp.com
+    heroku config:set PORT=80
+    heroku config:set IMGFLO_CACHE=local
 
 Deploy, will take ~1 minute
 
-    git push heroku
+    git push heroku master
 
-You should now see the imgflo server running at http://YOURAPP.herokuapps.com
+You should now see the imgflo server running at http://YOURAPP.herokuapp.com
 
+If everything is OK you should be
+able to see a generative image at http://YOURAPP.herokuapp.com/graph/delaunay_triangles?seed=foobar&height=800&width=600
 
 Developing and running locally
 ==========================
