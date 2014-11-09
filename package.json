@@ -22,7 +22,6 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "postinstall": "node update-version-info.js",
     "test": "mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee"
   },
   "engines": {
