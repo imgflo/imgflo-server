@@ -26,6 +26,8 @@ version:
 install: env version runtime components
 
 env:
+	pwd
+	ls -la *
 	mkdir -p $(PREFIX) || true
 	sed -e 's|@PREFIX@|$(PREFIX)|' runtime/env.sh.in > $(PREFIX)/env.sh
 	chmod +x $(PREFIX)/env.sh
