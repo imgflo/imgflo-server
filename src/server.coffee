@@ -370,13 +370,13 @@ exports.main = ->
     host = process.env.HOSTNAME || "localhost:#{port}"
     workdir = './temp'
     cache =
-        type: 's3'
-        region: process.env.AMAZON_API_REGION
-        prefix: 'p'
+        type: 'local'
 
-    if process.env.IMGFLO_CACHE? and process.env.IMGFLO_CACHE == 'local'
+    if process.env.IMGFLO_CACHE? and process.env.IMGFLO_CACHE == 's3'
         cache =
-            type: 'local'
+            type: 's3'
+            region: process.env.AMAZON_API_REGION
+            prefix: 'p'
 
     server = new Server workdir, null, null, false, cache
     server.listen host, port, () ->
