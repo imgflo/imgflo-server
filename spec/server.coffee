@@ -85,7 +85,7 @@ describe 'Server', ->
     after ->
         s.close() if startServer
 
-    describe 'Get version info', ->
+    describe.skip 'Get version info', ->
         info = null
         it 'returns valid data', (done) ->
             u = url.format {protocol:'http:',host: urlbase, pathname:'/version'}
