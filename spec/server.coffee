@@ -91,9 +91,11 @@ describe 'Server', ->
             u = url.format {protocol:'http:',host: urlbase, pathname:'/version'}
             request u, (err, response, body) ->
                 chai.expect(err).to.not.exist
+                chai.expect(response.statusCode).to.equal 200
                 info = JSON.parse body
                 done()
         it 'gives NPM version', ->
+            chai.expect(info.err).to.be.a 'undefined'
             chai.expect(info.npm).to.equal '0.0.3'
         it 'gives server version', ->
             chai.expect(info.server).to.be.a 'string'
