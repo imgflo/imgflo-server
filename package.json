@@ -38,6 +38,7 @@
     "noflo-canvas": "^0.1.8",
     "noflo-core": "^0.1.11",
     "noflo-geometry": "automata/noflo-geometry",
+    "noflo-image": "^0.0.18",
     "noflo-math": "0.0.6",
     "noflo-md5": "automata/noflo-md5",
     "noflo-objects": "^0.1.12",

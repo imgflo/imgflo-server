@@ -1,6 +1,30 @@
 # Every property except for _name and _graph are passed as graph properties/IIPs
 # The refencence the output is compared is '$_name+.reference.png'
 -
+    _name: 'insta_1977'
+    _graph: 'insta_1977'
+    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+-
+    _name: 'insta_brannan'
+    _graph: 'insta_brannan'
+    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'    
+-
+    _name: 'insta_hefe'
+    _graph: 'insta_hefe'
+    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+-
+    _name: 'insta_lordkelvin'
+    _graph: 'insta_lordkelvin'
+    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+-
+    _name: 'insta_nashville'
+    _graph: 'insta_nashville'
+    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+-
+    _name: 'insta_xproii'
+    _graph: 'insta_xproii'
+    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+-
     _name: 'delaunay_triangles_foobar100'
     _graph: 'delaunay_triangles'
     seed: 'foobar'
