@@ -1,30 +1,17 @@
 {
     "properties": {
-        "name": "main",
-        "id": "test-drawimage/main",
-        "project": "test-drawimage",
+        "name": "insta",
         "environment": {
-            "type": "noflo-nodejs"
-        },
-        "changed": true
+            "type": "noflo-browser"
+        }
     },
     "inports": {
-        "url": {
-            "process": "image/UrlToCanvas_k3tmy",
-            "port": "url",
-            "metadata": {
-                "x": -144,
-                "y": 144,
-                "width": 72,
-                "height": 72
-            }
-        },
         "canvas": {
-            "process": "SetWidth",
-            "port": "in",
+            "process": "image/ApplyAdjustmentCurve_9ntc3",
+            "port": "canvas",
             "metadata": {
-                "x": -144,
-                "y": -180,
+                "x": 252,
+                "y": 324,
                 "width": 72,
                 "height": 72
             }
@@ -32,11 +19,11 @@
     },
     "outports": {
         "output": {
-            "process": "canvas/Draw_cldd8",
+            "process": "image/ApplyAdjustmentCurve_9ntc3",
             "port": "canvas",
             "metadata": {
-                "x": 936,
-                "y": 144,
+                "x": 720,
+                "y": 324,
                 "width": 72,
                 "height": 72
             }
@@ -44,112 +31,22 @@
     },
     "groups": [],
     "processes": {
-        "canvas/Draw_cldd8": {
-            "component": "canvas/Draw",
+        "image/ApplyAdjustmentCurve_9ntc3": {
+            "component": "image/ApplyAdjustmentCurve",
             "metadata": {
-                "label": "canvas/Draw",
-                "x": 792,
-                "y": 144,
+                "label": "image/ApplyAdjustmentCurve",
+                "x": 540,
+                "y": 324,
                 "width": 72,
                 "height": 72
             }
         },
-        "canvas/DrawImage_7qzlt": {
-            "component": "canvas/DrawImage",
-            "metadata": {
-                "label": "canvas/DrawImage",
-                "x": 432,
-                "y": 144,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "image/GetPresetCurve_83g7k": {
+        "image/GetPresetCurve_3nr6f": {
             "component": "image/GetPresetCurve",
             "metadata": {
                 "label": "image/GetPresetCurve",
-                "x": 0,
-                "y": 252,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "ApplyCurve": {
-            "component": "image/ApplyAdjustmentCurve",
-            "metadata": {
-                "label": "ApplyCurve",
-                "x": 252,
-                "y": 144,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "image/UrlToCanvas_k3tmy": {
-            "component": "image/UrlToCanvas",
-            "metadata": {
-                "label": "image/UrlToCanvas",
-                "x": 0,
-                "y": 144,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "SetWidth": {
-            "component": "objects/SetPropertyValue",
-            "metadata": {
-                "label": "SetWidth",
                 "x": 396,
-                "y": -108,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "GetWidth": {
-            "component": "objects/ExtractProperty",
-            "metadata": {
-                "label": "GetWidth",
-                "x": 252,
-                "y": -108,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "GetHeight": {
-            "component": "objects/ExtractProperty",
-            "metadata": {
-                "label": "GetHeight",
-                "x": 252,
-                "y": 0,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "SetHeight": {
-            "component": "objects/SetPropertyValue",
-            "metadata": {
-                "label": "SetHeight",
-                "x": 396,
-                "y": 0,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "core/Split_y52on": {
-            "component": "core/Split",
-            "metadata": {
-                "label": "core/Split",
-                "x": 108,
-                "y": 0,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "WaitABit": {
-            "component": "core/RepeatDelayed",
-            "metadata": {
-                "label": "WaitABit",
-                "x": 576,
-                "y": 144,
+                "y": 180,
                 "width": 72,
                 "height": 72
             }
@@ -158,232 +55,22 @@
     "connections": [
         {
             "src": {
-                "process": "image/GetPresetCurve_83g7k",
+                "process": "image/GetPresetCurve_3nr6f",
                 "port": "curve"
             },
             "tgt": {
-                "process": "ApplyCurve",
+                "process": "image/ApplyAdjustmentCurve_9ntc3",
                 "port": "curve"
             },
-            "metadata": {
-                "route": 4
-            }
-        },
-        {
-            "src": {
-                "process": "ApplyCurve",
-                "port": "canvas"
-            },
-            "tgt": {
-                "process": "canvas/DrawImage_7qzlt",
-                "port": "image"
-            },
-            "metadata": {
-                "route": 4
-            }
-        },
-        {
-            "src": {
-                "process": "image/UrlToCanvas_k3tmy",
-                "port": "canvas"
-            },
-            "tgt": {
-                "process": "ApplyCurve",
-                "port": "canvas"
-            },
-            "metadata": {
-                "route": 5
-            }
-        },
-        {
-            "src": {
-                "process": "GetWidth",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "SetWidth",
-                "port": "value"
-            },
-            "metadata": {
-                "route": 10
-            }
-        },
-        {
-            "src": {
-                "process": "GetHeight",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "SetHeight",
-                "port": "value"
-            },
-            "metadata": {
-                "route": 1
-            }
-        },
-        {
-            "src": {
-                "process": "SetWidth",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "SetHeight",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 10
-            }
-        },
-        {
-            "src": {
-                "process": "SetHeight",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "canvas"
-            },
-            "metadata": {
-                "route": 5
-            }
-        },
-        {
-            "src": {
-                "process": "image/UrlToCanvas_k3tmy",
-                "port": "canvas"
-            },
-            "tgt": {
-                "process": "core/Split_y52on",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 5
-            }
-        },
-        {
-            "src": {
-                "process": "core/Split_y52on",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "GetWidth",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 10
-            }
-        },
-        {
-            "src": {
-                "process": "core/Split_y52on",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "GetHeight",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 1
-            }
-        },
-        {
-            "src": {
-                "process": "canvas/DrawImage_7qzlt",
-                "port": "drawimage"
-            },
-            "tgt": {
-                "process": "WaitABit",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 7
-            }
-        },
-        {
-            "src": {
-                "process": "WaitABit",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "commands"
-            },
-            "metadata": {
-                "route": 7
-            }
-        },
-        {
-            "data": true,
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "drawevery"
-            }
-        },
-        {
-            "data": true,
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "clearevery"
-            }
-        },
-        {
-            "data": {
-                "x": 0,
-                "y": 0
-            },
-            "tgt": {
-                "process": "canvas/DrawImage_7qzlt",
-                "port": "destpoint"
-            }
-        },
-        {
-            "data": "Anonymous",
-            "tgt": {
-                "process": "image/UrlToCanvas_k3tmy",
-                "port": "crossorigin"
-            }
-        },
-        {
-            "data": "width",
-            "tgt": {
-                "process": "SetWidth",
-                "port": "property"
-            }
-        },
-        {
-            "data": "width",
-            "tgt": {
-                "process": "GetWidth",
-                "port": "key"
-            }
-        },
-        {
-            "data": "height",
-            "tgt": {
-                "process": "GetHeight",
-                "port": "key"
-            }
-        },
-        {
-            "data": "height",
-            "tgt": {
-                "process": "SetHeight",
-                "port": "property"
-            }
-        },
-        {
-            "data": 500,
-            "tgt": {
-                "process": "WaitABit",
-                "port": "delay"
-            }
+            "metadata": {}
         },
         {
             "data": "1977",
             "tgt": {
-                "process": "image/GetPresetCurve_83g7k",
+                "process": "image/GetPresetCurve_3nr6f",
                 "port": "presetname"
-            }
+            },
+            "metadata": {}
         }
     ]
 }
