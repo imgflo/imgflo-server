@@ -55,10 +55,12 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
     # Avoid mutating original
     def = common.clone basegraph
 
-    # Note: We drop inpath on the floor, only support pure generative for now
-
-    # Add a input node
-    def.processes.canvas = { component: 'canvas/CreateCanvas' }
+    # Add a input subgraph
+    if inpath
+        def.processes.canvas = { component: 'image/UrlToCanvas' }
+    else
+        # Just blank canvas
+        def.processes.canvas = { component: 'canvas/CreateCanvas' }
 
     # Add a output node
     def.processes.repeat = { component: 'core/RepeatAsync' }
@@ -76,15 +78,15 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
     def.connections.push { src: {process: 'repeat', port: 'out'}, tgt: {process: 'save', port: 'canvas'} }
 
     # Defaults
-    if attributes.height?
-        attributes.height = parseInt attributes.height
+    if inpath
+        tgt =
+            process: 'canvas'
+            port: 'url'
+        def.connections.push { data: inpath, tgt: tgt }
+        # FIXME: respect resizing of image to height+width
     else
-        attributes.height = 400
-
-    if attributes.width?
-        attributes.width = parseInt attributes.width
-    else
-        attributes.width = 600
+        attributes.height =  if attributes.height? then parseInt attributes.height else 400
+        attributes.width =  if attributes.width? then parseInt attributes.width else 600
 
     # Attach processing parameters as IIPs
     for k, v of attributes
