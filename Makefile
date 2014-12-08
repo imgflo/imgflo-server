@@ -37,6 +37,14 @@ travis-deps:
 components: env
 	cd runtime && make components PREFIX=$(PREFIX) COMPONENTDIR=$(PROJECTDIR)/components
 
+component: env
+	cd runtime && make component PREFIX=$(PREFIX) \
+		COMPONENT=$(COMPONENT) \
+		COMPONENTINSTALLDIR=$(COMPONENTINSTALLDIR) \
+		COMPONENTDIR=$(COMPONENTDIR) \
+		COMPONENT_NAME_PREFIX=$(COMPONENT_NAME_PREFIX) \
+		COMPONENT_NAME_SUFFIX=$(COMPONENT_NAME_SUFFIX)
+
 dependencies:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) dependencies
 gegl:
