@@ -63,6 +63,7 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
         def.processes.canvas = { component: 'canvas/CreateCanvas' }
 
     # Add a output node
+    def.processes.resize = { component: 'core/Repeat' }
     def.processes.repeat = { component: 'core/RepeatAsync' }
     def.processes.save = { component: 'canvas/SavePNG' }
 
@@ -74,19 +75,27 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
     def.connections.push { src: {process: 'canvas', port: 'canvas'}, tgt: canvas }
 
     out = def.outports.output
-    def.connections.push { src: out, tgt: {process: 'repeat', port: 'in'} }
+    def.connections.push { src: out, tgt: {process: 'resize', port: 'in', index: 1} }
+    def.connections.push { src: {process: 'resize', port: 'out', index: 1}, tgt: {process: 'repeat', port: 'in'} }
     def.connections.push { src: {process: 'repeat', port: 'out'}, tgt: {process: 'save', port: 'canvas'} }
 
-    # Defaults
     if inpath
         tgt =
             process: 'canvas'
             port: 'url'
         def.connections.push { data: inpath, tgt: tgt }
+
+        if attributes.height? and attributes.width?
+            def.processes.resize = { component: 'canvas/ResizeCanvas' }
+            def.inports.height.process = 'resize'
+            def.inports.width.process = 'resize'
+            attributes.height = parseInt attributes.height
+            attributes.width = parseInt attributes.width
         # FIXME: respect resizing of image to height+width
     else
-        attributes.height =  if attributes.height? then parseInt attributes.height else 400
-        attributes.width =  if attributes.width? then parseInt attributes.width else 600
+        # Defaults
+        attributes.height = if attributes.height? then parseInt attributes.height else 400
+        attributes.width = if attributes.width? then parseInt attributes.width else 600
 
     # Attach processing parameters as IIPs
     for k, v of attributes
