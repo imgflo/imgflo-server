@@ -39,7 +39,8 @@ class NoFloProcessor extends common.Processor
                 @execute cmd, [ graphPath ], callback
 
     execute: (cmd, args, callback) ->
-        console.log 'executing', cmd, args if @verbose
+        # args.unshift '--debug'
+        console.log 'executing', cmd, args.join ' ' if @verbose
         stderr = ""
         process = child_process.spawn cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] }
         process.on 'close', (exitcode) ->
