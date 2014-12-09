@@ -7,8 +7,8 @@
 -
     _name: 'insta_1977_resized'
     _graph: 'insta_1977'
-    height: 101
-    width: 101
+    height: 100
+    width: 100
     input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
 -
     _name: 'insta_brannan'
