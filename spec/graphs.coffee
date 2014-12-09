@@ -31,7 +31,7 @@ requestUrl = (testcase) ->
         graph = testcase._graph
         props = {}
         for key of testcase
-            props[key] = testcase[key] if key != '_name' and key != '_graph'
+            props[key] = testcase[key] if key != '_name' and key != '_graph' and key != '_skip'
         u = utils.formatRequest urlbase, graph, props
     return u
 
@@ -54,8 +54,9 @@ describe 'Graphs', ->
         s.close() if startServer
 
     for testcase in testcases
+        describeOrSkip = if testcase._skip? and testcase._skip then describe.skip else describe
 
-        describe "#{testcase._name}", ->
+        describeOrSkip "#{testcase._name}", ->
             reqUrl = requestUrl testcase
             ext = utils.requestFileFormat reqUrl
             datadir = 'spec/data/'
