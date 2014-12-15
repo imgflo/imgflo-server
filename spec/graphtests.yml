@@ -14,23 +14,23 @@
 -
     _name: 'insta_brannan'
     _graph: 'insta_brannan'
-    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'    
+    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'    
 -
     _name: 'insta_hefe'
     _graph: 'insta_hefe'
-    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
 -
     _name: 'insta_lordkelvin'
     _graph: 'insta_lordkelvin'
-    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
 -
     _name: 'insta_nashville'
     _graph: 'insta_nashville'
-    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
 -
     _name: 'insta_xproii'
     _graph: 'insta_xproii'
-    url: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
 -
     _name: 'delaunay_triangles_foobar100'
     _graph: 'delaunay_triangles'
