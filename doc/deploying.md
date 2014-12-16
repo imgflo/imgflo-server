@@ -24,10 +24,11 @@ If this happens, just restart the build to try again.
 Verifying deploy
 ================
 
-* Go to [Activity on Heroku](https://dashboard.heroku.com/apps/imgflo/activity).
+* Go to [Activity on Heroku](https://dashboard.heroku.com/apps/imgflo/activity), check that a new version was activated.
 * Go to [thegrid.io](https://thegrid.io) in *incognito browser*, verify cached images being served
 * Go to [imgflo web interface](http://imgflo.herokuapp.com), enter info to run a processing request, verify it appears
 * Check [Metrics on Heroku](https://dashboard.heroku.com/apps/imgflo)
+that there is no/very-few 5xx errors, response time `< 500 ms`, and sane CPU/memory use.
 
 TODO: create automated production checks
 
