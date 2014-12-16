@@ -79,7 +79,7 @@ describe 'Graphs', ->
                         done()
 
                 it 'results should be equal to reference', (done) ->
-                    timeout = 4000
+                    timeout = 8000
                     @timeout timeout
                     utils.compareImages output, reference, timeout*2, (error, stderr, stdout) ->
                         msg = "image comparison failed code=#{error?.code}\n#{stderr}\n#{stdout}"
