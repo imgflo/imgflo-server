@@ -1,30 +1,21 @@
 {
     "properties": {
-        "name": "main",
-        "id": "test-drawimage/main",
-        "project": "test-drawimage",
+        "name": "insta_xproii",
+        "id": "imgflo-server_graphs_insta_xproii",
+        "project": "imgflo-server",
         "environment": {
             "type": "noflo-nodejs"
         },
-        "changed": true
+        "changed": true,
+        "sha": "8dfbb9ec162127cd638c4782475b52bd7313aaa4"
     },
     "inports": {
-        "url": {
-            "process": "GetImage",
-            "port": "url",
-            "metadata": {
-                "x": -216,
-                "y": 252,
-                "width": 72,
-                "height": 72
-            }
-        },
         "canvas": {
-            "process": "SetWidth",
-            "port": "in",
+            "process": "SetContrast",
+            "port": "canvas",
             "metadata": {
-                "x": -216,
-                "y": -108,
+                "x": -108,
+                "y": 252,
                 "width": 72,
                 "height": 72
             }
@@ -32,11 +23,11 @@
     },
     "outports": {
         "output": {
-            "process": "canvas/Draw_cldd8",
+            "process": "SetVignette",
             "port": "canvas",
             "metadata": {
-                "x": 1224,
-                "y": 36,
+                "x": 828,
+                "y": 252,
                 "width": 72,
                 "height": 72
             }
@@ -44,32 +35,12 @@
     },
     "groups": [],
     "processes": {
-        "canvas/Draw_cldd8": {
-            "component": "canvas/Draw",
-            "metadata": {
-                "label": "canvas/Draw",
-                "x": 1080,
-                "y": 36,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "DrawImage": {
-            "component": "canvas/DrawImage",
-            "metadata": {
-                "label": "DrawImage",
-                "x": 792,
-                "y": 252,
-                "width": 72,
-                "height": 72
-            }
-        },
         "XProII": {
             "component": "image/GetPresetCurve",
             "metadata": {
                 "label": "XProII",
                 "x": 360,
-                "y": 360,
+                "y": 144,
                 "width": 72,
                 "height": 72
             }
@@ -79,76 +50,6 @@
             "metadata": {
                 "label": "ApplyCurve",
                 "x": 504,
-                "y": 252,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "GetImage": {
-            "component": "image/UrlToCanvas",
-            "metadata": {
-                "label": "GetImage",
-                "x": -72,
-                "y": 252,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "SetWidth": {
-            "component": "objects/SetPropertyValue",
-            "metadata": {
-                "label": "SetWidth",
-                "x": 396,
-                "y": -108,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "GetWidth": {
-            "component": "objects/ExtractProperty",
-            "metadata": {
-                "label": "GetWidth",
-                "x": 252,
-                "y": -108,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "GetHeight": {
-            "component": "objects/ExtractProperty",
-            "metadata": {
-                "label": "GetHeight",
-                "x": 252,
-                "y": 0,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "SetHeight": {
-            "component": "objects/SetPropertyValue",
-            "metadata": {
-                "label": "SetHeight",
-                "x": 396,
-                "y": 0,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "core/Split_y52on": {
-            "component": "core/Split",
-            "metadata": {
-                "label": "core/Split",
-                "x": 108,
-                "y": 0,
-                "width": 72,
-                "height": 72
-            }
-        },
-        "WaitABit": {
-            "component": "core/RepeatDelayed",
-            "metadata": {
-                "label": "WaitABit",
-                "x": 936,
                 "y": 252,
                 "width": 72,
                 "height": 72
@@ -211,144 +112,13 @@
         },
         {
             "src": {
-                "process": "GetWidth",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "SetWidth",
-                "port": "value"
-            },
-            "metadata": {
-                "route": 10
-            }
-        },
-        {
-            "src": {
-                "process": "GetHeight",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "SetHeight",
-                "port": "value"
-            },
-            "metadata": {
-                "route": 1
-            }
-        },
-        {
-            "src": {
-                "process": "SetWidth",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "SetHeight",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 10
-            }
-        },
-        {
-            "src": {
-                "process": "SetHeight",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "canvas"
-            },
-            "metadata": {
-                "route": 5
-            }
-        },
-        {
-            "src": {
-                "process": "GetImage",
-                "port": "canvas"
-            },
-            "tgt": {
-                "process": "core/Split_y52on",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 5
-            }
-        },
-        {
-            "src": {
-                "process": "core/Split_y52on",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "GetWidth",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 10
-            }
-        },
-        {
-            "src": {
-                "process": "core/Split_y52on",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "GetHeight",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 1
-            }
-        },
-        {
-            "src": {
-                "process": "DrawImage",
-                "port": "drawimage"
-            },
-            "tgt": {
-                "process": "WaitABit",
-                "port": "in"
-            },
-            "metadata": {
-                "route": 7
-            }
-        },
-        {
-            "src": {
-                "process": "WaitABit",
-                "port": "out"
-            },
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "commands"
-            },
-            "metadata": {
-                "route": 7
-            }
-        },
-        {
-            "src": {
-                "process": "GetImage",
-                "port": "canvas"
-            },
-            "tgt": {
-                "process": "SetContrast",
-                "port": "canvas"
-            },
-            "metadata": {
-                "route": 5
-            }
-        },
-        {
-            "src": {
                 "process": "SetSaturation",
                 "port": "canvas"
             },
             "tgt": {
                 "process": "ApplyCurve",
                 "port": "canvas"
-            },
-            "metadata": {}
+            }
         },
         {
             "src": {
@@ -358,8 +128,7 @@
             "tgt": {
                 "process": "SetBrightness",
                 "port": "canvas"
-            },
-            "metadata": {}
+            }
         },
         {
             "src": {
@@ -369,8 +138,7 @@
             "tgt": {
                 "process": "SetSaturation",
                 "port": "canvas"
-            },
-            "metadata": {}
+            }
         },
         {
             "src": {
@@ -383,83 +151,6 @@
             },
             "metadata": {
                 "route": null
-            }
-        },
-        {
-            "src": {
-                "process": "SetVignette",
-                "port": "canvas"
-            },
-            "tgt": {
-                "process": "DrawImage",
-                "port": "image"
-            },
-            "metadata": {}
-        },
-        {
-            "data": true,
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "drawevery"
-            }
-        },
-        {
-            "data": true,
-            "tgt": {
-                "process": "canvas/Draw_cldd8",
-                "port": "clearevery"
-            }
-        },
-        {
-            "data": {
-                "x": 0,
-                "y": 0
-            },
-            "tgt": {
-                "process": "DrawImage",
-                "port": "destpoint"
-            }
-        },
-        {
-            "data": "Anonymous",
-            "tgt": {
-                "process": "GetImage",
-                "port": "crossorigin"
-            }
-        },
-        {
-            "data": "width",
-            "tgt": {
-                "process": "SetWidth",
-                "port": "property"
-            }
-        },
-        {
-            "data": "width",
-            "tgt": {
-                "process": "GetWidth",
-                "port": "key"
-            }
-        },
-        {
-            "data": "height",
-            "tgt": {
-                "process": "GetHeight",
-                "port": "key"
-            }
-        },
-        {
-            "data": "height",
-            "tgt": {
-                "process": "SetHeight",
-                "port": "property"
-            }
-        },
-        {
-            "data": 500,
-            "tgt": {
-                "process": "WaitABit",
-                "port": "delay"
             }
         },
         {
