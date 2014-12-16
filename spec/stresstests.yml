@@ -11,5 +11,5 @@ process_same_input:
 process_different_sizes:
     sizes: [50, 200, 800, 1600, 3200]
     expected:
-        'localhost': [1200, 1200, 2000, 5000, 14000]
+        'localhost': [1400, 1400, 2000, 5000, 14000]
         'imgflo.herokuapp.com': [6000, 6000, 6000]
