@@ -18,6 +18,8 @@ enrichGraphDefinition = (graph, publicOnly) ->
     graph.inports.width =
         process: 'canvas'
         port: 'width'
+    if not graph.inports?
+        graph.inports = {}
 
 class NoFloProcessor extends common.Processor
     constructor: (verbose) ->
