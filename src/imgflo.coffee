@@ -100,6 +100,13 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     def.connections.push { data: inpath, tgt: { process: 'load', port: 'path'} }
     def.connections.push { data: outpath, tgt: { process: 'save', port: 'path'} }
 
+    # General IIPs
+    if outtype is 'png'
+        # Use 8 bit-per-channel instead of default 16
+        # Compress more than the default level 3
+        def.connections.push { data: '6', tgt: { process: 'save', port: 'compression' } }
+        def.connections.push { data: '8', tgt: { process: 'save', port: 'bitdepth' } }
+
     # Attach processing parameters as IIPs
     for k, v of attributes
         tgt = def.inports[k]
