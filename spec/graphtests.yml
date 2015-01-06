@@ -3,34 +3,34 @@
 -
     _name: 'insta_1977'
     _graph: 'insta_1977'
-    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'demo/gridbear.jpg'
 -
     _skip: true
     _name: 'insta_1977_resized'
     _graph: 'insta_1977'
     height: 100
     width: 100
-    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'demo/gridbear.jpg'
 -
     _name: 'insta_brannan'
     _graph: 'insta_brannan'
-    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'    
+    input: 'demo/gridbear.jpg'
 -
     _name: 'insta_hefe'
     _graph: 'insta_hefe'
-    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'demo/gridbear.jpg'
 -
     _name: 'insta_lordkelvin'
     _graph: 'insta_lordkelvin'
-    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'demo/gridbear.jpg'
 -
     _name: 'insta_nashville'
     _graph: 'insta_nashville'
-    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'demo/gridbear.jpg'
 -
     _name: 'insta_xproii'
     _graph: 'insta_xproii'
-    input: 'https://farm3.staticflickr.com/2623/3946668599_90958b634c_q_d.jpg'
+    input: 'demo/gridbear.jpg'
 -
     _name: 'delaunay_triangles_foobar100'
     _graph: 'delaunay_triangles'
