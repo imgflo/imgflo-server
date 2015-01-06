@@ -49,6 +49,8 @@ dependencies:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) dependencies
 gegl:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) gegl
+babl:
+	cd runtime/dependencies && make PREFIX=$(PREFIX) babl
 glib:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) glib
 libsoup:
