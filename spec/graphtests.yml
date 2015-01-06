@@ -2,34 +2,34 @@
 # The refencence the output is compared is '$_name+.reference.png'
 -
     _name: 'insta_1977'
-    _graph: 'insta_1977'
+    _graph: 'insta_1977.png'
     input: 'demo/gridbear.jpg'
 -
     _skip: true
     _name: 'insta_1977_resized'
-    _graph: 'insta_1977'
+    _graph: 'insta_1977.png'
     height: 100
     width: 100
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_brannan'
-    _graph: 'insta_brannan'
+    _graph: 'insta_brannan.png'
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_hefe'
-    _graph: 'insta_hefe'
+    _graph: 'insta_hefe.png'
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_lordkelvin'
-    _graph: 'insta_lordkelvin'
+    _graph: 'insta_lordkelvin.png'
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_nashville'
-    _graph: 'insta_nashville'
+    _graph: 'insta_nashville.png'
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_xproii'
-    _graph: 'insta_xproii'
+    _graph: 'insta_xproii.png'
     input: 'demo/gridbear.jpg'
 -
     _name: 'delaunay_triangles_foobar100'

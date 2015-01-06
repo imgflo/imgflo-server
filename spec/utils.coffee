@@ -74,7 +74,8 @@ exports.requestFileFormat = (u) ->
     parsed = url.parse u
     graph = parsed.pathname.replace '/graph/', ''
     ext = (path.extname graph).replace '.', ''
-    return ext || 'png'
+    console.log 'requestFileFormat', u, ext
+    return ext || 'jpg'
 
 exports.formatRequest = (host, graph, params, key, secret) ->
     if key and secret
