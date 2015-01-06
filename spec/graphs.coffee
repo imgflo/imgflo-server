@@ -3,6 +3,7 @@
 #     imgflo may be freely distributed under the MIT license
 
 server = require '../src/server'
+common = require '../src/common'
 utils = require './utils'
 chai = require 'chai'
 yaml = require 'js-yaml'
@@ -31,7 +32,7 @@ requestUrl = (testcase) ->
         graph = testcase._graph
         props = {}
         for key of testcase
-            props[key] = testcase[key] if key != '_name' and key != '_graph' and key != '_skip'
+            props[key] = testcase[key] if (key.indexOf '_') != 0
         u = utils.formatRequest urlbase, graph, props
     return u
 
@@ -53,7 +54,7 @@ describe 'Graphs', ->
     after ->
         s.close() if startServer
 
-    for testcase in testcases
+    testcases.forEach (testcase) ->
         describeOrSkip = if testcase._skip? and testcase._skip then describe.skip else describe
 
         describeOrSkip "#{testcase._name}", ->
@@ -81,7 +82,10 @@ describe 'Graphs', ->
                 it 'results should be equal to reference', (done) ->
                     timeout = 8000
                     @timeout timeout
-                    utils.compareImages output, reference, timeout*2, (error, stderr, stdout) ->
+                    options = { timeout: timeout*2 }
+
+                    options.tolerance = testcase._tolerance if testcase._tolerance
+                    utils.compareImages output, reference, options, (error, stderr, stdout) ->
                         msg = "image comparison failed code=#{error?.code}\n#{stderr}\n#{stdout}"
                         chai.expect(error).to.be.a 'null', msg
                         done()

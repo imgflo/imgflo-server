@@ -63,10 +63,17 @@ class LogHandler
 
 exports.LogHandler = LogHandler
 
-exports.compareImages = (actual, expected, timeout, callback) ->
-    cmd = "./install/env.sh ./install/bin/gegl-imgcmp #{actual} #{expected}"
-    options =
-        timeout: timeout
+exports.compareImages = (actual, expected, opts, callback) ->
+    options = {}
+    defaults =
+        timeout: 5000
+        tolerance: 1.5
+    for k,v of defaults
+        options[k] = v
+    for k,v of opts
+        options[k] = v
+
+    cmd = "./install/env.sh ./install/bin/gegl-imgcmp #{actual} #{expected} #{options.tolerance}"
     child.exec cmd, options, (error, stdout, stderr) ->
         return callback error, stderr, stdout
 
@@ -74,7 +81,6 @@ exports.requestFileFormat = (u) ->
     parsed = url.parse u
     graph = parsed.pathname.replace '/graph/', ''
     ext = (path.extname graph).replace '.', ''
-    console.log 'requestFileFormat', u, ext
     return ext || 'jpg'
 
 exports.formatRequest = (host, graph, params, key, secret) ->
