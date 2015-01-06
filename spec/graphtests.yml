@@ -32,6 +32,12 @@
     _graph: 'insta_xproii.png'
     input: 'demo/gridbear.jpg'
 -
+    _name: 'imgflo_resize_heightonly'
+    _graph: 'desaturate'
+    _tolerance: 100
+    height: 300
+    input: "demo/grid-toastybob.jpg"
+-
     _name: 'delaunay_triangles_foobar100'
     _graph: 'delaunay_triangles'
     seed: 'foobar'

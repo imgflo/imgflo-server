@@ -85,13 +85,15 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     inp = def.inports.input
 
     if attributes.width? or attributes.height?
+        # Add scaling operation
         rescale = 'rescale'
-        def.processes.rescale = { component: 'gegl/scale-size' }
+        def.processes[rescale] = { component: 'gegl/scale-size-keepaspect' }
         def.connections.push fbpConn "load OUTPUT -> INPUT #{rescale}"
         def.connections.push { src: {process: rescale, port: 'output'}, tgt: inp }
     else
         # Connect directly
         def.connections.push { src: {process: 'load', port: 'output'}, tgt: inp }
+
 
     def.connections.push { src: out, tgt: {process: 'save', port: 'input'} }
     def.connections.push { src: {process: 'save', port: 'output'}, tgt: {process: 'proc', port: 'node'} }
