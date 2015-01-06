@@ -86,18 +86,18 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, inType, outType) ->
     def.connections.push { src: {process: 'repeat', port: 'out'}, tgt: {process: 'save', port: 'canvas'} }
 
     if inpath
+        # There is an input image
         tgt =
             process: 'canvas'
             port: 'url'
         def.connections.push { data: inpath, tgt: tgt }
 
-        if attributes.height? and attributes.width?
+        if attributes.height? or attributes.width?
             def.processes.resize = { component: 'canvas/ResizeCanvas' }
             def.inports.height.process = 'resize'
             def.inports.width.process = 'resize'
-            attributes.height = parseInt attributes.height
-            attributes.width = parseInt attributes.width
-        # FIXME: respect resizing of image to height+width
+            attributes.height =  if attributes.height? then parseInt attributes.height else -1
+            attributes.width = if attributes.width? then parseInt attributes.width else -1
     else
         # Defaults
         attributes.height = if attributes.height? then parseInt attributes.height else 400

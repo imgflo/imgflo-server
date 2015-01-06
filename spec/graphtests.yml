@@ -32,6 +32,11 @@
     _graph: 'insta_xproii.png'
     input: 'demo/gridbear.jpg'
 -
+    _name: 'noflo_resize_heightonly'
+    _graph: 'insta_brannan.png'
+    height: 300
+    input: "demo/gridbear.jpg"
+-
     _name: 'imgflo_resize_heightonly'
     _graph: 'desaturate'
     _tolerance: 100
