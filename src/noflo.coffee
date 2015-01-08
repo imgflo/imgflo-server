@@ -25,7 +25,7 @@ class NoFloProcessor extends common.Processor
         @verbose = verbose
 
     process: (outputFile, outputType, graph, iips, inputFile, inputType, callback) ->
-        g = prepareNoFloGraph graph, iips, inputFile, outputFile, inputType
+        g = prepareNoFloGraph graph, iips, inputFile, outputFile, inputType, outputType
         @run g, callback
 
     run: (graph, callback) ->
@@ -52,7 +52,7 @@ class NoFloProcessor extends common.Processor
         process.stderr.on 'data', (d)->
             stderr += d.toString()
 
-prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
+prepareNoFloGraph = (basegraph, attributes, inpath, outpath, inType, outType) ->
 
     # Avoid mutating original
     def = common.clone basegraph
@@ -65,9 +65,13 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, type) ->
         def.processes.canvas = { component: 'canvas/CreateCanvas' }
 
     # Add a output node
+    saveComponent = 'canvas/SavePNG'
+    if outType == 'jpg'
+        saveComponent = 'canvas/SaveJPEG'
+
     def.processes.resize = { component: 'core/Repeat' }
     def.processes.repeat = { component: 'core/RepeatAsync' }
-    def.processes.save = { component: 'canvas/SavePNG' }
+    def.processes.save = { component: saveComponent }
 
     # Attach filepaths as IIPs
     def.connections.push { data: outpath, tgt: { process: 'save', port: 'filename'} }

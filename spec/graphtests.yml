@@ -39,7 +39,7 @@
     input: "demo/grid-toastybob.jpg"
 -
     _name: 'delaunay_triangles_foobar100'
-    _graph: 'delaunay_triangles.png'
+    _graph: 'delaunay_triangles.jpg'
     _tolerance: 20
     seed: 'foobar'
     width: 100
