@@ -148,11 +148,16 @@ var main = function() {
     var activeGraphName = null;
     var availableGraphs = null;
 
+    id("apiKey").value = localStorage["imgflo-server-api-key"] || "";
+    id("apiSecret").value = localStorage["imgflo-server-api-secret"] || "";
+
     id('runButton').onclick = function () {
         var graph = activeGraphName;
         var props = getGraphProperties(id('graphProperties'), graph, availableGraphs[graph]);
         var apiKey = id("apiKey").value;
         var apiSecret = id("apiSecret").value;
+        localStorage["imgflo-server-api-key"] = apiKey;
+        localStorage["imgflo-server-api-secret"] = apiKey;
         var u = createRequestUrl(graph, props, apiKey, apiSecret);
         addEntry(u);
     };
