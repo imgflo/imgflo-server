@@ -148,8 +148,17 @@ var main = function() {
     var activeGraphName = null;
     var availableGraphs = null;
 
-    id("apiKey").value = localStorage["imgflo-server-api-key"] || "";
-    id("apiSecret").value = localStorage["imgflo-server-api-secret"] || "";
+    var readApiInfo = function() {
+        id("apiKey").value = localStorage["imgflo-server-api-key"] || "";
+        id("apiSecret").value = localStorage["imgflo-server-api-secret"] || "";
+    };
+    readApiInfo();
+
+    id('clearApiInfo').onclick = function () {
+        localStorage["imgflo-server-api-key"] = "";
+        localStorage["imgflo-server-api-secret"] = "";
+        readApiInfo();
+    };
 
     id('runButton').onclick = function () {
         var graph = activeGraphName;
