@@ -12,6 +12,11 @@
 
 #topSection {
     width: 800px;
+    height: 52px;
+}
+
+#apiSection {
+    height: 50px;
 }
 
 #graphsSection {

@@ -10,19 +10,19 @@
     <div id="app">
         <div id="topSection">
 
-            <p id="version"></p>
-
             <div id="apiSection">
                 <div class="line">
-                    <label>API key</label>
-                    <input id="apiKey"></input>
+                    <label for="apiKey" class="portLabel">API key</label>
+                    <input id="apiKey" class="portInput"></input>
                 </div>
                 <div class="line">
-                    <label>API secret</label>
-                    <input id="apiSecret" type="password"></input>
+                    <label for="apiSecret" class="portLabel">API secret</label>
+                    <input id="apiSecret" type="password" class="portInput"></input>
                 </div>
                 <button id="clearApiInfo">Clear</button>
             </div>
+
+            <p id="version" class="line"></p>
 
             <div id="graphsSection">
                 <h3>Graphs</h3>
