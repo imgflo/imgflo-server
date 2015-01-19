@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1052.3622"
+   height="744.09448"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.5 r10040"
+   sodipodi:docname="components.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path4098"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path4101"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.35"
+     inkscape:cx="456.20686"
+     inkscape:cy="380.63554"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer2"
+     showgrid="false"
+     inkscape:window-width="1278"
+     inkscape:window-height="779"
+     inkscape:window-x="0"
+     inkscape:window-y="19"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-308.2677)" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Layer"
+     transform="translate(0,-308.2677)">
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot2990"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(1.2096986,0,0,1,22.578796,119.98557)"><flowRegion
+         id="flowRegion2992"><rect
+           id="rect2994"
+           width="321.56012"
+           height="71.428566"
+           x="128.57143"
+           y="186.6479" /></flowRegion><flowPara
+         id="flowPara2996">imgflo-server</flowPara></flowRoot>    <g
+       id="g3875"
+       transform="translate(458.56421,422.84271)">
+      <g
+         transform="translate(-134.28571,-122.85714)"
+         id="g3802">
+        <rect
+           style="fill:#00ff00;fill-opacity:0.4679803;fill-rule:nonzero;stroke:none"
+           id="rect3792"
+           width="402.85715"
+           height="174.28572"
+           x="302.85715"
+           y="569.50507" />
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="320"
+           y="609.50507"
+           id="text3006"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3008"
+             x="320"
+             y="609.50507">noflo</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="434.28574"
+           y="666.64795"
+           id="text3010"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3012"
+             x="434.28574"
+             y="666.64795">node-canvas</tspan><tspan
+             sodipodi:role="line"
+             x="434.28574"
+             y="716.64795"
+             id="tspan3014">JavaScript</tspan></text>
+      </g>
+      <g
+         id="g3864">
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="168.57143"
+           y="258.07648"
+           id="text2998"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3000"
+             x="168.57143"
+             y="258.07648">Processors</tspan></text>
+        <g
+           id="g3794"
+           transform="translate(-134.28571,-128.57143)">
+          <rect
+             y="412.36221"
+             x="302.85715"
+             height="145.71428"
+             width="405.71429"
+             id="rect3022"
+             style="fill:#008080;fill-opacity:0.4679803;fill-rule:nonzero;stroke:none" />
+          <text
+             sodipodi:linespacing="125%"
+             id="text3002"
+             y="458.07648"
+             x="311.42856"
+             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+             xml:space="preserve"><tspan
+               y="458.07648"
+               x="311.42856"
+               id="tspan3004"
+               sodipodi:role="line">imgflo</tspan></text>
+          <text
+             sodipodi:linespacing="125%"
+             id="text3016"
+             y="489.50507"
+             x="488.57144"
+             style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+             xml:space="preserve"><tspan
+               y="489.50507"
+               x="488.57144"
+               id="tspan3018"
+               sodipodi:role="line">GEGL</tspan><tspan
+               id="tspan3020"
+               y="539.50507"
+               x="488.57144"
+               sodipodi:role="line">C</tspan></text>
+        </g>
+      </g>
+    </g>
+    <g
+       id="g3852"
+       transform="translate(-127.15007,25.699863)">
+      <text
+         sodipodi:linespacing="125%"
+         id="text3810"
+         y="669.50507"
+         x="174.28571"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="669.50507"
+           x="174.28571"
+           id="tspan3812"
+           sodipodi:role="line">Caches</tspan></text>
+      <g
+         id="g3847">
+        <rect
+           style="fill:#ffff00;fill-opacity:0.4679803;fill-rule:nonzero;stroke:none"
+           id="rect3814"
+           width="411.42856"
+           height="97.14286"
+           x="162.85713"
+           y="689.505" />
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="185.71429"
+           y="743.79077"
+           id="text3816"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3818"
+             x="185.71429"
+             y="743.79077">local filesystem</tspan></text>
+      </g>
+      <g
+         id="g3842">
+        <rect
+           y="798.07642"
+           x="162.85713"
+           height="97.14286"
+           width="411.42856"
+           id="rect3820"
+           style="fill:#000080;fill-opacity:0.4679803;fill-rule:nonzero;stroke:none" />
+        <text
+           xml:space="preserve"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="191.42856"
+           y="846.64795"
+           id="text3822"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             id="tspan3824"
+             x="191.42856"
+             y="846.64795">Amazon S3</tspan></text>
+      </g>
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="224.2785"
+       y="429.4906"
+       id="text2986"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2988"
+         x="224.2785"
+         y="429.4906">HTTP API frontend</tspan></text>
+    <rect
+       style="fill:#800080;fill-opacity:0.4679803;fill-rule:nonzero;stroke:none"
+       id="rect3894"
+       width="948.57147"
+       height="140"
+       x="32.84993"
+       y="369.4906" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="264.2785"
+       y="489.4906"
+       id="text3896"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3898"
+         x="264.2785"
+         y="489.4906">node.js</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:url(#Arrow1Lend)"
+       d="M 383.30147,529.81426 C 299.54124,652.02409 299.54124,652.02409 299.54124,652.02409"
+       id="path3912"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Lend)"
+       d="m 618.91083,532.46503 120.72387,81.69784 23.94589,16.20499"
+       id="path4538"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:4.42371082;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Lend)"
+       d="M 589.78094,992.1359 C 290.20465,946.54312 290.20465,946.54312 290.20465,946.54312"
+       id="path4540"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4906"
+       d="M 177.76755,637.14897 C 270.78944,521.83224 270.78944,521.83224 270.78944,521.83224"
+       style="fill:none;stroke:#000000;stroke-width:4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow1Lend)" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="52.849926"
+       y="595.20483"
+       id="text4908"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4910"
+         x="52.849926"
+         y="595.20483">Serve</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="361.42136"
+       y="623.77631"
+       id="text4912"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4914"
+         x="361.42136"
+         y="623.77631">Is cached?</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="247.13564"
+       y="1040.9192"
+       id="text4916"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4918"
+         x="247.13564"
+         y="1040.9192">Put in cache</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="752.84991"
+       y="586.63342"
+       id="text5106"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan5108"
+         x="752.84991"
+         y="586.63342">Process image</tspan></text>
+  </g>
+</svg>
