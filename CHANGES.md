@@ -1,3 +1,35 @@
+imgflo-server 0.3.0
+==================
+Released: January 23nd, 2015
+
+See-also [imgflo-runtime release notes](https://github.com/jonnor/imgflo)
+
+Changes
+--------
+
+Fix Heroku button deploy not working due to git submodule.
+
+Add support for custom GEGL/imgflo operations.
+Ops dropped into components/* will be built & installed.
+
+Local cache is now default, use `IMGFLO_CACHE=s3` to use Amazon S3.
+
+Fixed very large output files sizes for PNGs.
+Was using 16 bits-per-channel and very low compression. Output now 5-10 times smaller.
+
+Added support for noflo-canvas graphs to act as filters on input images,
+not just purely generative. The `canvas` input port will now contain the
+input, if any.
+
+Add support for scaling by passing only one dimension (height/width).
+The image will then be scaled by preserving input aspect-ratio.
+Explicitly passing a value of -1 can also be used to mean "not specified".
+
+Added a set of image filters inspired by those used by Instagram:
+Lord Kelvin, Brannan, Nashville, Hefe, XProII and 1977.
+
+The demo webapp will now remember API key/secret using LocalStorage, if entered.
+
 imgflo-server 0.2.0
 ==================
 Released: October 28th, 2014
