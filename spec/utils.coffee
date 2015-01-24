@@ -43,7 +43,7 @@ class LogHandler
             if data.stderr
                 for e in data.stderr.split '\n'
                     e = e.trim()
-                    @errors.push e if e and err.indexOf('imgflo-Message:') != 0
+                    @errors.push e if e and e.indexOf('imgflo-Message:') != 0
             if data.err
                 @errors.push data.err
         else if id == 'serve-from-cache'
