@@ -1,0 +1,58 @@
+
+img[height] == 200;
+.portInput[width] == 150;
+
+section {
+    bottom: == :next[top];
+    width: == ::window[width];
+    left: == ::window[left];
+    width: <= 700;
+}
+
+#apiSection {
+    top: == 0;
+    height: == 25;
+
+    lineWidth >= 0 !strong  ;
+
+    .line[left] >= &left;
+    .line[right] <= &right;
+    .line[width] == lineWidth;
+    (.line:first)[left] == 0;
+    .line {
+        label[right] == input[left];
+        input {
+            right: == ^[right];
+        }
+        label {
+            left: == ^[left];
+        }
+        (+ .line)[left] >= &right;
+    }
+
+}
+
+#graphsSection {
+    width: == 200 !strong;
+}
+#propertiesSection {
+    width: >= 200 !strong;
+}
+
+#mainSection {
+    sectionWidth >= 0;
+
+    > div {
+        :first[left] == ($ #mainSection)[left];
+        :last[right] == ($ #mainSection)[right];
+        left: == :previous[right];
+        height: == ($ #mainSection)[height];
+    }
+}
+
+#historySection {
+    bottom: == ::window[bottom];
+    height: == 200;
+}
+
+

@@ -39,18 +39,16 @@ var createGraphProperties = function(name, graph) {
 
     var graphInfo = document.createElement('div');
     var graphName = document.createElement('p');
-    var portsInfo = document.createElement('div');
+    var portsInfo = document.createElement('ul');
     graphName.innerHTML = name;
     //graphInfo.appendChild(graphName);
     graphInfo.appendChild(portsInfo);
-
-    var attributeList = document.createElement('ul');
 
     var inports = Object.keys(graph.inports);
     inports.forEach(function (name) {
         var port = inports[name];
 
-        var portInfo = document.createElement('div');
+        var portInfo = document.createElement('li');
         portInfo.className = 'line';
 
         var portName = document.createElement('label');
@@ -70,12 +68,12 @@ var createGraphProperties = function(name, graph) {
 }
 
 var createGraphList = function(graphs, onClicked) {
-    var list = document.createElement('li');
+    var list = document.createElement('ul');
     list.onclick = onClicked;
 
     Object.keys(graphs).forEach(function(name) {
         if (typeof graphs[name].inports !== 'undefined') {
-            var e = document.createElement('ul');
+            var e = document.createElement('li');
             e.className = "graphEntry";
             e.innerHTML = name;
             list.appendChild(e);
@@ -173,7 +171,7 @@ var main = function() {
 
     var setActiveGraph = function(name) {
         if (typeof availableGraphs[name] === 'undefined') {
-            throw new Error('No such graph: ' + name);
+            return false;
         }
         activeGraphName = name;
         var container = id('graphProperties');
@@ -182,11 +180,12 @@ var main = function() {
         }
         var e = createGraphProperties(name, availableGraphs[name]);
         container.appendChild(e);
+        return true;
     }
 
     var onGraphClicked = function(event) {
         var name = event.target.innerText;
-        console.log("onGraphClicked", name);
+        console.log("onGraphClicked", name, event.target);
         setActiveGraph(name);
     }
 
