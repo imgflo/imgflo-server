@@ -1,5 +1,5 @@
 
-img[height] == 200;
+img[height] == 150;
 .portInput[width] == 150;
 
 section {
@@ -37,6 +37,10 @@ section {
 }
 #propertiesSection {
     width: >= 200 !strong;
+
+    .portLabel {
+        width: == 350;
+    }
 }
 
 #mainSection {

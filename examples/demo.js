@@ -37,12 +37,9 @@ var createGraphProperties = function(name, graph) {
         return null;
     }
 
-    var graphInfo = document.createElement('div');
     var graphName = document.createElement('p');
     var portsInfo = document.createElement('ul');
     graphName.innerHTML = name;
-    //graphInfo.appendChild(graphName);
-    graphInfo.appendChild(portsInfo);
 
     var inports = Object.keys(graph.inports);
     inports.forEach(function (name) {
@@ -53,18 +50,18 @@ var createGraphProperties = function(name, graph) {
 
         var portName = document.createElement('label');
         portName.className = "portLabel";
-        portName.innerHTML = name;
         var portInput = document.createElement('input');
+        portName.innerHTML = "<span>"+name+"</span>";
         portInput.name = name;
         portInput.className = "portInput";
 
         // TODO: show information about type,value ranges, default value, description etc
         portInfo.appendChild(portName);
-        portInfo.appendChild(portInput);
+        portName.appendChild(portInput);
         portsInfo.appendChild(portInfo);
     });
 
-    return graphInfo;
+    return portsInfo;
 }
 
 var createGraphList = function(graphs, onClicked) {

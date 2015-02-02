@@ -15,9 +15,20 @@ label {
     text-align: right;
     padding-right: 10px;
 }
+label span {
+    width: 100px;
+    display: inline-block;
+    padding-right: 10px;
+}
+
+#runButton {
+    margin-left: 110px;
+}
 
 ul {
     list-style-type: none;
+    padding: 0px;
+    padding-left: 10px;
 }
 
 #historySection, #graphsSection {
