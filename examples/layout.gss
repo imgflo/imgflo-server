@@ -1,6 +1,4 @@
 
-img[height] == 150;
-
 section {
     bottom: == :next[top];
     left: == ::window[left];
@@ -32,11 +30,35 @@ section {
 }
 
 #pictureSection {
-    @h |-(#originalImage)-10-(#processedImage)-|;
-    img {
-        width: >= 100;
-        width: == 300 !weak;
+    @h |-(div)-...-| gap(5);
+    imageWidth >= 200;
+    div {
+        top: == ^[top];
+        height: <= ^[height];
+        width: == imageWidth;
+
+        /*
+        img {
+            //left: == ^[left];
+            width: == &[intrinsic-width] !required;
+            height: <= ^[height];
+            //width: == 150;
+            center-x: == ^[center-x] !strong;
+        }
+        */
+
+        fieldset {
+            width: == ^[width] !weak;
+            // center-x: == ^[center-x] !weak;
+            bottom: == ^[bottom] !weak;
+            height: == &[intrinsic-height];
+
+            input {
+                width: == ^[width];
+            }
+        }
     }
+
 }
 
 #graphsSection {
@@ -55,8 +77,11 @@ section {
             :first[left] == ^[left] !strong;
             width: == 150;
         }
-        @h |-(li)...;
+
+        @h |-(li)-5-...;
     }
+
+    bottom: == ::window[bottom];
 }
 
 
@@ -65,19 +90,18 @@ section {
     @h |-(ul)-|;
 
     ul {
-        top: == ^top+10;
+        top: == ^top;
         bottom: == ^bottom;
         width: == 400;
         li {
             width: == 400;
-            height: == 30;
+            height: == 25;
         }
 
         @v |-(li)-0-...-|;
     }
 
     height: == 200;
-    bottom: == ::window[bottom];
 }
 
 

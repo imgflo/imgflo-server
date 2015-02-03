@@ -25,18 +25,26 @@
         </section>
 
         <section id="pictureSection">
-            <img id="originalImage"></img>
-            <img id="processedImage"></img>
+            <div id="originalImage" class="bgSizeContain bgSizeLeft">
+                <fieldset>
+                    <input id="inputUrl" value="demo/grid-toastybob.jpg"></input>
+                </fieldset>
+            </div>
+            <div id="processedImage" class="bgSizeContain"></img>
+                <fieldset>
+                    <input id="processedUrl"></input>
+                </fieldset>
+            </div>
+        </section>
+
+        <section id="parameterSection">
+            <ul id="graphProperties"></ul>
         </section>
 
         <section id="graphsSection">
             <button id="previousGraph">Prev</button>
             <ul id="graphList"></ul>
             <button id="nextGraph">Next</button>
-        </section>
-
-        <section id="parameterSection">
-            <ul id="graphProperties"></ul>
         </section>
 
         <button id="runButton" type="button">Execute</button>

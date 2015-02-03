@@ -17,7 +17,6 @@ var removeClassName = function(el, name) {
 
 /* TODO:
  * - allow to select input image from URL
- * - fix placement of execution button
  *
  * - add thumbnail/preview images to graph selector
  * - add selected/deselected indicator to graph list
@@ -28,6 +27,7 @@ var removeClassName = function(el, name) {
  * - use slider for number/integer properties
  * - use color selector for color type properties
  * - use drop-down selector for enum type properties
+ * - make HEAD request to check if image is cached, and then show automatically
  *
  * Later:
  * - add progress bar for request processing.
@@ -100,34 +100,25 @@ var createGraphProperties = function(container, name, graph) {
 }
 
 var createGraphList = function(container, graphs, onClicked) {
-    container.onclick = onClicked;
 
     Object.keys(graphs).forEach(function(name) {
         if (typeof graphs[name].inports !== 'undefined') {
+            var graph = graphs[name];
             var e = document.createElement('li');
+            e.onclick = onClicked;
+            var displayName = name.replace("_", " ");
             e.className = "graphEntry";
-            e.innerHTML = name.replace("_", " ");
+            var p = document.createElement('label');
+            p.innerHTML = displayName;
+            e.appendChild(p);
+            var img = document.createElement('img');
+            img.src = graph.thumbnailUrl;
+            e.appendChild(img);
             e.setAttribute('data-graph-id', name);
             container.appendChild(e);
         }
     });
-    return graphs;
-}
-
-var createLogEntry = function(url) {
-    var img = document.createElement("img");
-    img.className = "image";
-    img.src = url;
-
-    var req = document.createElement("p");
-    req.innerHTML = "GET " + url.replace('&', '\n&')
-    req.className = "request";
-
-    var div = document.createElement("div");
-    div.className = "logEntry";
-    div.appendChild(req);
-    div.appendChild(img);
-    return div;
+    return container;
 }
 
 var createRequestUrl = function(graphname, parameters, apiKey, apiSecret) {
@@ -170,11 +161,6 @@ var main = function() {
         return document.getElementById(n);
     }
 
-    var addEntry = function(url) {
-        var e = createLogEntry(url);
-        id('historySection').insertBefore(e, id('historySection').firstChild);
-    }
-
     var activeGraphName = null;
     var availableGraphs = null;
 
@@ -190,16 +176,38 @@ var main = function() {
         readApiInfo();
     };
 
-    id('runButton').onclick = function () {
+    var processCurrent = function() {
         var graph = activeGraphName;
         var props = getGraphProperties(id('graphProperties'), graph, availableGraphs[graph]);
+        props.input = id('inputUrl').value;
         var apiKey = id("apiKey").value;
         var apiSecret = id("apiSecret").value;
         localStorage["imgflo-server-api-key"] = apiKey;
         localStorage["imgflo-server-api-secret"] = apiKey;
-        var u = createRequestUrl(graph, props, apiKey, apiSecret);
-        addEntry(u);
-    };
+        var url = createRequestUrl(graph, props, apiKey, apiSecret);
+        var bg = 'url("'+url+'")';
+        console.log('processing:', url, bg);
+        /*
+        id('processedImage').onload = function() {
+            id('processedImage').className = "visible";
+        };
+        id('processedImage').src = u;
+        */
+        id('processedUrl').value = url;
+        id('processedImage').style.backgroundImage = bg;
+    }
+    id('runButton').onclick = processCurrent;
+
+    var onInputChanged = function(event) {
+        var url = id('inputUrl').value;
+        console.log('setting input', url);
+
+        var bg = 'url("'+url+'")';
+        id('originalImage').style.backgroundImage = bg;
+        //id('originalImage').src = url;
+    }
+    id('inputUrl').onblur = onInputChanged;
+    onInputChanged();
 
     var setActiveGraph = function(name) {
         if (typeof availableGraphs[name] === 'undefined') {
@@ -217,8 +225,8 @@ var main = function() {
     }
 
     var onGraphClicked = function(event) {
-        var name = event.target.getAttribute('data-graph-id');
-        console.log("onGraphClicked", name, event.target);
+        var name = event.currentTarget.getAttribute('data-graph-id');
+        console.log("onGraphClicked", name);
         setActiveGraph(name);
     }
 
@@ -228,15 +236,20 @@ var main = function() {
         }
 
         availableGraphs = demo.graphs;
-        setActiveGraph(Object.keys(availableGraphs)[0]);
 
-        createGraphList(id('graphList'), demo.graphs, onGraphClicked);
-        var images = [
-            "demo/grid-toastybob.jpg"
-        ];
-        images.forEach(function(image) {
-            addEntry(image);
+        Object.keys(availableGraphs).forEach(function(name) {
+            var graph = availableGraphs[name];
+            var props = { width: 150, input: id('inputUrl').value };
+            var apiKey = id("apiKey").value;
+            var apiSecret = id("apiSecret").value;
+            localStorage["imgflo-server-api-key"] = apiKey;
+            localStorage["imgflo-server-api-secret"] = apiKey;
+            graph.thumbnailUrl = createRequestUrl(name, props, apiKey, apiSecret);
         });
+
+        setActiveGraph(Object.keys(availableGraphs)[0]);
+        processCurrent();
+        createGraphList(id('graphList'), demo.graphs, onGraphClicked);
     });
 
     getVersionInfo(function(err, res) {

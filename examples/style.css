@@ -31,8 +31,25 @@ ul {
     margin: 0px;
 }
 
-#historySection, #parameterSection {
-    overflow-y: scroll;
+input {
+    text-align: center;
+}
+
+.graphEntry label {
+    text-align: center;
+    display: block;
+}
+
+.bgSizeContain {
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+.bgSizeLeft {
+    background-position: right;
+}
+
+#graphProperties, #parameterSection {
+    overflow-y: auto;
     overflow-x: hidden;
 }
 
