@@ -1,11 +1,10 @@
 
 img[height] == 150;
-.portInput[width] == 150;
 
 section {
     bottom: == :next[top];
-    width: == ::window[width];
     left: == ::window[left];
+    width: == ::window[width];
     width: <= 700;
 }
 
@@ -13,50 +12,72 @@ section {
     top: == 0;
     height: == 25;
 
-    lineWidth >= 0 !strong  ;
-
-    .line[left] >= &left;
-    .line[right] <= &right;
-    .line[width] == lineWidth;
-    (.line:first)[left] == 0;
-    .line {
-        label[right] == input[left];
-        input {
-            right: == ^[right];
-        }
-        label {
-            left: == ^[left];
-        }
-        (+ .line)[left] >= &right;
+    #clearApiInfo {
+        width: == 70;
     }
 
+    @h |-(fieldset)...-(#clearApiInfo)-|;
+    .line {
+        @h |(label)-0-(input)| {
+            width: == &[intrinsic-width];
+        }
+    }
+}
+
+#runButton {
+    height: == 25;
+    width: == 100;
+    bottom: == ($ #pictureSection)[bottom] - 100;
+    center-x: == ($ #pictureSection)[center-x];
+}
+
+#pictureSection {
+    @h |-(#originalImage)-10-(#processedImage)-|;
+    img {
+        width: >= 100;
+        width: == 300 !weak;
+    }
 }
 
 #graphsSection {
-    width: == 200 !strong;
-}
-#propertiesSection {
-    width: >= 200 !strong;
+    height: == 150;
 
-    .portLabel {
-        width: == 350;
+    @h |(#previousGraph)-5-(ul)-5-(#nextGraph)|;
+
+    button {
+        width: == 50;
+    }
+
+    ul {
+        height: == ($ #graphsSection)[height];
+        width: >= 0;
+        li {
+            :first[left] == ^[left] !strong;
+            width: == 150;
+        }
+        @h |-(li)...;
     }
 }
 
-#mainSection {
-    sectionWidth >= 0;
 
-    > div {
-        :first[left] == ($ #mainSection)[left];
-        :last[right] == ($ #mainSection)[right];
-        left: == :previous[right];
-        height: == ($ #mainSection)[height];
+#parameterSection {
+
+    @h |-(ul)-|;
+
+    ul {
+        top: == ^top+10;
+        bottom: == ^bottom;
+        width: == 400;
+        li {
+            width: == 400;
+            height: == 30;
+        }
+
+        @v |-(li)-0-...-|;
     }
-}
 
-#historySection {
-    bottom: == ::window[bottom];
     height: == 200;
+    bottom: == ::window[bottom];
 }
 
 

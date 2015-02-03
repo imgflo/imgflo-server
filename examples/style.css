@@ -20,20 +20,33 @@ label span {
     display: inline-block;
     padding-right: 10px;
 }
-
-#runButton {
-    margin-left: 110px;
+fieldset {
+    padding: 0px;
+    border: 0px;
 }
 
 ul {
     list-style-type: none;
     padding: 0px;
-    padding-left: 10px;
+    margin: 0px;
 }
 
-#historySection, #graphsSection {
+#historySection, #parameterSection {
     overflow-y: scroll;
     overflow-x: hidden;
+}
+
+#graphsSection {
+    overflow-y: hidden;
+}
+
+#graphList {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+#graphsSection button {
+    display: none;
 }
 
 * {
@@ -44,6 +57,26 @@ ul {
     display: none;
 }
 
+#historySection {
+    display: none;
+}
+
+::-webkit-scrollbar
+{
+  width: 12px;  /* for vertical scrollbars */
+  height: 12px; /* for horizontal scrollbars */
+}
+
+::-webkit-scrollbar-track
+{
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb
+{
+  background: rgba(0, 0, 0, 0.5);
+}
+
 /* Debug colors */
 .debug #apiSection {
     background-color: yellow;
@@ -51,7 +84,7 @@ ul {
 .debug #graphsSection {
     background-color: orange;
 }
-.debug #propertiesSection {
+.debug #parameterSection {
     background-color: red;
 }
 .debug #historySection {

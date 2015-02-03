@@ -1,3 +1,39 @@
+var hasClassName = function(el, name) {
+    return new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)").test(el.className);
+};
+
+var addClassName = function(el, name) {
+    if (!hasClassName(el, name)) {
+        el.className = el.className ? [el.className, name].join(' ') : name;
+    }
+};
+
+var removeClassName = function(el, name) {
+    if (hasClassName(el, name)) {
+        var c = this.className;
+        el.className = c.replace(new RegExp("(?:^|\\s+)" + name + "(?:\\s+|$)", "g"), "");
+    }
+};
+
+/* TODO:
+ * - allow to select input image from URL
+ * - fix placement of execution button
+ *
+ * - add thumbnail/preview images to graph selector
+ * - add selected/deselected indicator to graph list
+ * - add invalidated/working/completed indicator on processed image
+ * - add API/authentication status element to header, shows when authed correctly
+ * - make images use up available space vertically, centered
+ *
+ * - use slider for number/integer properties
+ * - use color selector for color type properties
+ * - use drop-down selector for enum type properties
+ *
+ * Later:
+ * - add progress bar for request processing.
+ * - add persisted history, with prev/next buttons in pictureSection
+ */
+
 var getDemoData = function(callback) {
     var req=new XMLHttpRequest();
     req.onreadystatechange = function() {
@@ -32,18 +68,17 @@ var getVersionInfo = function(callback) {
     req.send();
 }
 
-var createGraphProperties = function(name, graph) {
+var createGraphProperties = function(container, name, graph) {
     if (typeof graph.inports === 'undefined') {
         return null;
     }
 
-    var graphName = document.createElement('p');
-    var portsInfo = document.createElement('ul');
-    graphName.innerHTML = name;
-
     var inports = Object.keys(graph.inports);
     inports.forEach(function (name) {
         var port = inports[name];
+        if (name === "input") {
+            return;
+        }
 
         var portInfo = document.createElement('li');
         portInfo.className = 'line';
@@ -58,25 +93,25 @@ var createGraphProperties = function(name, graph) {
         // TODO: show information about type,value ranges, default value, description etc
         portInfo.appendChild(portName);
         portName.appendChild(portInput);
-        portsInfo.appendChild(portInfo);
+        container.appendChild(portInfo);
     });
 
-    return portsInfo;
+    return container;
 }
 
-var createGraphList = function(graphs, onClicked) {
-    var list = document.createElement('ul');
-    list.onclick = onClicked;
+var createGraphList = function(container, graphs, onClicked) {
+    container.onclick = onClicked;
 
     Object.keys(graphs).forEach(function(name) {
         if (typeof graphs[name].inports !== 'undefined') {
             var e = document.createElement('li');
             e.className = "graphEntry";
-            e.innerHTML = name;
-            list.appendChild(e);
+            e.innerHTML = name.replace("_", " ");
+            e.setAttribute('data-graph-id', name);
+            container.appendChild(e);
         }
     });
-    return list;
+    return graphs;
 }
 
 var createLogEntry = function(url) {
@@ -172,16 +207,17 @@ var main = function() {
         }
         activeGraphName = name;
         var container = id('graphProperties');
-        if (container.children.length) {
+        var len = container.children.length;
+        //container.innerHTML = '';
+        for (var i=0; i<len; i++) {
             container.removeChild(container.children[0]);
         }
-        var e = createGraphProperties(name, availableGraphs[name]);
-        container.appendChild(e);
+        createGraphProperties(container, name, availableGraphs[name]);
         return true;
     }
 
     var onGraphClicked = function(event) {
-        var name = event.target.innerText;
+        var name = event.target.getAttribute('data-graph-id');
         console.log("onGraphClicked", name, event.target);
         setActiveGraph(name);
     }
@@ -194,8 +230,7 @@ var main = function() {
         availableGraphs = demo.graphs;
         setActiveGraph(Object.keys(availableGraphs)[0]);
 
-        var l = createGraphList(demo.graphs, onGraphClicked);
-        id('graphList').appendChild(l);
+        createGraphList(id('graphList'), demo.graphs, onGraphClicked);
         var images = [
             "demo/grid-toastybob.jpg"
         ];
