@@ -3,6 +3,7 @@
 #     imgflo-server may be freely distributed under the MIT license
 
 common = require './common'
+errors = common.errors
 
 fs = require 'fs'
 child_process = require 'child_process'
@@ -19,6 +20,8 @@ enrichGraphDefinition = (graph, publicOnly) ->
         process: 'rescale'
         port: 'x'
 
+supportedTypes = ['jpg', 'jpeg', 'png', null]
+
 class ImgfloProcessor extends common.Processor
 
     constructor: (verbose, installdir) ->
@@ -26,6 +29,9 @@ class ImgfloProcessor extends common.Processor
         @installdir = installdir
 
     process: (outputFile, outputType, graph, iips, inputFile, inputType, callback) ->
+        return callback new errors.UnsupportedImageType inputType, supportedTypes if inputType not in supportedTypes
+        return callback new errors.UnsupportedImageType outputType, supportedTypes if outputType not in supportedTypes
+
         g = prepareImgfloGraph graph, iips, inputFile, outputFile, inputType, outputType
         @run g, callback
 

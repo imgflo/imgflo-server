@@ -3,6 +3,7 @@
 #     imgflo-server may be freely distributed under the MIT license
 
 common = require './common'
+errors = common.errors
 
 fs = require 'fs'
 child_process = require 'child_process'
@@ -20,11 +21,16 @@ enrichGraphDefinition = (graph, publicOnly) ->
         port: 'width'
     graph.inports.input = {}
 
+supportedTypes = ['jpg', 'jpeg', 'png', null]
+
 class NoFloProcessor extends common.Processor
     constructor: (verbose) ->
         @verbose = verbose
 
     process: (outputFile, outputType, graph, iips, inputFile, inputType, callback) ->
+        return callback new errors.UnsupportedImageType outputType, supportedTypes if outputType not in supportedTypes
+        return callback new errors.UnsupportedImageType inputType, supportedTypes if inputType not in supportedTypes
+
         g = prepareNoFloGraph graph, iips, inputFile, outputFile, inputType, outputType
         @run g, callback
 

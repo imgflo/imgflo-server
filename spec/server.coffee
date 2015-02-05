@@ -140,6 +140,20 @@ describe 'Server', ->
                 e = ['input', 'color1', 'color2', "color3", "color4", "color5",
                     "stop1", "stop2", "stop3", "stop4", "stop5", "srgb", "opacity"]
                 chai.expect(Object.keys(d.inports)).to.deep.equal
+        describe 'with unsupported image type', ->
+            u = graph_url 'gradientmap.svg', { input: "demo/happy-kitten.svg" }
+            data = ""
+            it 'should give HTTP 449', (done) ->
+                http.get u, (response) ->
+                    chai.expect(response.statusCode).to.equal 449
+                    response.on 'data', (chunk) ->
+                        data += chunk.toString()
+                    response.on 'end', () ->
+                        done()
+            it 'should list supported types', ->
+                console.log 'resp', data
+                d = JSON.parse data
+                chai.expect(d.supported).to.eql ['jpg', 'jpeg', 'png', null]
 
     describe 'Get image', ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }

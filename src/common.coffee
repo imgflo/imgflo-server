@@ -12,6 +12,13 @@ installdir = __dirname + '/../install/'
 projectdir = __dirname + '/..'
 
 # Interface for Processors
+class UnsupportedImageTypeError extends Error
+    constructor: (attempt, supported) ->
+        @name = 'unsupported-image-type'
+        @code = 449
+        @message = "Unsupported image type: " + attempt
+        @result = { supported: supported, error: @message, code: @name }
+
 class Processor
     constructor: (verbose) ->
         @verbose = verbose
@@ -114,3 +121,6 @@ exports.getInstalledVersions = getInstalledVersions
 exports.updateInstalledVersions = updateInstalledVersions
 exports.installdir = installdir
 exports.CacheServer = CacheServer
+exports.errors = {
+    UnsupportedImageType: UnsupportedImageTypeError
+}
