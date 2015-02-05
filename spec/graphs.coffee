@@ -73,10 +73,14 @@ describe 'Graphs', ->
             describe "GET #{reqUrl}", ->
                 it 'should output a file', (done) ->
                     @timeout 8000
-                    req = request reqUrl, (err, response) ->
+                    response = null
+                    req = request reqUrl, (err, res) ->
                         chai.expect(err).to.be.a 'null'
                     req.pipe fs.createWriteStream output
+                    req.on 'response', (res) ->
+                        response = res
                     req.on 'end', () ->
+                        chai.expect(response.statusCode).to.equal 200
                         done()
 
                 it 'results should be equal to reference', (done) ->
