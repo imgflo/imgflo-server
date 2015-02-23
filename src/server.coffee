@@ -351,6 +351,7 @@ class Server extends EventEmitter
                 @logEvent 'no-processor-for-runtime-error', e
                 return callback { code: 500, result: {} }, null
 
+            @logEvent 'download-inputs-start', { request: request_url, files: req.files }
             waitForDownloads req.files, (err, downloads) =>
                 if err
                     @logEvent 'download-input-error', { request: request_url, files: req.files, err: err }
