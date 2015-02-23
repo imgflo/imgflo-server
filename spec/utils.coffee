@@ -37,6 +37,7 @@ class LogHandler
             'serve-processed-file'
             'graph-in-cache'
             'put-into-cache'
+            'download-inputs-start'
         ]
 
         if id == 'process-request-end'
