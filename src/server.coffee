@@ -134,6 +134,8 @@ parseRequestUrl = (u) ->
     graph = path.basename p, path.extname p
     if not outtype
         outtype = 'jpg'
+    if outtype == 'jpeg'
+        outtype = 'jpg'
     apikey = if pathComponents.length > 2 then pathComponents[1] else null
     token = if pathComponents.length > 3 then pathComponents[2] else null
     cachekey = (hashFile "/graph/#{graph}#{parsedUrl.search}") + '.'+outtype

@@ -141,6 +141,9 @@
     _name: regcheck_cmyk_jpeg
     _url: '/graph/passthrough.png?input=http%3A%2F%2Fi1.sndcdn.com%2Fartworks-000082002645-fhibur-t500x500.jpg'
 -
+    _name: regcheck_jpeg_graph_extension
+    _url: '/graph/vahj1ThiexotieMo/905d76b162a49871bba3697e323eaf08/passthrough.jpeg?input=https%3A%2F%2Fd262ilb51hltx0.cloudfront.net%2Ffit%2Ft%2F1200%2F504%2F0*g3xYNYyDOiaSyhhj.jpeg&width=600'
+-
     _name: custom_component
     _graph: customgrey.jpg
     input: "demo/grid-toastybob.jpg"

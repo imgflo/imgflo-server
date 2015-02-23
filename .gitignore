@@ -12,4 +12,5 @@ temp/
 spec/data/*.out.png
 spec/data/*-diff.png
 spec/data/*.out.jpg
+spec/data/*.out.jpeg
 testout.png
