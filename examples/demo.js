@@ -134,7 +134,6 @@ var createRequestUrl = function(graphname, parameters, apiKey, apiSecret) {
 
     var url = '/graph/'+search;
     if (apiKey || apiSecret) {
-        // FIXME: implement md5 hashing of search
         var base = search+apiSecret;
         var token = CryptoJS.MD5(base);
         url = '/graph/'+apiKey+'/'+token+'/'+search;
