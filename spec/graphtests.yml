@@ -147,3 +147,6 @@
     _name: custom_component
     _graph: customgrey.jpg
     input: "demo/grid-toastybob.jpg"
+-
+    _name: regcheck_no_extension_no_contentype
+    _url: /graph/passthrough?height=720&input=https%3A%2F%2Fwww.evernote.com%2Fshard%2Fs31%2Fsh%2F697b5242-7e79-4565-b1bb-74d9987ed3cb%2Fc591bfd1c137afa6a681bb975f15a5f2%2Fthm%2Fnote%2F697b5242-7e79-4565-b1bb-74d9987ed3cb
