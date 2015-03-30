@@ -176,6 +176,8 @@ describe 'Server', ->
 
         it 'should redirect to cached file', () ->
             chai.expect(res.statusCode).to.equal 301
+            chai.expect(res.headers).to.contain.keys 'location'
+            console.log res.headers
             location = res.headers['location']
             chai.expect(location).to.contain cacheurl
         it 'redirect should end with .jpg', () ->

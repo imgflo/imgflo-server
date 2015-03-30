@@ -30,3 +30,6 @@ src/s3.coffee
 components/example.c
 examples/layout.gss
 src/cache.coffee
+src/processing.coffee
+src/jobmanager.coffee
+src/cache.coffee

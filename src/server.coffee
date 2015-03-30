@@ -2,10 +2,10 @@
 #     (c) 2014 The Grid
 #     imgflo-server may be freely distributed under the MIT license
 
-noflo = require './noflo'
-imgflo = require './imgflo'
+jobmanager = require './jobmanager'
 common = require './common'
 cache = require './cache'
+processing = require './processing'
 
 http = require 'http'
 fs = require 'fs'
@@ -15,33 +15,12 @@ url = require 'url'
 querystring = require 'querystring'
 path = require 'path'
 crypto = require 'crypto'
-request = require 'request'
 node_static = require 'node-static'
 async = require 'async'
 
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control
 
-downloadFile = (src, out, callback) ->
-    req = request src, (error, response) ->
-        if error
-            return callback error, null
-        if response.statusCode != 200
-            return callback response.statusCode, null
 
-        callback null, response.headers['content-type']
-
-    stream = fs.createWriteStream out
-    s = req.pipe stream
-
-waitForDownloads = (files, callback) ->
-    f = files.input
-    if f?
-        downloadFile f.src, f.path, (err, contentType) ->
-            return callback err, null if err
-            f.type = contentType
-            return callback null, files
-    else
-        return callback null, files
 
 getGraphs = (directory, callback) ->
     graphs = {}
@@ -62,18 +41,10 @@ getGraphs = (directory, callback) ->
                 name = path.basename graphfiles[i]
                 name = (name.split '.')[0]
                 def = JSON.parse results[i]
-                enrichGraphDefinition def, true
+                processing.enrichGraphDefinition def, true
                 graphs[name] = def
 
             return callback null, graphs
-
-
-enrichGraphDefinition = (graph, publicOnly) ->
-    runtime = common.runtimeForGraph graph
-    if (runtime.indexOf 'noflo') != -1
-        noflo.enrichGraphDefinition graph, publicOnly
-    else if (runtime.indexOf 'imgflo') != -1
-        imgflo.enrichGraphDefinition graph, publicOnly
 
 
 parseRequestUrl = (u) ->
@@ -143,20 +114,15 @@ class Server extends EventEmitter
             @authdb[apikey] = secret
 
         @cache = cache.fromOptions cacheoptions
+        joboptions =
+            type: 'local'
+            cache: cacheoptions
+        @jobManager = new jobmanager.JobManager joboptions
 
         @httpserver = http.createServer @handleHttpRequest
         @port = null
         @host = null
         @verbose = verbose
-
-        n = new noflo.Processor verbose
-        @processors =
-            imgflo: new imgflo.Processor verbose, common.installdir
-            'noflo-browser': n
-            'noflo-nodejs': n
-
-        if not fs.existsSync workdir
-            fs.mkdirSync workdir
 
     listen: (host, port, cb) ->
         @host = host
@@ -218,7 +184,7 @@ class Server extends EventEmitter
         fs.readFile graphPath, (err, contents) =>
             return callback err, null if err
             def = JSON.parse contents
-            enrichGraphDefinition def
+            processing.enrichGraphDefinition def
             return callback null, def
 
     handleVersionRequest: (request, response) ->
@@ -229,7 +195,15 @@ class Server extends EventEmitter
                 return
             response.end JSON.stringify info
 
-    redirectToCache: (target, response) ->
+    redirectToCache: (err, target, response) ->
+        if err
+            if err.code?
+                response.writeHead err.code, { 'Content-Type': 'application/json' }
+                response.end JSON.stringify err.result
+            else
+                response.writeHead 500
+                response.end JSON.stringify err
+            return
         response.writeHead 301, { 'Location': target }
         response.end()
 
@@ -244,6 +218,13 @@ class Server extends EventEmitter
         expectedToken = hash.digest 'hex'
         return req.token == expectedToken
 
+    # GET /process
+    # on new HTTP request:
+    #   validate parameters & auth
+    #   check S3 cache
+    #   create job from request, submit
+    # when job completes:
+    #   set HTTP response with correct statuscode/data
     handleGraphRequest: (request, response) ->
         u = url.parse request.url, true
         req = parseRequestUrl request.url
@@ -256,70 +237,23 @@ class Server extends EventEmitter
         @cache.keyExists req.cachekey, (err, cached) =>
             if cached
                 @logEvent 'graph-in-cache', { request: request.url, key: req.cachekey, url: cached }
-                @redirectToCache cached, response
+                @redirectToCache err, cached, response
             else
-                @processAndCache request.url, req.cachekey, response, (err, cached) ->
-                    @redirectToCache cached, response
+                @processAndCache request.url, req.cachekey, response, (err, cached) =>
+                    @logEvent 'serve-processed-file', { request: request.url, url: cached, err: err }
+                    @redirectToCache err, cached, response
 
-    processAndCache: (request_url, key, response) ->
-        workdir_filepath = path.join @workdir, key
-        @processGraphRequest workdir_filepath, request_url, (err, stderr) =>
-            @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, file: workdir_filepath }
-            if err
-                if err.code?
-                    response.writeHead err.code, { 'Content-Type': 'application/json' }
-                    response.end JSON.stringify err.result
-                else
-                    response.writeHead 500
-                    response.end()
-            else
-                # FIXME: remove file from workdir
-                @logEvent 'put-into-cache', { request: request_url, path: workdir_filepath, key: key }
-                @cache.putFile workdir_filepath, key, (err, cached) =>
-                    # requested file shall now be present, redirect
-                    @logEvent 'serve-processed-file', { request: request_url, url: cached, err: err }
-                    if err
-                        response.writeHead 500
-                        return response.end JSON.stringify err
-                    @redirectToCache cached, response
-
-    processGraphRequest: (outf, request_url, callback) =>
+    processAndCache: (request_url, key, response, callback) ->
         req = parseRequestUrl request_url
-
+        #  Resolve relative request to localhost
         for port, file of req.files
-            file.path = path.join @workdir, (common.hashFile file.src) + file.extension
             if (file.src.indexOf 'http://') == -1 and (file.src.indexOf 'https://') == -1
                 file.src = 'http://localhost:'+@port+'/'+file.src
 
-        @getGraph req.graph, (err, graph) =>
-            if err
-                @logEvent 'read-graph-error', { request: request_url, err: err, file: graph }
-                return callback err, null
-
-            invalid = common.keysNotIn req.iips, graph.inports
-            if invalid.length > 0
-                @logEvent 'invalid-graph-properties-error', { request: request_url, props: invalid }
-                return callback { code: 449, result: graph }, null
-
-            runtime = common.runtimeForGraph graph
-            processor = @processors[runtime]
-            if not processor?
-                e =
-                    request: request_url
-                    runtime: runtime
-                    valid: Object.keys @processors
-                @logEvent 'no-processor-for-runtime-error', e
-                return callback { code: 500, result: {} }, null
-
-            @logEvent 'download-inputs-start', { request: request_url, files: req.files }
-            waitForDownloads req.files, (err, downloads) =>
-                if err
-                    @logEvent 'download-input-error', { request: request_url, files: req.files, err: err }
-                    return callback { code: 504, result: {} }, null
-
-                inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
-                inputFile = if downloads.input? then downloads.input.path else null
-                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, callback
+        # TODO: check that using req as job payload is sane
+        @jobManager.doJob 'process-image', req, (err, job) =>
+            @logEvent 'serve-processed-file', { request: req.request, url: job.results?.url }
+            return callback err, job.results?.url
 
 exports.Server = Server
 

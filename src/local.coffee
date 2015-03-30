@@ -3,6 +3,7 @@
 #     imgflo-server may be freely distributed under the MIT license
 
 common = require './common'
+processing = require './processing'
 
 fs = require 'fs'
 path = require 'path'
@@ -19,6 +20,7 @@ class FsyncedWriteStream extends fs.WriteStream
 
 class Cache extends common.CacheServer
     constructor: (options) ->
+        console.log 'cache options', options
         @dir = options.directory
         if not fs.existsSync @dir
             fs.mkdirSync @dir
@@ -59,4 +61,23 @@ class Cache extends common.CacheServer
     urlForKey: (key) ->
         return "http://#{@options.baseurl}/cache/#{key}"
 
+# Perform jobs by executing locally
+class LocalWorker extends common.JobWorker
+    constructor: (@options) ->
+        @worker = null
+
+    setup: (callback) ->
+        @worker = new processing.JobExecutor @options
+        return callback null
+    destroy: (callback) ->
+        @worker = null
+        return callback null
+
+    addJob: (job, callback) ->
+        @worker.doJob job, (results) =>
+            @onJobUpdated results
+        return callback null
+
+
+exports.Worker = LocalWorker
 exports.Cache = Cache
