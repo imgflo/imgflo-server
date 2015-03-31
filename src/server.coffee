@@ -5,8 +5,7 @@
 noflo = require './noflo'
 imgflo = require './imgflo'
 common = require './common'
-local = require './local'
-s3 = require './s3'
+cache = require './cache'
 
 http = require 'http'
 fs = require 'fs'
@@ -164,8 +163,7 @@ class Server extends EventEmitter
         @graphdir = graphdir || './graphs'
         @resourceserver = new node_static.Server resourcedir
         @authdb = null
-        cachedir = path.join @workdir, 'cache'
-        cachetype = 'local' if not cachetype
+        cacheoptions.directory = path.join @workdir, 'cache'
 
         apikey = process.env.IMGFLO_API_KEY
         secret = process.env.IMGFLO_API_SECRET
@@ -173,17 +171,7 @@ class Server extends EventEmitter
             @authdb = {}
             @authdb[apikey] = secret
 
-        defaultcacheoptions =
-            type: 'local'
-        cache = common.clone defaultcacheoptions
-        for k,v of cacheoptions
-            cache[k] = v if v
-        if cache.type == 's3'
-            @cache = new s3.Cache cachedir, cache
-        else if cache.type == 'local'
-            @cache = new local.Cache cachedir, cache
-        else
-            @cache = new common.Cache cachedir, cache
+        @cache = cache.fromOptions cacheoptions
 
         @httpserver = http.createServer @handleHttpRequest
         @port = null

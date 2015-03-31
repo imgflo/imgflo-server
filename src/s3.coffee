@@ -11,7 +11,7 @@ node_static = require 'node-static'
 knox = require 'knox'
 
 class Cache extends common.CacheServer
-    constructor: (dir, options) ->
+    constructor: (options) ->
         defaults =
             key: process.env.AMAZON_API_ID
             secret: process.env.AMAZON_API_TOKEN

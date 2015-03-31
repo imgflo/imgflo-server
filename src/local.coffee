@@ -18,10 +18,10 @@ class FsyncedWriteStream extends fs.WriteStream
             super cb
 
 class Cache extends common.CacheServer
-    constructor: (dir, options) ->
-        @dir = dir
-        if not fs.existsSync dir
-            fs.mkdirSync dir
+    constructor: (options) ->
+        @dir = options.directory
+        if not fs.existsSync @dir
+            fs.mkdirSync @dir
         defaults =
             route: '/cache/'
             baseurl: 'localhost'
