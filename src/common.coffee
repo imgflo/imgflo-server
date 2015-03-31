@@ -7,6 +7,7 @@ pkginfo = (require 'pkginfo')(module, 'version')
 path = require 'path'
 child_process = require 'child_process'
 fs = require 'fs'
+crypto = require 'crypto'
 
 installdir = __dirname + '/../install/'
 projectdir = __dirname + '/..'
@@ -42,6 +43,36 @@ class CacheServer
         #
 
 
+# Key used in cache
+exports.hashFile = (path) ->
+    hash = crypto.createHash 'sha1'
+    hash.update path
+    return hash.digest 'hex'
+
+exports.keysNotIn = (A, B) ->
+    notIn = []
+    for a in Object.keys A
+        isIn = false
+        for b in Object.keys B
+            if b == a
+                isIn = true
+        if not isIn
+            notIn.push a
+    return notIn
+
+exports.typeFromMime = (mime) ->
+    type = null
+    if mime == 'image/jpeg'
+        type = 'jpg'
+    else if mime == 'image/png'
+        type = 'png'
+    return type
+
+exports.runtimeForGraph = (g) ->
+    runtime = 'imgflo'
+    if g.properties and g.properties.environment and g.properties.environment.type
+        runtime = g.properties.environment.type
+    return runtime
 
 clone = (obj) ->
   if not obj? or typeof obj isnt 'object'

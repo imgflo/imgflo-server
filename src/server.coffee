@@ -67,39 +67,9 @@ getGraphs = (directory, callback) ->
 
             return callback null, graphs
 
-# Key used in cache
-hashFile = (path) ->
-    hash = crypto.createHash 'sha1'
-    hash.update path
-    return hash.digest 'hex'
-
-keysNotIn = (A, B) ->
-    notIn = []
-    for a in Object.keys A
-        isIn = false
-        for b in Object.keys B
-            if b == a
-                isIn = true
-        if not isIn
-            notIn.push a
-    return notIn
-
-typeFromMime = (mime) ->
-    type = null
-    if mime == 'image/jpeg'
-        type = 'jpg'
-    else if mime == 'image/png'
-        type = 'png'
-    return type
-
-runtimeForGraph = (g) ->
-    runtime = 'imgflo'
-    if g.properties and g.properties.environment and g.properties.environment.type
-        runtime = g.properties.environment.type
-    return runtime
 
 enrichGraphDefinition = (graph, publicOnly) ->
-    runtime = runtimeForGraph graph
+    runtime = common.runtimeForGraph graph
     if (runtime.indexOf 'noflo') != -1
         noflo.enrichGraphDefinition graph, publicOnly
     else if (runtime.indexOf 'imgflo') != -1
@@ -137,7 +107,7 @@ parseRequestUrl = (u) ->
         outtype = 'jpg'
     apikey = if pathComponents.length > 2 then pathComponents[1] else null
     token = if pathComponents.length > 3 then pathComponents[2] else null
-    cachekey = (hashFile "/graph/#{graph}#{parsedUrl.search}") + '.'+outtype
+    cachekey = (common.hashFile "/graph/#{graph}#{parsedUrl.search}") + '.'+outtype
 
     out =
         graphspec: path.basename p
@@ -149,6 +119,7 @@ parseRequestUrl = (u) ->
         token: token
         cachekey: cachekey
         query: parsedUrl.search
+        request: u
     return out
 
 
@@ -317,7 +288,7 @@ class Server extends EventEmitter
         req = parseRequestUrl request_url
 
         for port, file of req.files
-            file.path = path.join @workdir, (hashFile file.src) + file.extension
+            file.path = path.join @workdir, (common.hashFile file.src) + file.extension
             if (file.src.indexOf 'http://') == -1 and (file.src.indexOf 'https://') == -1
                 file.src = 'http://localhost:'+@port+'/'+file.src
 
@@ -326,12 +297,12 @@ class Server extends EventEmitter
                 @logEvent 'read-graph-error', { request: request_url, err: err, file: graph }
                 return callback err, null
 
-            invalid = keysNotIn req.iips, graph.inports
+            invalid = common.keysNotIn req.iips, graph.inports
             if invalid.length > 0
                 @logEvent 'invalid-graph-properties-error', { request: request_url, props: invalid }
                 return callback { code: 449, result: graph }, null
 
-            runtime = runtimeForGraph graph
+            runtime = common.runtimeForGraph graph
             processor = @processors[runtime]
             if not processor?
                 e =
@@ -347,7 +318,7 @@ class Server extends EventEmitter
                     @logEvent 'download-input-error', { request: request_url, files: req.files, err: err }
                     return callback { code: 504, result: {} }, null
 
-                inputType = if downloads.input? then typeFromMime downloads.input.type else null
+                inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
                 processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, callback
 
