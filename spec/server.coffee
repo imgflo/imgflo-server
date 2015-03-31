@@ -65,10 +65,10 @@ itSkipRemote = if not startServer then it.skip else it
 graph_url = (graph, props, key, secret) ->
     return utils.formatRequest urlbase, graph, props, key, secret
 
-cache = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
+cachetype = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
 
-cacheurl = '/cache/' if cache == 'local'
-cacheurl = 'amazonaws.com' if cache == 's3'
+cacheurl = '/cache/' if cachetype == 'local'
+cacheurl = 'amazonaws.com' if cachetype == 's3'
 
 describe 'Server', ->
     s = null
@@ -77,7 +77,10 @@ describe 'Server', ->
         wd = './testtemp'
         utils.rmrf wd
         if startServer
-            s = new server.Server wd, null, null, verbose, { type: cache }
+            cache =
+                type: cachetype
+                baseurl: urlbase
+            s = new server.Server wd, null, null, verbose, cache
             l = new utils.LogHandler s
             s.listen urlbase, port, done()
         else

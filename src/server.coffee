@@ -161,7 +161,6 @@ class Server extends EventEmitter
     listen: (host, port, cb) ->
         @host = host
         @port = port
-        @cache.options.baseurl = @host # TEMP
         @httpserver.listen port, cb
     close: ->
         @httpserver.close()
@@ -333,6 +332,7 @@ exports.main = ->
     workdir = './temp'
     cache =
         type: 'local'
+        baseurl: host
 
     if process.env.IMGFLO_CACHE? and process.env.IMGFLO_CACHE == 's3'
         cache =
