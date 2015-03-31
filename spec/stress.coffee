@@ -105,8 +105,8 @@ describeSkipPerformance 'Stress', ->
             s.listen urlbase, port, done
         else
             done()
-    after ->
-        s.close() if startServer
+    after (done) ->
+        s.close done if startServer
 
 
     describe "Cached graph", ->

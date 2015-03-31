@@ -54,8 +54,8 @@ describe 'Graphs', ->
             s.listen urlbase, port, done
         else
             done()
-    after ->
-        s.close() if startServer
+    after (done) ->
+        s.close done if startServer
 
     testcases.forEach (testcase) ->
         describeOrSkip = if testcase._skip? and testcase._skip then describe.skip else describe

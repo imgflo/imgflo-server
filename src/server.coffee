@@ -124,12 +124,16 @@ class Server extends EventEmitter
         @host = null
         @verbose = verbose
 
-    listen: (host, port, cb) ->
+    listen: (host, port, callback) ->
         @host = host
         @port = port
-        @httpserver.listen port, cb
-    close: ->
+        @httpserver.listen port, (err) =>
+            return callback err if err
+            @jobManager.start callback
+    close: (callback) ->
         @httpserver.close()
+        @jobManager.stop (err) ->
+            return callback err
 
     logEvent: (id, data) ->
         @emit 'logevent', id, data

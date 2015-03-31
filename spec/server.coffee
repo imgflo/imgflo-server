@@ -82,11 +82,11 @@ describe 'Server', ->
                 baseurl: urlbase
             s = new server.Server wd, null, null, verbose, cache
             l = new utils.LogHandler s
-            s.listen urlbase, port, done()
+            s.listen urlbase, port, done
         else
             done()
-    after ->
-        s.close() if startServer
+    after (done) ->
+        s.close done if startServer
 
     describe.skip 'Get version info', ->
         info = null

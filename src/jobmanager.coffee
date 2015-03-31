@@ -12,14 +12,24 @@ class AmqpWorker extends common.JobWorker # TODO: implement
 
 
 class JobManager
-    constructor: (options) ->
-        # FIXME: use msgflo abstraction for local versus AMQP case. Still need to create participant though
-        @worker = new local.Worker options
+    constructor: (@options) ->
+        console.log 'JobManager options', @options
         @jobs = {} # pending/in-flight
+        @worker = null
+
+    start: (callback) ->
+        # FIXME: use msgflo transport abstraction for local versus AMQP case.
+        # Still need to create participant though
+        @worker = new local.Worker @options
+
         @worker.onJobUpdated = (result) =>
             @onResult result
-        @worker.setup () ->
-            # FIXME: run in a start()
+        @worker.setup callback
+
+    stop: (callback) ->
+        @worker.destroy (err) ->
+            @worker = null
+            return callback err
 
     createJob: (type, data) ->
         # TODO: validate type and data
