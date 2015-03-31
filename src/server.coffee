@@ -117,6 +117,7 @@ class Server extends EventEmitter
         joboptions =
             type: 'local'
             cache: cacheoptions
+            broker: 'amqp://localhost'
         @jobManager = new jobmanager.JobManager joboptions
 
         @httpserver = http.createServer @handleHttpRequest
@@ -268,17 +269,17 @@ exports.main = ->
     port = process.env.PORT || 8080
     host = process.env.HOSTNAME || "localhost:#{port}"
     workdir = './temp'
-    cache =
+    cacheopts =
         type: 'local'
         baseurl: host
 
     if process.env.IMGFLO_CACHE? and process.env.IMGFLO_CACHE == 's3'
-        cache =
+        cacheopts =
             type: 's3'
             region: process.env.AMAZON_API_REGION
             prefix: 'p'
 
-    server = new Server workdir, null, null, false, cache
+    server = new Server workdir, null, null, false, cacheopts
     server.listen host, port, () ->
         console.log 'Server listening at port', port, "with workdir", workdir, "on host", host, "with cache", cache.type
     server.on 'logevent', (id, data) ->

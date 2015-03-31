@@ -33,3 +33,6 @@ src/cache.coffee
 src/processing.coffee
 src/jobmanager.coffee
 src/cache.coffee
+src/worker.coffee
+index.js
+worker.js

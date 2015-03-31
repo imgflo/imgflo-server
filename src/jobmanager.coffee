@@ -3,12 +3,76 @@
 #     imgflo-server may be freely distributed under the MIT license
 
 uuid = require 'uuid'
+msgflo = require 'msgflo'
+
 common = require './common'
 local = require './local'
 
+FrontendParticipant = (client, customId) ->
+  id = 'http-api' + (process.env.DYNO or '')
+  id = customId if customId
+
+  definition =
+    id: id
+    'class': 'imgflo-server/HttpApi'
+    icon: 'file-word-o'
+    label: 'Creates processing jobs from HTTP requests'
+    inports: [
+      {
+        id: 'newjob'
+        type: 'object'
+      },
+      {
+        id: 'jobresult'
+        type: 'object'
+        queue: 'job-results' # FIXME: load from .fbp / .json file
+      }
+    ]
+    outports: [
+      {
+        id: 'newjob'
+        queue: 'new-jobs' # FIXME: load from .fbp / .json file
+        type: 'object'
+      }
+      ,
+      {
+        id: 'jobresult'
+        type: 'object'
+      }
+    ]
+
+  func = (inport, indata, send) ->
+    console.log 'frontendparticipant', inport, indata.id
+    if inport == 'newjob'
+        # no-op, just forwards directly, so the job appears on output queue
+        send 'newjob', null, indata
+    else if inport == 'jobresult'
+        # no-op, just forwards directly, so the job appears on output queue
+        send 'jobresult', null, indata
+
+  return new msgflo.participant.Participant client, definition, func
+
 # Performs jobs using workers over AMQP/msgflo
 class AmqpWorker extends common.JobWorker # TODO: implement
-    constructor: () ->
+    constructor: (options) ->
+        @client = msgflo.transport.getClient options.broker
+        @participant = FrontendParticipant @client
+        @participant.on 'data', (port, data) =>
+            console.log 'participant data on port', port
+            @onJobUpdated data if port == 'jobresult'
+
+    setup: (callback) ->
+        @participant.start (err) ->
+            console.log 'participant started', err
+            return callback err
+
+    destroy: (callback) ->
+        @participant.stop callback
+
+    addJob: (job, callback) ->
+        @participant.send 'newjob', job, () =>
+            console.log 'job sent', job.id
+        return callback null
 
 
 class JobManager
@@ -21,6 +85,7 @@ class JobManager
         # FIXME: use msgflo transport abstraction for local versus AMQP case.
         # Still need to create participant though
         @worker = new local.Worker @options
+        #@worker = new AmqpWorker @options
 
         @worker.onJobUpdated = (result) =>
             @onResult result
@@ -38,8 +103,9 @@ class JobManager
             data: data
             id: uuid.v4()
             callback: null
-        @worker.addJob job, () ->
         @jobs[job.id] = job
+        @worker.addJob job, () ->
+        console.log 'created job', job.id
         return job
 
     doJob: (type, data, callback) ->
@@ -47,9 +113,13 @@ class JobManager
         @jobs[job.id].callback = callback
 
     onResult: (result) ->
+        console.log 'onresult', result.id, Object.keys @jobs
         job = @jobs[result.id]
+        console.log 'onresult job?', if job? then "true" else "false"
+        return if not job # we got results from a non-pending job
+        delete @jobs[result.id]
         # TODO: sanity check job.data.request result.data.request
         err = if result.error then result.error else null
-        job.callback err, result if job.callback
+        return job.callback(err, result) if job.callback
 
 exports.JobManager = JobManager
