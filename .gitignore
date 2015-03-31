@@ -14,3 +14,5 @@ spec/data/*-diff.png
 spec/data/*.out.jpg
 spec/data/*.out.jpeg
 testout.png
+*.includes
+*.autosave
