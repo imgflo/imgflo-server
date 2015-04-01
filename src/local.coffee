@@ -20,26 +20,23 @@ class FsyncedWriteStream extends fs.WriteStream
 
 class Cache extends common.CacheServer
     constructor: (options) ->
-        console.log 'cache options', options
         @dir = options.directory
         if not fs.existsSync @dir
             fs.mkdirSync @dir
-        defaults =
-            route: '/cache/'
-            baseurl: 'localhost'
+        defaults = {}
         @options = defaults
         for k,v of options
             @options[k] = v
         @server = new node_static.Server @dir
 
     keyExists: (key, callback) ->
-        target = path.join @dir, key
+        target = @filePathForKey key
         fs.exists target, (exists) =>
             cached = if exists then @urlForKey key else null
             callback null, cached
 
     putFile: (source, key, callback) ->
-        target = path.join @dir, key
+        target = @filePathForKey key
         from = fs.createReadStream source
         to = new FsyncedWriteStream target
         from.pipe to
@@ -53,13 +50,15 @@ class Cache extends common.CacheServer
                 callback null, @urlForKey key
             , 300
 
-    handleRequest: (request, response) ->
-        u = url.parse request.url, true
-        filepath = u.pathname.replace "#{@options.route}", ''
-        @server.serveFile filepath, 200, {}, request, response
+    handleKeyRequest: (key, request, response) ->
+        @server.serveFile key, 200, {}, request, response
+
+    filePathForKey: (key) ->
+        return path.join @dir, key
 
     urlForKey: (key) ->
-        return "http://#{@options.baseurl}/cache/#{key}"
+        # relative url rewritten on receive
+        return "./#{key}"
 
 # Perform jobs by executing locally
 class LocalWorker extends common.JobWorker

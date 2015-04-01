@@ -148,7 +148,8 @@ class Server extends EventEmitter
             if (u.pathname.indexOf "/demo") == 0
                 @serveDemoPage request, response
             else if (u.pathname.indexOf "/cache") == 0
-                @cache.handleRequest? request, response
+                key = path.basename u.pathname
+                @cache.handleKeyRequest? key, request, response
             else if (u.pathname.indexOf "/version") == 0
                 @handleVersionRequest request, response
             else if (u.pathname.indexOf "/graph") == 0
@@ -209,6 +210,7 @@ class Server extends EventEmitter
                 response.writeHead 500
                 response.end JSON.stringify err
             return
+        target = "http://#{@host}/cache/#{target.substr(2)}" if target.indexOf('./') == 0
         response.writeHead 301, { 'Location': target }
         response.end()
 
