@@ -60,23 +60,4 @@ class Cache extends common.CacheServer
         # relative url rewritten on receive
         return "./#{key}"
 
-# Perform jobs by executing locally
-class LocalWorker extends common.JobWorker
-    constructor: (@options) ->
-        @worker = null
-
-    setup: (callback) ->
-        @worker = new processing.JobExecutor @options
-        return callback null
-    destroy: (callback) ->
-        @worker = null
-        return callback null
-
-    addJob: (job, callback) ->
-        @worker.doJob job, (results) =>
-            @onJobUpdated results
-        return callback null
-
-
-exports.Worker = LocalWorker
 exports.Cache = Cache

@@ -7,6 +7,7 @@ msgflo = require 'msgflo'
 
 common = require './common'
 local = require './local'
+worker = require './worker'
 
 FrontendParticipant = (client, customId) ->
   id = 'http-api' + (process.env.DYNO or '')
@@ -52,51 +53,37 @@ FrontendParticipant = (client, customId) ->
 
   return new msgflo.participant.Participant client, definition, func
 
-# Performs jobs using workers over AMQP/msgflo
-class AmqpWorker extends common.JobWorker # TODO: implement
-    constructor: (options) ->
-        @client = msgflo.transport.getClient options.broker_url
-        @participant = FrontendParticipant @client
-        @participant.on 'data', (port, data) =>
-            console.log 'participant data on port', port
-            @onJobUpdated data if port == 'jobresult'
-
-    setup: (callback) ->
-        @participant.start (err) ->
-            console.log 'participant started', err
-            return callback err
-
-    destroy: (callback) ->
-        @participant.stop callback
-
-    addJob: (job, callback) ->
-        @participant.send 'newjob', job, () =>
-            console.log 'job sent', job.id
-        return callback null
-
-
 class JobManager
     constructor: (@options) ->
         console.log 'JobManager options', @options
         @jobs = {} # pending/in-flight
         @worker = null
+        @frontend = null
 
     start: (callback) ->
-        # FIXME: use msgflo transport abstraction for local versus AMQP case.
-        # Still need to create participant though
-        if @options.worker_type == 'internal'
-            @worker = new local.Worker @options
-        else
-            @worker = new AmqpWorker @options
-
-        @worker.onJobUpdated = (result) =>
-            @onResult result
-        @worker.setup callback
+        broker = msgflo.transport.getBroker @options.broker_url if @options.broker_url.indexOf('direct://') == 0
+        broker.connect(->) if broker # HACK
+        console.log 'broker created???'
+        c = msgflo.transport.getClient @options.broker_url
+        @frontend = FrontendParticipant c
+        @frontend.on 'data', (port, data) =>
+            console.log 'participant data on port', port
+            @onResult data if port == 'jobresult'
+        @frontend.start (err) =>
+            return callback err if err
+            return callback null if @options.worker_type != 'internal'
+            @worker = new worker.getParticipant @options
+            @worker.start callback
 
     stop: (callback) ->
-        @worker.destroy (err) ->
-            @worker = null
-            return callback err
+        @frontend.stop (err) =>
+            @frontend = null
+            return callback err if err
+            return callback null if not @worker
+            @worker.stop (err) =>
+                @worker = null
+                return callback err
+
 
     createJob: (type, data) ->
         # TODO: validate type and data
@@ -106,7 +93,7 @@ class JobManager
             id: uuid.v4()
             callback: null
         @jobs[job.id] = job
-        @worker.addJob job, () ->
+        @frontend.send 'newjob', job, () =>
         console.log 'created job', job.id
         return job
 

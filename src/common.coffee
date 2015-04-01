@@ -42,22 +42,6 @@ class CacheServer
     keyExists: (key, callback) ->
         #
 
-# Interface for job queues
-# Actually a 2-set of queues, bidirectional
-class JobWorker
-    constructor: (verbose) ->
-
-    setup: (callback) ->
-    destroy: (callback) ->
-
-    # @job: { id: number/uuid, type: 'process-image', data: {} }
-    addJob: (job) ->
-
-    # to be called by queue when job has been updated (usually completed or failed)
-    onJobUpdated: () ->
-        throw new Error 'JobWorker.onJobUpdated not implemented'
-
-
 # Key used in cache
 exports.hashFile = (path) ->
     hash = crypto.createHash 'sha1'
@@ -238,7 +222,6 @@ exports.getInstalledVersions = getInstalledVersions
 exports.updateInstalledVersions = updateInstalledVersions
 exports.installdir = installdir
 exports.CacheServer = CacheServer
-exports.JobWorker = JobWorker
 exports.errors = {
     UnsupportedImageType: UnsupportedImageTypeError
 }

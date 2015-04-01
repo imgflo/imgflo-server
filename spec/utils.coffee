@@ -111,6 +111,7 @@ exports.getTestConfig = () ->
         cache_type: cachetype
         baseurl: urlbase
         verbose: verbose
+        broker_url: process.env.IMGFLO_TESTS_BROKER or null
 
     config = require('../src/common').mergeDefaultConfig config
     return config

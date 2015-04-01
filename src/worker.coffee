@@ -29,22 +29,22 @@ ProcessImageParticipant = (client, customId) ->
 
     # XXX: use an error queue?
     @executor.doJob job, (result) ->
-        send 'jobresult', null, result
+      send 'jobresult', null, result
 
   return new msgflo.participant.Participant client, definition, func
 
-
+exports.getParticipant = (config) ->
+  client = msgflo.transport.getClient config.broker_url
+  participant = ProcessImageParticipant client
+  participant.executor = new processing.JobExecutor config
+  return participant
 
 exports.main = ->
   config = common.getProductionConfig()
-
-  address = 'amqp://localhost' # FIXME: use proper broker from config
-  client = msgflo.transport.getClient address
-  participant = ProcessImageParticipant client
-  participant.executor = new processing.JobExecutor config
+  participant = exports.getParticipant config
   participant.start (err) ->
     throw callback err if err
 
     # FIXME: prefetch is hardcoded to 1 in msgflo
-    console.log 'worker started'
+    console.log "worker started using broker #{config.broker_url}"
     client.channel.prefetch 1 # allow N concurrent requests
