@@ -212,6 +212,7 @@ exports.getProductionConfig = () ->
     config.cache_type = process.env.IMGFLO_CACHE or null
     config.worker_type = process.env.IMGFLO_WORKER or null
     config.broker_url = process.env.CLOUDAMQP_URL or null
+    config.broker_url = process.env.IMGFLO_BROKER_URL or null
     config = exports.mergeDefaultConfig config
 
     return config
