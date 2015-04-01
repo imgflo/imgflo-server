@@ -97,3 +97,20 @@ exports.formatRequest = (host, graph, params, key, secret) ->
         return url.format { protocol: 'http:', host: host, pathname: '/graph/'+graph, query: params }
 
 exports.rmrf = rmrf
+
+exports.getTestConfig = () ->
+    urlbase = process.env.IMGFLO_TESTS_TARGET
+    urlbase = 'localhost:8888' if not urlbase
+    port = (urlbase.split ':')[1]
+    verbose = process.env.IMGFLO_TESTS_VERBOSE?
+    cachetype = process.env.IMGFLO_TESTS_CACHE or 'local'
+
+    config =
+        workdir: './testtemp'
+        cache_local_directory: './testtemp/cache'
+        cache_type: cachetype
+        baseurl: urlbase
+        verbose: verbose
+
+    config = require('../src/common').mergeDefaultConfig config
+    return config

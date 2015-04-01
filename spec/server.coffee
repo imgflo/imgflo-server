@@ -52,31 +52,18 @@ url = require 'url'
 
 chai = require 'chai'
 request = require 'request'
-
 http.globalAgent.maxSockets = 10
 
-urlbase = process.env.IMGFLO_TESTS_TARGET
-urlbase = 'localhost:8888' if not urlbase
-port = (urlbase.split ':')[1]
-verbose = process.env.IMGFLO_TESTS_VERBOSE?
-startServer = (urlbase.indexOf 'localhost') == 0
+config = utils.getTestConfig()
+startServer = (config.api_host.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
+urlbase = config.api_host # compat
+
+cacheurl = '/cache/' if config.cache_type == 'local'
+cacheurl = 'amazonaws.com' if config.cache_type == 's3'
 
 graph_url = (graph, props, key, secret) ->
-    return utils.formatRequest urlbase, graph, props, key, secret
-
-cachetype = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
-
-cacheurl = '/cache/' if cachetype == 'local'
-cacheurl = 'amazonaws.com' if cachetype == 's3'
-
-config =
-    workdir: './testtemp'
-    cache_local_directory: './testtemp/cache'
-    cache_type: cachetype
-    baseurl: urlbase
-    verbose: verbose
-config = require('../src/common').mergeDefaultConfig config
+    return utils.formatRequest config.api_host, graph, props, key, secret
 
 describe 'Server', ->
     s = null
@@ -86,7 +73,7 @@ describe 'Server', ->
         if startServer
             s = new server.Server config
             l = new utils.LogHandler s
-            s.listen urlbase, port, done
+            s.listen config.api_host, config.api_port, done
         else
             done()
     after (done) ->

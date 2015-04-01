@@ -15,14 +15,10 @@ path = require 'path'
 url = require 'url'
 child = require 'child_process'
 
-urlbase = process.env.IMGFLO_TESTS_TARGET
-urlbase = 'localhost:8888' if not urlbase
-port = (urlbase.split ':')[1]
-verbose = process.env.IMGFLO_TESTS_VERBOSE?
-startServer = (urlbase.indexOf 'localhost') == 0
+config = utils.getTestConfig()
+startServer = (config.api_host.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
-
-cachetype = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
+urlbase = config.api_host # compat
 
 requestUrl = (testcase) ->
     u = null
@@ -36,14 +32,6 @@ requestUrl = (testcase) ->
         u = utils.formatRequest urlbase, graph, props
     return u
 
-config =
-    workdir: './testtemp'
-    cache_local_directory: './testtemp/cache'
-    cache_type: cachetype
-    baseurl: urlbase
-    verbose: verbose
-config = require('../src/common').mergeDefaultConfig config
-
 # End-to-end tests of image processing pipeline and included graphs
 describe 'Graphs', ->
     s = null
@@ -56,7 +44,7 @@ describe 'Graphs', ->
         if startServer
             s = new server.Server config
             l = new utils.LogHandler s
-            s.listen urlbase, port, done
+            s.listen config.api_host, config.api_port, done
         else
             done()
     after (done) ->

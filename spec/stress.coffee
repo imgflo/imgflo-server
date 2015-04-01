@@ -37,16 +37,13 @@ url = require 'url'
 # also run with a mix of local input images and remote
 # Verify correctness of images against eachohter. SHA sum based on first
 
-cachetype = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACHE else 'local'
-
-urlbase = process.env.IMGFLO_TESTS_TARGET
-urlbase = 'localhost:8888' if not urlbase
-port = (urlbase.split ':')[1]
-host = (urlbase.split ':')[0]
-verbose = process.env.IMGFLO_TESTS_VERBOSE?
-startServer = (urlbase.indexOf 'localhost') == 0
+config = utils.getTestConfig()
+startServer = (config.api_host.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
+urlbase = config.api_host # compat
+
 describeSkipPerformance = if process.env.IMGFLO_TESTS_PERFORMANCE? then describe else describe.skip
+host = config.api_host.split(':')[0] # compat
 
 requestRecordTime = (reqUrl, callback) ->
     startTime = process.hrtime()
@@ -85,14 +82,6 @@ describeTimings = (times) ->
     r['stddev-perc'] = r.stddev/r.mean*100
     return r
 
-config =
-    workdir: './testtemp'
-    cache_local_directory: './testtemp/cache'
-    cache_type: cachetype
-    baseurl: urlbase
-    verbose: verbose
-config = require('../src/common').mergeDefaultConfig config
-
 # End-to-end stress-tests of image processing server, particularly performance
 describeSkipPerformance 'Stress', ->
     s = null
@@ -106,7 +95,7 @@ describeSkipPerformance 'Stress', ->
         if startServer
             s = new server.Server config
             l = new utils.LogHandler s
-            s.listen urlbase, port, done
+            s.listen config.api_host, config.api_port, done
         else
             done()
     after (done) ->
