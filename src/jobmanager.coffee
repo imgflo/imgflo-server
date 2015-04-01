@@ -15,7 +15,7 @@ FrontendParticipant = (client, customId) ->
   definition =
     id: id
     'class': 'imgflo-server/HttpApi'
-    icon: 'file-word-o'
+    icon: 'code'
     label: 'Creates processing jobs from HTTP requests'
     inports: [
       {

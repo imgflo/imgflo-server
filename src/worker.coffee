@@ -10,7 +10,7 @@ ProcessImageParticipant = (client, customId) ->
   definition =
     id: id
     'class': 'imgflo-server/ProcessImage'
-    icon: 'file-word-o'
+    icon: 'file-image-o'
     label: 'Executes image processing jobs'
     inports: [
       id: 'job'
