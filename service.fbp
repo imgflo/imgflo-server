@@ -1,0 +1,4 @@
+
+# !runtime msgflo
+api(imgflo-server/HttpApi) JOB -> NEWJOB worker(imgflo-server/ProcessImage)
+worker JOBRESULT -> JOBRESULT api
