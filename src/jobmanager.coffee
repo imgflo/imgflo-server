@@ -55,7 +55,7 @@ FrontendParticipant = (client, customId) ->
 # Performs jobs using workers over AMQP/msgflo
 class AmqpWorker extends common.JobWorker # TODO: implement
     constructor: (options) ->
-        @client = msgflo.transport.getClient options.broker
+        @client = msgflo.transport.getClient options.broker_url
         @participant = FrontendParticipant @client
         @participant.on 'data', (port, data) =>
             console.log 'participant data on port', port
@@ -84,8 +84,10 @@ class JobManager
     start: (callback) ->
         # FIXME: use msgflo transport abstraction for local versus AMQP case.
         # Still need to create participant though
-        @worker = new local.Worker @options
-        #@worker = new AmqpWorker @options
+        if @options.worker_type == 'internal'
+            @worker = new local.Worker @options
+        else
+            @worker = new AmqpWorker @options
 
         @worker.onJobUpdated = (result) =>
             @onResult result

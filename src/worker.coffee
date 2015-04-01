@@ -1,5 +1,6 @@
 
 processing = require './processing'
+common = require './common'
 
 msgflo = require 'msgflo'
 
@@ -35,12 +36,12 @@ ProcessImageParticipant = (client, customId) ->
 
 
 exports.main = ->
+  config = common.getProductionConfig()
 
-  options = { workdir: 'worker', cache: { workdir: 'testtemp', baseurl: 'localhost:8888' } } # FIXME: use proper cache options from config
   address = 'amqp://localhost' # FIXME: use proper broker from config
   client = msgflo.transport.getClient address
   participant = ProcessImageParticipant client
-  participant.executor = new processing.JobExecutor options
+  participant.executor = new processing.JobExecutor config
   participant.start (err) ->
     throw callback err if err
 

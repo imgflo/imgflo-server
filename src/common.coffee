@@ -192,6 +192,46 @@ updateInstalledVersions = (callback) ->
               return callback err, null if err
               return callback null, p
 
+
+exports.mergeDefaultConfig = (overrides) ->
+    defaultConfig =
+        verbose: false
+        api_port: 8080
+        api_host: 'localhost:8080' # note: depends on port
+        api_key: process.env.IMGFLO_API_KEY
+        api_secret: process.env.IMGFLO_API_SECRET
+        workdir: './temp'
+        graphdir: './graphs'
+        resourcedir: './examples'
+
+        worker_type: 'internal' # will start internal worker
+        broker_url: 'direct://imgflo3'
+
+        cache_type: 'local' # will start local cache server
+        cache_s3_key: process.env.AMAZON_API_ID
+        cache_s3_secret: process.env.AMAZON_API_TOKEN
+        cache_s3_bucket: process.env.AMAZON_API_BUCKET
+        cache_s3_region: process.env.AMAZON_API_REGION
+        cache_s3_folder: 'test'
+        cache_local_directory: './cache'
+
+    config = clone defaultConfig
+    for key, value of overrides
+        config[key] = value if value
+    return config
+
+exports.getProductionConfig = () ->
+    config =
+        cache_s3_folder: 'p'
+    config.api_port = process.env.PORT if process.env.PORT?
+    config.api_host = process.env.HOSTNAME || "localhost:#{config.api_port}"
+    config.cache_type = process.env.IMGFLO_CACHE or null
+    config.worker_type = process.env.IMGFLO_WORKER or null
+    config.broker_url = process.env.CLOUDAMQP_URL or null
+    config = exports.mergeDefaultConfig config
+
+    return config
+
 exports.clone = clone
 exports.Processor = Processor
 exports.getInstalledVersions = getInstalledVersions

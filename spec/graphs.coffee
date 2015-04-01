@@ -36,6 +36,14 @@ requestUrl = (testcase) ->
         u = utils.formatRequest urlbase, graph, props
     return u
 
+config =
+    workdir: './testtemp'
+    cache_local_directory: './testtemp/cache'
+    cache_type: cachetype
+    baseurl: urlbase
+    verbose: verbose
+config = require('../src/common').mergeDefaultConfig config
+
 # End-to-end tests of image processing pipeline and included graphs
 describe 'Graphs', ->
     s = null
@@ -44,12 +52,9 @@ describe 'Graphs', ->
 
     before (done) ->
         wd = './testtemp'
-        utils.rmrf wd
+        utils.rmrf config.workdir
         if startServer
-            cache =
-                type: cachetype
-                baseurl: urlbase
-            s = new server.Server wd, null, null, verbose, cache
+            s = new server.Server config
             l = new utils.LogHandler s
             s.listen urlbase, port, done
         else

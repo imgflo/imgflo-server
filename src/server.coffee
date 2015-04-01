@@ -97,33 +97,26 @@ parseRequestUrl = (u) ->
 
 class Server extends EventEmitter
 
-    constructor: (workdir, resourcedir, graphdir, verbose, cacheoptions) ->
-        @workdir = workdir
-        if not fs.existsSync workdir
-            fs.mkdirSync workdir
-        @resourcedir = resourcedir || './examples'
-        @graphdir = graphdir || './graphs'
-        @resourceserver = new node_static.Server resourcedir
+    constructor: (config) ->
+        @workdir = config.workdir
+        if not fs.existsSync @workdir
+            fs.mkdirSync @workdir
+        @resourcedir = config.resourcedir
+        @graphdir = config.graphdir
+        @resourceserver = new node_static.Server config.resourcedir
+
         @authdb = null
-        cacheoptions.directory = path.join @workdir, 'cache'
-
-        apikey = process.env.IMGFLO_API_KEY
-        secret = process.env.IMGFLO_API_SECRET
-        if apikey or secret
+        if config.api_key or config.api_secret
             @authdb = {}
-            @authdb[apikey] = secret
+            @authdb[config.api_key] = config.api_secret
 
-        @cache = cache.fromOptions cacheoptions
-        joboptions =
-            type: 'local'
-            cache: cacheoptions
-            broker: 'amqp://localhost'
-        @jobManager = new jobmanager.JobManager joboptions
+        @cache = cache.fromOptions config
+        @jobManager = new jobmanager.JobManager config
 
         @httpserver = http.createServer @handleHttpRequest
         @port = null
         @host = null
-        @verbose = verbose
+        @verbose = config.verbose
 
     listen: (host, port, callback) ->
         @host = host
@@ -177,7 +170,6 @@ class Server extends EventEmitter
             p = '/demo/index.html'
         p = p.replace '/demo', ''
         if p
-            p = path.join @resourcedir, p
             @resourceserver.serveFile p, 200, {}, request, response
         else
             @getDemoData (err, data) ->
@@ -264,26 +256,22 @@ class Server extends EventEmitter
 
 exports.Server = Server
 
+
 exports.main = ->
     process.on 'uncaughtException', (err) ->
         console.log 'Uncaught exception: ', err
+        console.log err.stack
 
-    port = process.env.PORT || 8080
-    host = process.env.HOSTNAME || "localhost:#{port}"
-    workdir = './temp'
-    cacheopts =
-        type: 'local'
-        baseurl: host
+    config = common.getProductionConfig()
 
-    if process.env.IMGFLO_CACHE? and process.env.IMGFLO_CACHE == 's3'
-        cacheopts =
-            type: 's3'
-            region: process.env.AMAZON_API_REGION
-            prefix: 'p'
-
-    server = new Server workdir, null, null, false, cacheopts
-    server.listen host, port, () ->
-        console.log 'Server listening at port', port, "with workdir", workdir, "on host", host, "with cache", cache.type
+    server = new Server config
+    server.listen config.api_host, config.api_port, (err) ->
+        throw err if err
+        console.log "Server listening at port #{config.api_port} on host #{config.api_host}"
+        console.log "with workdir #{config.workdir}"
+        console.log "with #{config.cache_type} cache"
+        console.log "with #{config.worker_type} workers"
+        console.log "using broker #{config.broker_url}"
     server.on 'logevent', (id, data) ->
         console.log "EVENT: #{id}:", data
     

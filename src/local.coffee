@@ -20,7 +20,7 @@ class FsyncedWriteStream extends fs.WriteStream
 
 class Cache extends common.CacheServer
     constructor: (options) ->
-        @dir = options.directory
+        @dir = options.cache_local_directory
         if not fs.existsSync @dir
             fs.mkdirSync @dir
         defaults = {}

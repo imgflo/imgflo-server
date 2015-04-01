@@ -70,17 +70,21 @@ cachetype = if process.env.IMGFLO_TESTS_CACHE then process.env.IMGFLO_TESTS_CACH
 cacheurl = '/cache/' if cachetype == 'local'
 cacheurl = 'amazonaws.com' if cachetype == 's3'
 
+config =
+    workdir: './testtemp'
+    cache_local_directory: './testtemp/cache'
+    cache_type: cachetype
+    baseurl: urlbase
+    verbose: verbose
+config = require('../src/common').mergeDefaultConfig config
+
 describe 'Server', ->
     s = null
 
     before (done) ->
-        wd = './testtemp'
-        utils.rmrf wd
+        utils.rmrf config.workdir
         if startServer
-            cache =
-                type: cachetype
-                baseurl: urlbase
-            s = new server.Server wd, null, null, verbose, cache
+            s = new server.Server config
             l = new utils.LogHandler s
             s.listen urlbase, port, done
         else

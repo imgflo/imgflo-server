@@ -85,6 +85,14 @@ describeTimings = (times) ->
     r['stddev-perc'] = r.stddev/r.mean*100
     return r
 
+config =
+    workdir: './testtemp'
+    cache_local_directory: './testtemp/cache'
+    cache_type: cachetype
+    baseurl: urlbase
+    verbose: verbose
+config = require('../src/common').mergeDefaultConfig config
+
 # End-to-end stress-tests of image processing server, particularly performance
 describeSkipPerformance 'Stress', ->
     s = null
@@ -94,13 +102,9 @@ describeSkipPerformance 'Stress', ->
     fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
 
     before (done) ->
-        wd = './testtemp'
-        utils.rmrf wd
+        utils.rmrf config.workdir
         if startServer
-            cache =
-                type: cachetype
-                baseurl: urlbase
-            s = new server.Server wd, null, null, verbose, cache
+            s = new server.Server config
             l = new utils.LogHandler s
             s.listen urlbase, port, done
         else

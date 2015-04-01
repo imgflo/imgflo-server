@@ -11,16 +11,13 @@ node_static = require 'node-static'
 knox = require 'knox'
 
 class Cache extends common.CacheServer
-    constructor: (options) ->
-        defaults =
-            key: process.env.AMAZON_API_ID
-            secret: process.env.AMAZON_API_TOKEN
-            bucket: process.env.AMAZON_API_BUCKET
-            region: 'us-west-2'
-            prefix: 'test'
-        @options = common.clone defaults
-        for k,v of options
-            @options[k] = v if v
+    constructor: (config) ->
+        options =
+            key: config.cache_s3_keu
+            secret: config.cache_s3_secret
+            region: config.cache_s3_region
+            bucket: config.cache_s3_bucket
+            prefix: config.cache_s3_folder
         @client = knox.createClient @options
 
     # PERFORMANCE: keep a local index of keys?

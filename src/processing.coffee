@@ -44,25 +44,24 @@ waitForDownloads = (files, callback) ->
         return callback null, files
 
 class JobExecutor
-    constructor: (options) ->
+    constructor: (config) ->
 
-        @workdir = options.workdir
-        @workdir = 'temp' if not @workdir
+        @workdir = config.workdir
         if not fs.existsSync @workdir
             fs.mkdirSync @workdir
-        @graphdir = options.graphdir || './graphs'
+        @graphdir = config.graphdir
 
-        n = new noflo.Processor options.verbose
+        n = new noflo.Processor config.verbose
         @processors =
-            imgflo: new imgflo.Processor options.verbose, common.installdir
+            imgflo: new imgflo.Processor config.verbose, common.installdir
             'noflo-browser': n
             'noflo-nodejs': n
 
         if not fs.existsSync @workdir
             fs.mkdirSync @workdir
 
-        @cache = cache.fromOptions options.cache
-        @options = options
+        @cache = cache.fromOptions config
+        @options = config
 
     getGraph: (name, callback) ->
         # TODO: cache graphs
