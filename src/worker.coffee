@@ -47,4 +47,4 @@ exports.main = ->
 
     # FIXME: prefetch is hardcoded to 1 in msgflo
     console.log "worker started using broker #{config.broker_url}"
-    client.channel.prefetch 1 # allow N concurrent requests
+    participant.messaging.channel.prefetch 1 # allow N concurrent requests
