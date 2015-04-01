@@ -94,7 +94,7 @@ describeSkipPerformance 'Stress', ->
     fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
 
     before (done) ->
-        wd = './stressteststemp'
+        wd = './testtemp'
         utils.rmrf wd
         if startServer
             cache =

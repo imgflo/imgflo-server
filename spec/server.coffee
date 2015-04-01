@@ -56,7 +56,7 @@ request = require 'request'
 http.globalAgent.maxSockets = 10
 
 urlbase = process.env.IMGFLO_TESTS_TARGET
-urlbase = 'localhost:8889' if not urlbase
+urlbase = 'localhost:8888' if not urlbase
 port = (urlbase.split ':')[1]
 verbose = process.env.IMGFLO_TESTS_VERBOSE?
 startServer = (urlbase.indexOf 'localhost') == 0

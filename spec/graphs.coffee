@@ -43,7 +43,7 @@ describe 'Graphs', ->
     l = null
 
     before (done) ->
-        wd = './graphteststemp'
+        wd = './testtemp'
         utils.rmrf wd
         if startServer
             cache =
