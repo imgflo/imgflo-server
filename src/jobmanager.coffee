@@ -9,36 +9,33 @@ common = require './common'
 local = require './local'
 worker = require './worker'
 
-FrontendParticipant = (client, customId) ->
-  id = 'http-api' + (process.env.DYNO or '')
-  id = customId if customId
+FrontendParticipant = (client, role) ->
 
   definition =
-    id: id
-    'class': 'imgflo-server/HttpApi'
+    component: 'imgflo-server/HttpApi'
     icon: 'code'
     label: 'Creates processing jobs from HTTP requests'
     inports: [
       {
         id: 'newjob'
         type: 'object'
+        hidden: true
       },
       {
         id: 'jobresult'
         type: 'object'
-        queue: 'job-results' # FIXME: load from .fbp / .json file
       }
     ]
     outports: [
       {
         id: 'newjob'
-        queue: 'new-jobs' # FIXME: load from .fbp / .json file
         type: 'object'
       }
       ,
       {
         id: 'jobresult'
         type: 'object'
+        hidden: true
       }
     ]
 
@@ -51,7 +48,7 @@ FrontendParticipant = (client, customId) ->
         # no-op, just forwards directly, so the job appears on output queue
         send 'jobresult', null, indata
 
-  return new msgflo.participant.Participant client, definition, func
+  return new msgflo.participant.Participant client, definition, func, role
 
 class JobManager
     constructor: (@options) ->
@@ -65,15 +62,22 @@ class JobManager
         broker.connect(->) if broker # HACK
         console.log 'broker created???'
         c = msgflo.transport.getClient @options.broker_url
-        @frontend = FrontendParticipant c
+        @frontend = FrontendParticipant c, 'api'
         @frontend.on 'data', (port, data) =>
             console.log 'participant data on port', port
             @onResult data if port == 'jobresult'
-        @frontend.start (err) =>
+
+        @frontend.connectGraphEdgesFile './service.fbp', (err) =>
             return callback err if err
-            return callback null if @options.worker_type != 'internal'
-            @worker = new worker.getParticipant @options
-            @worker.start callback
+            console.log 'frontend', @frontend.definition
+            @frontend.start (err) =>
+                return callback err if err
+                return callback null if @options.worker_type != 'internal'
+                @worker = new worker.getParticipant @options
+                @worker.connectGraphEdgesFile './service.fbp', (err) =>
+                    return callback err if err
+                    console.log 'worker', @worker.definition
+                    @worker.start callback
 
     stop: (callback) ->
         @frontend.stop (err) =>
