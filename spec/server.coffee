@@ -52,7 +52,6 @@ url = require 'url'
 
 chai = require 'chai'
 request = require 'request'
-http.globalAgent.maxSockets = 10
 
 config = utils.getTestConfig()
 startServer = (config.api_host.indexOf 'localhost') == 0
