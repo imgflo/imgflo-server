@@ -73,7 +73,10 @@ class JobManager
                 @worker = new worker.getParticipant @options
                 @worker.connectGraphEdgesFile './service.fbp', (err) =>
                     return callback err if err
-                    @worker.start callback
+                    @worker.start (err) =>
+                        return callback err if err
+                        @worker.messaging.channel?.prefetch 4
+                        return callback null
 
     stop: (callback) ->
         @frontend.stop (err) =>
