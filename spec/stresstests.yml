@@ -4,10 +4,10 @@ cached_graph:
         'localhost': [20, 200, 2000, 10000]
         'imgflo.herokuapp.com': [1500, 1500, 6000]
 process_same_input:
-    concurrent: [1, 2, 4]
+    concurrent: [1, 2, 4, 16]
     expected:
-        'localhost': [1200, 1200, 2000]
-        'imgflo.herokuapp.com': [6000, 6000, 6000]
+        'localhost': [1200, 1200, 2000, 4000]
+        'imgflo.herokuapp.com': [6000, 6000, 6000, 8000]
 process_different_sizes:
     sizes: [50, 200, 800, 1600, 3200]
     expected:
