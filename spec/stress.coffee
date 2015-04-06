@@ -4,6 +4,8 @@
 
 server = require '../src/server'
 utils = require './utils'
+common = require '../src/common'
+
 chai = require 'chai'
 yaml = require 'js-yaml'
 request = require 'request'
@@ -67,10 +69,11 @@ identicalRequests = (u, number) ->
     return (u for n in [0...number])
 
 randomRequests = (graph, props, number, randomprop) ->
-    f = () ->
-        props[randomprop] = randomString 5+(number/10)
-        return utils.formatRequest urlbase, graph, props
-    return (f() for n in [0...number])
+    f = (number) ->
+        params = common.clone props
+        params[randomprop] = randomString 5+(number/10)
+        return utils.formatRequest urlbase, graph, params
+    return (f(n) for n in [0...number])
 
 describeTimings = (times) ->
     r =
