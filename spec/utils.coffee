@@ -38,6 +38,9 @@ class LogHandler
             'graph-in-cache'
             'put-into-cache'
             'download-inputs-start'
+            'job-created'
+            'job-result'
+            'job-completed'
         ]
 
         if id == 'process-request-end'

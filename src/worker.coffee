@@ -37,6 +37,10 @@ exports.getParticipant = (config) ->
 exports.main = ->
   config = common.getProductionConfig()
   participant = exports.getParticipant config
+
+  participant.executor.on 'logevent', (id, data) ->
+    console.log "EVENT: #{id}:", data
+
   participant.connectGraphEdgesFile './service.fbp', (err) ->
     throw callback err if err
     participant.start (err) ->

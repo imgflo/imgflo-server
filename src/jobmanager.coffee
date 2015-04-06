@@ -4,6 +4,7 @@
 
 uuid = require 'uuid'
 msgflo = require 'msgflo'
+EventEmitter = require('events').EventEmitter
 
 common = require './common'
 local = require './local'
@@ -40,7 +41,6 @@ FrontendParticipant = (client, role) ->
     ]
 
   func = (inport, indata, send) ->
-    console.log 'frontendparticipant', inport, indata.id
     if inport == 'newjob'
         # no-op, just forwards directly, so the job appears on output queue
         send 'newjob', null, indata
@@ -50,9 +50,8 @@ FrontendParticipant = (client, role) ->
 
   return new msgflo.participant.Participant client, definition, func, role
 
-class JobManager
+class JobManager extends EventEmitter
     constructor: (@options) ->
-        console.log 'JobManager options', @options
         @jobs = {} # pending/in-flight
         @worker = null
         @frontend = null
@@ -71,6 +70,7 @@ class JobManager
                 return callback err if err
                 return callback null if @options.worker_type != 'internal'
                 @worker = new worker.getParticipant @options
+                @worker.executor.on 'logevent', (id, data) => @logEvent id, data
                 @worker.connectGraphEdgesFile './service.fbp', (err) =>
                     return callback err if err
                     @worker.start (err) =>
@@ -87,6 +87,8 @@ class JobManager
                 @worker = null
                 return callback err
 
+    logEvent: (id, data) ->
+        @emit 'logevent', id, data
 
     createJob: (type, data) ->
         # TODO: validate type and data
@@ -97,7 +99,7 @@ class JobManager
             callback: null
         @jobs[job.id] = job
         @frontend.send 'newjob', job, () =>
-        console.log 'created job', job.id
+        @logEvent 'job-created', { job: job.id }
         return job
 
     doJob: (type, data, callback) ->
@@ -105,9 +107,8 @@ class JobManager
         @jobs[job.id].callback = callback
 
     onResult: (result) ->
-        console.log 'onresult', result.id, Object.keys @jobs
         job = @jobs[result.id]
-        console.log 'onresult job?', if job? then "true" else "false"
+        @logEvent 'job-result', { job: result.id, pending: if job? then "true" else "false" }
         return if not job # we got results from a non-pending job
         delete @jobs[result.id]
         # TODO: sanity check job.data.request result.data.request

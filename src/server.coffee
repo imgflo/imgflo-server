@@ -112,6 +112,8 @@ class Server extends EventEmitter
 
         @cache = cache.fromOptions config
         @jobManager = new jobmanager.JobManager config
+        @jobManager.on 'logevent', (id, data) =>
+            @logEvent id, data
 
         @httpserver = http.createServer @handleHttpRequest
         @port = null

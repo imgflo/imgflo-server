@@ -8,6 +8,7 @@ noflo = require './noflo'
 imgflo = require './imgflo'
 cache = require './cache'
 
+EventEmitter = require('events').EventEmitter
 request = require 'request'
 async = require 'async'
 fs = require 'fs'
@@ -43,7 +44,7 @@ waitForDownloads = (files, callback) ->
     else
         return callback null, files
 
-class JobExecutor
+class JobExecutor extends EventEmitter
     constructor: (config) ->
 
         @workdir = config.workdir
@@ -73,7 +74,7 @@ class JobExecutor
             return callback null, def
 
     logEvent: (id, data) ->
-        console.log 'logevent', id, data
+        @emit 'logevent', id, data
 
     # on new job:
     #   download inputs
