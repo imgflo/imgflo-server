@@ -60,23 +60,19 @@ class JobManager
     start: (callback) ->
         broker = msgflo.transport.getBroker @options.broker_url if @options.broker_url.indexOf('direct://') == 0
         broker.connect(->) if broker # HACK
-        console.log 'broker created???'
         c = msgflo.transport.getClient @options.broker_url
         @frontend = FrontendParticipant c, 'api'
         @frontend.on 'data', (port, data) =>
-            console.log 'participant data on port', port
             @onResult data if port == 'jobresult'
 
         @frontend.connectGraphEdgesFile './service.fbp', (err) =>
             return callback err if err
-            console.log 'frontend', @frontend.definition
             @frontend.start (err) =>
                 return callback err if err
                 return callback null if @options.worker_type != 'internal'
                 @worker = new worker.getParticipant @options
                 @worker.connectGraphEdgesFile './service.fbp', (err) =>
                     return callback err if err
-                    console.log 'worker', @worker.definition
                     @worker.start callback
 
     stop: (callback) ->
