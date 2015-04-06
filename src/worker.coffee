@@ -42,6 +42,5 @@ exports.main = ->
     participant.start (err) ->
       throw callback err if err
 
-      # FIXME: prefetch is hardcoded to 1 in msgflo
       console.log "worker started using broker #{config.broker_url}"
-      participant.messaging.channel.prefetch 1 # allow N concurrent requests
+      participant.messaging.channel.prefetch 4 # allow N concurrent requests
