@@ -18,6 +18,8 @@ crypto = require 'crypto'
 node_static = require 'node-static'
 async = require 'async'
 
+http.globalAgent.maxSockets = Infinity # for older node.js
+
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control
 
 getGraphs = (directory, callback) ->

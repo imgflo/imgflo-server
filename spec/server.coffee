@@ -53,6 +53,8 @@ url = require 'url'
 chai = require 'chai'
 request = require 'request'
 
+http.globalAgent.maxSockets = Infinity # for older node.js
+
 config = utils.getTestConfig()
 startServer = (config.api_host.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
