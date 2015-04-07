@@ -92,7 +92,6 @@ Configure some environment variables (hostname, port and local image cache):
 
     heroku config:set HOSTNAME=YOURAPP.herokuapp.com
     heroku config:set PORT=80
-    heroku config:set IMGFLO_CACHE=local
 
 Deploy, will take ~1 minute
 

@@ -8,18 +8,15 @@ common = require './common'
 local = require './local'
 s3 = require './s3'
 
-exports.fromOptions = (options) ->
+exports.fromOptions = (config) ->
 
-    defaultcacheoptions =
-        type: 'local'
-    defaultcacheoptions.directory = path.join options.workdir, 'cache' if options.workdir
-    cache = common.clone defaultcacheoptions
-    for k,v of options
-        cache[k] = v if v
-    if cache.type == 's3'
-        @cache = new s3.Cache cache
-    else if cache.type == 'local'
-        @cache = new local.Cache cache
+    type = config.cache_type
+    if type == 's3'
+        cache = new s3.Cache config
+    else if type == 'local'
+        cache = new local.Cache config
     else
-        @cache = new common.Cache cache
+        cache = new common.Cache config
+
+    return cache
 

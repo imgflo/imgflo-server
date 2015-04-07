@@ -12,8 +12,8 @@ knox = require 'knox'
 
 class Cache extends common.CacheServer
     constructor: (config) ->
-        options =
-            key: config.cache_s3_keu
+        @options =
+            key: config.cache_s3_key
             secret: config.cache_s3_secret
             region: config.cache_s3_region
             bucket: config.cache_s3_bucket
