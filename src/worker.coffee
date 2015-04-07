@@ -29,7 +29,9 @@ ProcessImageParticipant = (client, role) ->
   return new msgflo.participant.Participant client, definition, func, role
 
 exports.getParticipant = (config) ->
-  client = msgflo.transport.getClient config.broker_url
+  options =
+    prefetch: 4
+  client = msgflo.transport.getClient config.broker_url, options
   participant = ProcessImageParticipant client, 'worker'
   participant.executor = new processing.JobExecutor config
   return participant
@@ -47,4 +49,3 @@ exports.main = ->
       throw callback err if err
 
       console.log "worker started using broker #{config.broker_url}"
-      participant.messaging.channel.prefetch 4 # allow N concurrent requests

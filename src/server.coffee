@@ -20,8 +20,6 @@ async = require 'async'
 
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control
 
-
-
 getGraphs = (directory, callback) ->
     graphs = {}
 

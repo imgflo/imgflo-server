@@ -73,10 +73,7 @@ class JobManager extends EventEmitter
                 @worker.executor.on 'logevent', (id, data) => @logEvent id, data
                 @worker.connectGraphEdgesFile './service.fbp', (err) =>
                     return callback err if err
-                    @worker.start (err) =>
-                        return callback err if err
-                        @worker.messaging.channel?.prefetch 4
-                        return callback null
+                    @worker.start callback
 
     stop: (callback) ->
         @frontend.stop (err) =>
