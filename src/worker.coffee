@@ -49,3 +49,5 @@ exports.main = ->
       throw callback err if err
 
       console.log "worker started using broker #{config.broker_url}"
+      console.log "with workdir #{config.workdir}"
+      console.log "with #{config.cache_type} cache"
