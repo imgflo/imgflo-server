@@ -17,6 +17,7 @@ path = require 'path'
 crypto = require 'crypto'
 node_static = require 'node-static'
 async = require 'async'
+express = require 'express'
 
 http.globalAgent.maxSockets = Infinity # for older node.js
 
@@ -105,6 +106,10 @@ class Server extends EventEmitter
         @graphdir = config.graphdir
         @resourceserver = new node_static.Server config.resourcedir
 
+        @port = null
+        @host = null
+        @verbose = config.verbose
+
         @authdb = null
         if config.api_key or config.api_secret
             @authdb = {}
@@ -115,10 +120,39 @@ class Server extends EventEmitter
         @jobManager.on 'logevent', (id, data) =>
             @logEvent id, data
 
-        @httpserver = http.createServer @handleHttpRequest
-        @port = null
-        @host = null
-        @verbose = config.verbose
+        @app = express()
+        @setupRoutes @app
+        @httpserver = http.createServer @app
+
+    setupRoutes: (app) ->
+
+        app.get '/', (req, res) =>
+            res.redirect '/demo/index.html'
+
+        # processing
+        app.get '/graph/:graph', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @handleGraphRequest req, res
+        app.get '/graph/:apikey/:apitoken/:graph', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @handleGraphRequest req, res
+        app.get '/cache/:key', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            key = req.params.key
+            @cache.handleKeyRequest? key, req, res
+
+        # meta/management
+        app.get '/demo', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @serveDemoPage req, res
+        app.get '/demo/*', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @serveDemoPage req, res
+        app.get '/version', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @handleVersionRequest req, res
+
+        console.log 'routes setup'
 
     listen: (host, port, callback) ->
         @host = host
@@ -133,27 +167,6 @@ class Server extends EventEmitter
 
     logEvent: (id, data) ->
         @emit 'logevent', id, data
-
-    handleHttpRequest: (request, response) =>
-        @logEvent 'request-received', { request: request.url }
-        request.addListener('end', () =>
-            u = url.parse request.url, true
-            if u.pathname == '/'
-                u.pathname = '/demo/index.html'
-            if (u.pathname.indexOf "/demo") == 0
-                @serveDemoPage request, response
-            else if (u.pathname.indexOf "/cache") == 0
-                key = path.basename u.pathname
-                @cache.handleKeyRequest? key, request, response
-            else if (u.pathname.indexOf "/version") == 0
-                @handleVersionRequest request, response
-            else if (u.pathname.indexOf "/graph") == 0
-                @handleGraphRequest request, response
-            else
-                @logEvent 'unknown-request', { request: request.url, path: u.pathname }
-                response.statusCode = 404
-                response.end "Cannot find #{u.pathname}"
-        ).resume()
 
     getDemoData: (callback) ->
 
