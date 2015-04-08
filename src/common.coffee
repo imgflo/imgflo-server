@@ -198,6 +198,7 @@ exports.mergeDefaultConfig = (overrides) ->
         cache_s3_region: process.env.AMAZON_API_REGION
         cache_s3_folder: 'test'
         cache_local_directory: './cache'
+        redis_url: process.env.IMGFLO_REDIS_URL
 
     config = clone defaultConfig
     for key, value of overrides
@@ -213,6 +214,7 @@ exports.getProductionConfig = () ->
     config.worker_type = process.env.IMGFLO_WORKER or null
     config.broker_url = process.env.CLOUDAMQP_URL or null
     config.broker_url = process.env.IMGFLO_BROKER_URL or config.broker_url
+    config.redis_url = process.env.REDISCLOUD_URL or null
     config = exports.mergeDefaultConfig config
 
     return config

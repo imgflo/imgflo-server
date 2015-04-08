@@ -20,7 +20,6 @@ class Cache extends common.CacheServer
             prefix: config.cache_s3_folder
         @client = knox.createClient @options
 
-    # PERFORMANCE: keep a local index of keys?
     keyExists: (key, callback) ->
         @client.headFile @fullKey(key), (err, res) =>
             exists = res.headers['etag']

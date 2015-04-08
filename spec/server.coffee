@@ -60,8 +60,8 @@ startServer = (config.api_host.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
 urlbase = config.api_host # compat
 
-cacheurl = '/cache/' if config.cache_type == 'local'
-cacheurl = 'amazonaws.com' if config.cache_type == 's3'
+cacheurl = '/cache/' if config.cache_type.indexOf('local') != -1
+cacheurl = 'amazonaws.com' if config.cache_type.indexOf('s3') != -1
 
 graph_url = (graph, props, key, secret) ->
     return utils.formatRequest config.api_host, graph, props, key, secret
