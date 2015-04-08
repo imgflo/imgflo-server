@@ -260,8 +260,6 @@ exports.Server = Server
 
 
 exports.main = ->
-    require 'newrelic' if process.env.NEW_RELIC_LICENSE_KEY?
-
     process.on 'uncaughtException', (err) ->
         console.log 'Uncaught exception: ', err
         console.log err.stack
