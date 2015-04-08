@@ -182,7 +182,7 @@ var main = function() {
         var apiKey = id("apiKey").value;
         var apiSecret = id("apiSecret").value;
         localStorage["imgflo-server-api-key"] = apiKey;
-        localStorage["imgflo-server-api-secret"] = apiKey;
+        localStorage["imgflo-server-api-secret"] = apiSecret;
         var url = createRequestUrl(graph, props, apiKey, apiSecret);
         var bg = 'url("'+url+'")';
         console.log('processing:', url, bg);
@@ -242,7 +242,7 @@ var main = function() {
             var apiKey = id("apiKey").value;
             var apiSecret = id("apiSecret").value;
             localStorage["imgflo-server-api-key"] = apiKey;
-            localStorage["imgflo-server-api-secret"] = apiKey;
+            localStorage["imgflo-server-api-secret"] = apiSecret;
             graph.thumbnailUrl = createRequestUrl(name, props, apiKey, apiSecret);
         });
 
