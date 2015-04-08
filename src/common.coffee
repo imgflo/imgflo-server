@@ -178,10 +178,11 @@ updateInstalledVersions = (callback) ->
 
 
 exports.mergeDefaultConfig = (overrides) ->
+    defaultPort = 8080
     defaultConfig =
         verbose: false
         api_port: 8080
-        api_host: 'localhost:8080' # note: depends on port
+        api_host: "localhost:#{defaultPort}" # note: depends on port
         api_key: process.env.IMGFLO_API_KEY
         api_secret: process.env.IMGFLO_API_SECRET
         workdir: './temp'
@@ -197,7 +198,7 @@ exports.mergeDefaultConfig = (overrides) ->
         cache_s3_bucket: process.env.AMAZON_API_BUCKET
         cache_s3_region: process.env.AMAZON_API_REGION
         cache_s3_folder: 'test'
-        cache_local_directory: './cache'
+        cache_local_directory: './temp/cache' # note: depends on workdir?
         redis_url: process.env.IMGFLO_REDIS_URL
 
     config = clone defaultConfig
@@ -208,8 +209,8 @@ exports.mergeDefaultConfig = (overrides) ->
 exports.getProductionConfig = () ->
     config =
         cache_s3_folder: 'p'
-    config.api_port = process.env.PORT if process.env.PORT?
-    config.api_host = process.env.HOSTNAME || "localhost:#{config.api_port}"
+    config.api_port = process.env.PORT or null
+    config.api_host = process.env.HOSTNAME or null
     config.cache_type = process.env.IMGFLO_CACHE or null
     config.worker_type = process.env.IMGFLO_WORKER or null
     config.broker_url = process.env.CLOUDAMQP_URL or null
