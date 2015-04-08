@@ -126,11 +126,8 @@ class Server extends EventEmitter
 
     setupRoutes: (app) ->
 
-        app.get '/', (req, res) =>
-            res.redirect '/demo/index.html'
-
         # processing
-        app.get '/graph/:graph', (req, res) =>
+        app.get '/graph/:graphname', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @handleGraphRequest req, res
         app.get '/graph/:apikey/:apitoken/:graph', (req, res) =>
@@ -141,18 +138,21 @@ class Server extends EventEmitter
             key = req.params.key
             @cache.handleKeyRequest? key, req, res
 
-        # meta/management
+        # UI
+        app.get '/', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @serveDemoPage req, res
         app.get '/demo', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
         app.get '/demo/*', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
+
+        # meta/management
         app.get '/version', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @handleVersionRequest req, res
-
-        console.log 'routes setup'
 
     listen: (host, port, callback) ->
         @host = host
