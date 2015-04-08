@@ -6,17 +6,16 @@ url = require 'url'
 # Transparent frontend for the real @cache
 class Cache extends common.CacheServer
     constructor: (@cache, @config) ->
-        if config.redis_url
-            params = url.parse config.redis_url
+        if @config.redis_url
+            params = url.parse @config.redis_url
             @client = redis.createClient params.port, params.hostname
             @client.auth params.auth.split(':')[1] if params.auth
         else
             @client = redis.createClient()
-        @mapName = config.cache_redis_map or 'processed-file-url'
+        @mapName = @config.cache_redis_map or 'processed-file-url'
 
     keyExists: (key, callback) ->
         @client.hget @mapName, key, (err, res) =>
-            console.log 'redis get', key, err, res
             return callback err if err
             return callback null, res if res
 
