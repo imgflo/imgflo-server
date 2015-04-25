@@ -106,7 +106,7 @@ describe 'Server', ->
         for g in fs.readdirSync './graphs'
             expected.push g.replace '.json', '' if (g.indexOf '.json') != -1
         responseData = ""
-        it 'HTTP request', (done) ->
+        it 'HTTP request gives 200', (done) ->
             u = url.format {protocol:'http:',host: urlbase, pathname:'/demo'}
             http.get u, (response) ->
                 chai.expect(response.statusCode).to.equal 200
