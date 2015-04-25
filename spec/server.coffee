@@ -114,10 +114,16 @@ describe 'Server', ->
                     responseData += chunk.toString()
                 response.on 'end', () ->
                     done()
-        it 'should return all graphs', () ->
+        it 'should return all processing graphs', () ->
             d = JSON.parse responseData
             actual = Object.keys d.graphs
             chai.expect(actual).to.deep.equal expected
+
+        it 'should not include internal msgflo graph', () ->
+            g = fs.readFileSync './graphs/imgflo-server.fbp'
+            chai.expect(g).to.exist
+            d = JSON.parse responseData
+            chai.expect(d.graphs).to.not.have.key 'imgflo-server'
 
     describe 'Graph request', ->
         describe 'with invalid graph parameters', ->
