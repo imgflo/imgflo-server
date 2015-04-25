@@ -17,6 +17,9 @@ enrichGraphDefinition = (graph, publicOnly) ->
     else if (runtime.indexOf 'imgflo') != -1
         imgflo.enrichGraphDefinition graph, publicOnly
 
+validGraph = (filepath) ->
+    return path.extname(filepath) == '.json' and filepath.indexOf('Test') == -1
+
 class GraphsStore
     constructor: (@config) ->
 
@@ -32,7 +35,7 @@ class GraphsStore
 
             graphfiles = []
             for f in files
-                graphfiles.push path.join directory, f if (path.extname f) == '.json'
+                graphfiles.push path.join directory, f if validGraph f
 
             async.map graphfiles, fs.readFile, (err, results) ->
                 if err
@@ -50,6 +53,8 @@ class GraphsStore
     get: (name, callback) ->
         # TODO: cache graphs
         graphPath = path.join @config.graphdir, name + '.json'
+        return new Error "Invalid processing graph '#{name}'" if not validGraph graphPath
+
         fs.readFile graphPath, (err, contents) =>
             return callback err, null if err
             def = JSON.parse contents

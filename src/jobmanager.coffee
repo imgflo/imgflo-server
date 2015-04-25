@@ -64,14 +64,15 @@ class JobManager extends EventEmitter
         @frontend.on 'data', (port, data) =>
             @onResult data if port == 'jobresult'
 
-        @frontend.connectGraphEdgesFile './service.fbp', (err) =>
+        serviceGraph = './graphs/imgflo-server.fbp'
+        @frontend.connectGraphEdgesFile serviceGraph, (err) =>
             return callback err if err
             @frontend.start (err) =>
                 return callback err if err
                 return callback null if @options.worker_type != 'internal'
                 @worker = new worker.getParticipant @options
                 @worker.executor.on 'logevent', (id, data) => @logEvent id, data
-                @worker.connectGraphEdgesFile './service.fbp', (err) =>
+                @worker.connectGraphEdgesFile serviceGraph, (err) =>
                     return callback err if err
                     @worker.start callback
 

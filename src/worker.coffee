@@ -43,7 +43,8 @@ exports.main = ->
   participant.executor.on 'logevent', (id, data) ->
     console.log "EVENT: #{id}:", data
 
-  participant.connectGraphEdgesFile './service.fbp', (err) ->
+  serviceGraph = './graphs/imgflo-server.fbp'
+  participant.connectGraphEdgesFile serviceGraph, (err) ->
     throw callback err if err
     participant.start (err) ->
       throw callback err if err
