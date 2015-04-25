@@ -6,7 +6,9 @@ common = require './common'
 # Processors
 noflo = require './noflo'
 imgflo = require './imgflo'
+#
 cache = require './cache'
+GraphsStore = require './graphs'
 
 EventEmitter = require('events').EventEmitter
 request = require 'request'
@@ -14,13 +16,7 @@ async = require 'async'
 fs = require 'fs'
 path = require 'path'
 
-
-enrichGraphDefinition = (graph, publicOnly) ->
-    runtime = common.runtimeForGraph graph
-    if (runtime.indexOf 'noflo') != -1
-        noflo.enrichGraphDefinition graph, publicOnly
-    else if (runtime.indexOf 'imgflo') != -1
-        imgflo.enrichGraphDefinition graph, publicOnly
+# TODO: support using long-lived workers as Processors, use FBP WebSocket API to control?
 
 downloadFile = (src, out, callback) ->
     req = request src, (error, response) ->
@@ -50,7 +46,7 @@ class JobExecutor extends EventEmitter
         @workdir = config.workdir
         if not fs.existsSync @workdir
             fs.mkdirSync @workdir
-        @graphdir = config.graphdir
+        @graphs = new GraphsStore config
 
         n = new noflo.Processor config.verbose
         @processors =
@@ -65,13 +61,7 @@ class JobExecutor extends EventEmitter
         @options = config
 
     getGraph: (name, callback) ->
-        # TODO: cache graphs
-        graphPath = path.join @graphdir, name + '.json'
-        fs.readFile graphPath, (err, contents) =>
-            return callback err, null if err
-            def = JSON.parse contents
-            enrichGraphDefinition def
-            return callback null, def
+        @graphs.get name, callback
 
     logEvent: (id, data) ->
         @emit 'logevent', id, data
@@ -145,5 +135,4 @@ class JobExecutor extends EventEmitter
                 processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, callback
 
 exports.JobExecutor = JobExecutor
-exports.enrichGraphDefinition = enrichGraphDefinition
 

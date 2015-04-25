@@ -6,46 +6,18 @@ jobmanager = require './jobmanager'
 common = require './common'
 cache = require './cache'
 processing = require './processing'
+GraphsStore = require './graphs'
 
 http = require 'http'
 fs = require 'fs'
-child_process = require 'child_process'
 EventEmitter = (require 'events').EventEmitter
 url = require 'url'
-querystring = require 'querystring'
 path = require 'path'
 crypto = require 'crypto'
 node_static = require 'node-static'
-async = require 'async'
 express = require 'express'
 
 http.globalAgent.maxSockets = Infinity # for older node.js
-
-# TODO: support using long-lived workers as Processors, use FBP WebSocket API to control
-
-getGraphs = (directory, callback) ->
-    graphs = {}
-
-    fs.readdir directory, (err, files) ->
-        if err
-            callback err, null
-
-        graphfiles = []
-        for f in files
-            graphfiles.push path.join directory, f if (path.extname f) == '.json'
-
-        async.map graphfiles, fs.readFile, (err, results) ->
-            if err
-                return callback err, null
-
-            for i in [0...results.length]
-                name = path.basename graphfiles[i]
-                name = (name.split '.')[0]
-                def = JSON.parse results[i]
-                processing.enrichGraphDefinition def, true
-                graphs[name] = def
-
-            return callback null, graphs
 
 
 parseRequestUrl = (u) ->
@@ -103,7 +75,7 @@ class Server extends EventEmitter
         if not fs.existsSync @workdir
             fs.mkdirSync @workdir
         @resourcedir = config.resourcedir
-        @graphdir = config.graphdir
+        @graphs = new GraphsStore config
         @resourceserver = new node_static.Server config.resourcedir
 
         @port = null
@@ -171,9 +143,7 @@ class Server extends EventEmitter
     getDemoData: (callback) ->
 
         # TODO: this should be GET /graphs, useful not limited to demo page
-        getGraphs @graphdir, (err, res) =>
-            if err
-                throw err
+        @graphs.getAll (err, res) =>
             d =
                 graphs: res
             return callback null, d
@@ -190,15 +160,6 @@ class Server extends EventEmitter
             @getDemoData (err, data) ->
                 response.statusCode = 200
                 response.end JSON.stringify data
-
-    getGraph: (name, callback) ->
-        # TODO: cache graphs
-        graphPath = path.join @graphdir, name + '.json'
-        fs.readFile graphPath, (err, contents) =>
-            return callback err, null if err
-            def = JSON.parse contents
-            processing.enrichGraphDefinition def
-            return callback null, def
 
     handleVersionRequest: (request, response) ->
         common.getInstalledVersions (err, info) ->
