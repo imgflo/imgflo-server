@@ -35,7 +35,7 @@ requestUrl = (testcase) ->
 # End-to-end tests of image processing pipeline and included graphs
 describe 'Graphs', ->
     s = null
-    testcases = yaml.safeLoad fs.readFileSync 'spec/graphtests.yml', 'utf-8'
+    testcases = yaml.safeLoad fs.readFileSync 'spec/graphtests.yaml', 'utf-8'
     l = null
 
     before (done) ->

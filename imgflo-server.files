@@ -16,13 +16,13 @@ src/server.coffee
 spec/server.coffee
 spec/websocket.coffee
 spec/graphs.coffee
-spec/graphtests.yml
+spec/graphtests.yaml
 src/noflo.coffee
 src/imgflo.coffee
 src/common.coffee
 spec/utils.coffee
 spec/stress.coffee
-spec/stresstests.yml
+spec/stresstests.yaml
 spec/index.html
 update-version-info.js
 src/local.coffee

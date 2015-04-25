@@ -90,7 +90,7 @@ describeSkipPerformance 'Stress', ->
     s = null
     l = null
     outdir = "spec/out"
-    stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yml', 'utf-8'
+    stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yaml', 'utf-8'
     fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
 
     before (done) ->
