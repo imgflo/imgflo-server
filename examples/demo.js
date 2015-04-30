@@ -16,20 +16,40 @@ var removeClassName = function(el, name) {
 };
 
 /* TODO:
- * - allow to select input image from URL
+ * - make input picking a dialog "paste URL here"
+ * - hide output URL, use "copy image link" instead
+ * - move execute button down, change to spinner when processing (font-awesome?)
+ * - move graph details to below the graph selector
  *
- * - add thumbnail/preview images to graph selector
+ * - Don't show auth input fields all the time.
+ * If authed, checkmark OK. Not authed, allow to drop down to enter.
+ * - Allow to register new API keys "apps"
+ * - Allow to copy API keys/secret pair out.
+ * - Link out to API docs
+ *
  * - add selected/deselected indicator to graph list
  * - add invalidated/working/completed indicator on processed image
  * - add API/authentication status element to header, shows when authed correctly
+ * -
  * - make images use up available space vertically, centered
  *
- * - use slider for number/integer properties
+ * - use slider for number/integer properties (min, max, default)
  * - use color selector for color type properties
  * - use drop-down selector for enum type properties
- * - make HEAD request to check if image is cached, and then show automatically
+ * - use checkbox for boolean
+ *
+ * Maybe
+ * - make HEAD request to check if image is cached,
+ * and then show without pressing execute?
  *
  * Later:
+ *
+ * - Allow sharing an URL to UI, with all image parameters included.
+ * Have a standard convention?
+ * - Allow to input a processing URL, get the input image+params out
+ *
+ * - allow to upload image
+ * - allow to take picture with webcam
  * - add progress bar for request processing.
  * - add persisted history, with prev/next buttons in pictureSection
  */
