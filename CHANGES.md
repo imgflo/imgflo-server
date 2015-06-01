@@ -1,3 +1,9 @@
+imgflo-server 0.4
+====================
+Released: N/A
+
+Since 0.4.16 using cedar-14 stack on Heroku instead of old 'cedar'.
+
 imgflo-server 0.3.0
 ==================
 Released: January 23nd, 2015
