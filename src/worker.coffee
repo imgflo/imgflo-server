@@ -32,7 +32,7 @@ exports.getParticipant = (config) ->
   options =
     prefetch: 4
   client = msgflo.transport.getClient config.broker_url, options
-  participant = ProcessImageParticipant client, 'worker'
+  participant = ProcessImageParticipant client, 'imgflo_worker'
   participant.executor = new processing.JobExecutor config
   return participant
 
@@ -43,12 +43,9 @@ exports.main = ->
   participant.executor.on 'logevent', (id, data) ->
     console.log "EVENT: #{id}:", data
 
-  serviceGraph = './graphs/imgflo-server.fbp'
-  participant.connectGraphEdgesFile serviceGraph, (err) ->
+  participant.start (err) ->
     throw callback err if err
-    participant.start (err) ->
-      throw callback err if err
 
-      console.log "worker started using broker #{config.broker_url}"
-      console.log "with workdir #{config.workdir}"
-      console.log "with #{config.cache_type} cache"
+    console.log "worker started using broker #{config.broker_url}"
+    console.log "with workdir #{config.workdir}"
+    console.log "with #{config.cache_type} cache"

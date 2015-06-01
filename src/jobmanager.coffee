@@ -60,21 +60,24 @@ class JobManager extends EventEmitter
         broker = msgflo.transport.getBroker @options.broker_url if @options.broker_url.indexOf('direct://') == 0
         broker.connect(->) if broker # HACK
         c = msgflo.transport.getClient @options.broker_url
-        @frontend = FrontendParticipant c, 'api'
+        @frontend = FrontendParticipant c, 'imgflo_api'
         @frontend.on 'data', (port, data) =>
             @onResult data if port == 'jobresult'
 
-        serviceGraph = './graphs/imgflo-server.fbp'
-        @frontend.connectGraphEdgesFile serviceGraph, (err) =>
-            return callback err if err
-            @frontend.start (err) =>
-                return callback err if err
-                return callback null if @options.worker_type != 'internal'
-                @worker = new worker.getParticipant @options
-                @worker.executor.on 'logevent', (id, data) => @logEvent id, data
-                @worker.connectGraphEdgesFile serviceGraph, (err) =>
-                    return callback err if err
-                    @worker.start callback
+        startInternalWorker = (callback) =>
+          return callback null if @options.worker_type != 'internal'
+          @worker = new worker.getParticipant @options
+          @worker.executor.on 'logevent', (id, data) => @logEvent id, data
+          @worker.start callback
+
+        setup =
+          broker: @options.broker_url
+          graphfile: './graphs/imgflo-server.fbp'
+        startInternalWorker (err) =>
+          return callback err if err
+          @frontend.start (err) =>
+              return callback err if err
+              msgflo.setup.bindings setup, callback
 
     stop: (callback) ->
         @frontend.stop (err) =>
