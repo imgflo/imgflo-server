@@ -1,4 +1,6 @@
 language: node_js
+services:
+- rabbitmq
 node_js:
 - '0.10'
 before_install:
@@ -6,6 +8,7 @@ before_install:
 - sudo apt-get install libjson-glib-dev libsdl1.2-dev libgif-dev gdb
 script:
 - export IMGFLO_TESTS_PERFORMANCE=1
+- export IMGFLO_BROKER_URL=amqp://localhost
 - make travis-deps
 - make release RELOCATE_DEPS=true
 before_deploy:
