@@ -196,7 +196,7 @@ describeSkipPerformance 'Stress', ->
                             done()
 
     # FIXME: should use a deterministic set of request urls, and delete them from cache before running test
-    describe "Processing different inputs", ->
+    describe.skip "Processing different inputs", ->
         testid = 'process_different_inputs'
         testcases = stresstests[testid]
         testcases.expected[host].forEach (expect, i) ->
