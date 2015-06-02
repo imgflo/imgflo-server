@@ -75,6 +75,13 @@ randomRequests = (graph, props, number, randomprop) ->
         return utils.formatRequest urlbase, graph, params
     return (f(n) for n in [0...number])
 
+oneEach = (inputs, graph, props) ->
+    f = (input) ->
+        params = common.clone props
+        params.input = input
+        return utils.formatRequest urlbase, graph, params
+    return (f(i) for i in inputs)
+
 describeTimings = (times) ->
     r =
         values: times
@@ -179,6 +186,36 @@ describeSkipPerformance 'Stress', ->
                         chai.expect(err).to.not.exist
                         results = describeTimings times
                         fname = outdir+"/stress.#{testid}.#{size}.json"
+                        c = JSON.stringify results
+                        fs.writeFile fname, c, (err) ->
+                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
+                            chai.expect(results.mean).to.be.below expect
+                            done()
+
+    # FIXME: should use a deterministic set of request urls, and delete them from cache before running test
+    describe "Processing different inputs", ->
+        testid = 'process_different_inputs'
+        testcases = stresstests[testid]
+        testcases.expected[host].forEach (expect, i) ->
+            concurrent = testcases.concurrent[i]
+            total = concurrent*2
+            total = concurrent if total > 16
+
+            describe "#{concurrent} concurrent requests", (done) ->
+                props =
+                    width: 50
+                    width: 40
+                    ignored: randomString 5
+                inputs = testcases.inputs.slice(0, total)
+                chai.expect(inputs.length).to.equal total
+
+                requestUrls = oneEach inputs, 'passthrough', props
+                it "average response time should be below #{expect} ms", (done) ->
+                    @timeout 5*60*1000
+                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
+                        chai.expect(err).to.not.exist
+                        results = describeTimings times
+                        fname = outdir+"/stress.#{testid}.#{concurrent}.json"
                         c = JSON.stringify results
                         fs.writeFile fname, c, (err) ->
                             console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
