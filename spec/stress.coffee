@@ -73,14 +73,14 @@ randomRequests = (graph, props, number, randomprop) ->
     f = (number) ->
         params = common.clone props
         params[randomprop] = randomString 5+(number/10)
-        return utils.formatRequest urlbase, graph, params
+        return utils.formatRequest urlbase, graph, params, config.api_key, config.api_secret
     return (f(n) for n in [0...number])
 
 oneEach = (inputs, graph, props) ->
     f = (input) ->
         params = common.clone props
         params.input = input
-        return utils.formatRequest urlbase, graph, params
+        return utils.formatRequest urlbase, graph, params, config.api_key, config.api_secret
     return (f(i) for i in inputs)
 
 describeTimings = (times) ->
@@ -110,12 +110,14 @@ describeSkipPerformance 'Stress', ->
         else
             done()
     after (done) ->
-        s.close done if startServer
+        return done null if not startServer
+        s.close done
 
 
     describe "Cached graph", ->
         testid = 'cached_graph'
-        requestUrl = utils.formatRequest urlbase, 'gradientmap', {input: 'demo/gradient-black-white.png'}
+        props = {input: 'demo/gradient-black-white.png'}
+        requestUrl = utils.formatRequest urlbase, 'gradientmap', props, config.api_key, config.api_secret
         testcases = stresstests[testid]
 
         it 'generating cache', (done) ->

@@ -112,7 +112,7 @@ exports.getTestConfig = () ->
         workdir: './testtemp'
         cache_local_directory: './testtemp/cache'
         cache_type: cachetype
-        baseurl: urlbase
+        api_host: urlbase
         verbose: verbose
         broker_url: process.env.IMGFLO_BROKER_URL or null
 
