@@ -299,3 +299,4 @@ describe 'Server', ->
             http.get u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
+

@@ -39,6 +39,7 @@ url = require 'url'
 # also run with a mix of local input images and remote
 # Verify correctness of images against eachohter. SHA sum based on first
 
+outdir = "spec/out"
 config = utils.getTestConfig()
 startServer = (config.api_host.indexOf 'localhost') == 0
 itSkipRemote = if not startServer then it.skip else it
@@ -52,8 +53,12 @@ requestRecordTime = (reqUrl, callback) ->
     req = request reqUrl, (err, response) ->
         timeDiff = process.hrtime(startTime)
         timeDiffMs = timeDiff[0]*1000 + timeDiff[1]/1000000
-        return callback err, timeDiffMs if err
-        return callback null, timeDiffMs
+        result =
+            url: reqUrl
+            duration: timeDiffMs
+            status: response?.statusCode
+            err: err
+        return callback err, result
 
     return req
 
@@ -92,11 +97,36 @@ describeTimings = (times) ->
     r['stddev-perc'] = r.stddev/r.mean*100
     return r
 
+writeResults = (testname, results, callback) ->
+    fname = outdir+"/stress.#{testname}.json"
+    c = JSON.stringify results
+    fs.writeFile fname, c, callback
+
+executeConcurrently = (testname, urls, concurrent, expect, done) ->
+    return done new Error 'Number of URLs less than concurrency' if concurrent > urls.length
+
+    async.mapLimit urls, concurrent, requestRecordTime, (err, results) ->
+        chai.expect(err).to.not.exist
+
+        times = results.map (r) -> r.duration
+        timings = describeTimings times
+        failures = results.filter (r) -> r.status != 200
+
+        failPercent = (failures.length / urls.length)*100
+        console.log "Requests/results/failed:\t #{urls.length}/#{results.length}/#{failures.length} (#{failPercent}%)"
+        console.log "Mean=#{timings.mean} stddev=#{timings['stddev']} (#{timings['stddev-perc']}%)"
+
+        failTolerance = 2
+        chai.expect(failPercent).to.be.below failTolerance, "Expected < #{failTolerance}% failures\n" + JSON.stringify(failures, null, 2)
+        chai.expect(timings.mean).to.be.below expect
+
+        writeResults testname, results, done
+
+
 # End-to-end stress-tests of image processing server, particularly performance
 describeSkipPerformance 'Stress', ->
     s = null
     l = null
-    outdir = "spec/out"
     stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yaml', 'utf-8'
     fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
 
@@ -134,15 +164,8 @@ describeSkipPerformance 'Stress', ->
 
                 it "average response time should be below #{expect} ms", (done) ->
                     @timeout 5*60*1000
-                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
-                        chai.expect(err).to.not.exist
-                        results = describeTimings times
-                        fname = outdir+"/stress.#{testid}.#{concurrent}.json"
-                        c = JSON.stringify results
-                        fs.writeFile fname, c, (err) ->
-                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
-                            chai.expect(results.mean).to.be.below expect
-                            done()
+                    name = "#{testid}.#{concurrent}"
+                    executeConcurrently name, requestUrls, concurrent, expect, done
 
 
     describe "Processing same input with different attributes", ->
@@ -158,15 +181,7 @@ describeSkipPerformance 'Stress', ->
 
                 it "average response time should be below #{expect} ms", (done) ->
                     @timeout 5*60*1000
-                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
-                        chai.expect(err).to.not.exist
-                        results = describeTimings times
-                        fname = outdir+"/stress.#{testid}.#{concurrent}.json"
-                        c = JSON.stringify results
-                        fs.writeFile fname, c, (err) ->
-                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
-                            chai.expect(results.mean).to.be.below expect
-                            done()
+                    executeConcurrently "#{testid}.#{concurrent}", requestUrls, concurrent, expect, done
 
     # FIXME: should be different sizes of input image
     describe "Processing same input at different sizes", ->
@@ -184,15 +199,7 @@ describeSkipPerformance 'Stress', ->
 
                 it "average response time should be below #{expect} ms", (done) ->
                     @timeout 5*60*1000
-                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
-                        chai.expect(err).to.not.exist
-                        results = describeTimings times
-                        fname = outdir+"/stress.#{testid}.#{size}.json"
-                        c = JSON.stringify results
-                        fs.writeFile fname, c, (err) ->
-                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
-                            chai.expect(results.mean).to.be.below expect
-                            done()
+                    executeConcurrently "#{testid}.#{size}", requestUrls, concurrent, expect, done
 
     # FIXME: should use a deterministic set of request urls, and delete them from cache before running test
     describe.skip "Processing different inputs", ->
@@ -214,12 +221,4 @@ describeSkipPerformance 'Stress', ->
                 requestUrls = oneEach inputs, 'passthrough', props
                 it "average response time should be below #{expect} ms", (done) ->
                     @timeout 5*60*1000
-                    async.mapLimit requestUrls, concurrent, requestRecordTime, (err, times) ->
-                        chai.expect(err).to.not.exist
-                        results = describeTimings times
-                        fname = outdir+"/stress.#{testid}.#{concurrent}.json"
-                        c = JSON.stringify results
-                        fs.writeFile fname, c, (err) ->
-                            console.log 'Mean, std-dev (%)', results.mean, results['stddev-perc']
-                            chai.expect(results.mean).to.be.below expect
-                            done()
+                    executeConcurrently "#{testid}.#{concurrent}", requestUrls, concurrent, expect, done
