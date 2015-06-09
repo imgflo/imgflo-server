@@ -53,7 +53,6 @@ requestRecordTime = (reqUrl, callback) ->
         timeDiff = process.hrtime(startTime)
         timeDiffMs = timeDiff[0]*1000 + timeDiff[1]/1000000
         return callback err, timeDiffMs if err
-        return callback new Error "#{response.statusCode}: #{reqUrl}", timeDiffMs if response.statusCode >= 400
         return callback null, timeDiffMs
 
     return req
