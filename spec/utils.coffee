@@ -116,5 +116,7 @@ exports.getTestConfig = () ->
         verbose: verbose
         broker_url: process.env.IMGFLO_BROKER_URL or null
 
+    config.api_port = port if port
+
     config = require('../src/common').mergeDefaultConfig config
     return config
