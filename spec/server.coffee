@@ -215,6 +215,20 @@ describe 'Server', ->
         it 'should end with .jpg', () ->
             chai.expect(location).to.contain '.jpg'
 
+    describe 'Input URL does not resolve', ->
+
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/__nonexisting_image___.jpg" }
+        u = graph_url 'crop', p
+
+        it 'should fail with a 504', (done) ->
+            @timeout 5000
+            # Enable auth
+            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
     describe 'Missing authentication', ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
 
