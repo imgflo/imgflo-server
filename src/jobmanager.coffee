@@ -99,11 +99,14 @@ class JobManager extends EventEmitter
             id: uuid.v4()
             created_at: Date.now()
             callback: null
-        @frontend.send 'newjob', job, (err) =>
+        onSent = (err) =>
             @logEvent 'job-created', { job: job.id, err: err }
             return callback err if err
             @jobs[job.id] = job
             return callback null, job
+        @frontend.send 'newjob', job
+        onSent null # FIXME: Participant.send should take callback
+
 
     doJob: (type, data, jobcallback, callback) ->
         @createJob type, data, (err, job) =>
