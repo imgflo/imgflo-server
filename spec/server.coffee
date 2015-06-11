@@ -321,6 +321,62 @@ describe 'Server', ->
                     done()
 
 
-    describe.skip 'POST /graph', () ->
+    describe 'POST /graph', () ->
+        beforeEach () ->
+            # Reset auth to disabled
+            state.server.authdb = null
+
         commonGraphTests 'POST', state
 
+        describe 'Create new image', ->
+            u = graph_url 'crop', { height: 44, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            location = null
+
+            it 'should return 202 accepted', (done) ->
+                HTTP.post u, (response) ->
+                    location = response.headers?['location']
+                    chai.expect(response.statusCode).to.equal 202
+                    chai.expect(response.headers).to.contain.keys 'location'
+                    done()
+            it 'should have location header', () ->
+                console.log 'location is', location
+                chai.expect(location).to.contain cacheurl
+            it 'location header should end with .jpg', () ->
+                console.log 'location is', location
+                chai.expect(location).to.contain '.jpg'
+
+
+            it.skip 'location URL should eventually return created image', (done) ->
+
+        describe 'Get existing image', ->
+            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            location = null
+
+            it 'should be a 301 redirect', () ->
+                HTTP.post u, (response) ->
+                    location = response.headers?['location']
+                    chai.expect(response.statusCode).to.equal 301
+                    chai.expect(location).to.contain cacheurl
+            it 'should end with .jpg', () ->
+                chai.expect(location).to.contain '.jpg'
+
+        describe 'with authentication', ->
+            location = null
+
+            describe 'get existing image', ->
+                p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+                u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
+
+                it 'request should succeed with redirect to file', (done) ->
+                    # Enable auth
+                    s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+                    HTTP.post u, (res) ->
+                        chai.expect(res.statusCode).to.equal 301
+                        location = res.headers['location']
+                        chai.expect(location).to.contain cacheurl
+                        done()
+                it 'file should be same as for non-authed / GET request', () ->
+                    chai.expect(location).to.be.a 'string'
+                    basename = path.basename (url.parse location).pathname, '.jpg'
+                    chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
