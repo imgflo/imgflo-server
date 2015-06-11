@@ -66,8 +66,22 @@ cacheurl = 'amazonaws.com' if config.cache_type.indexOf('s3') != -1
 graph_url = (graph, props, key, secret) ->
     return utils.formatRequest config.api_host, graph, props, key, secret
 
+HTTP =
+    get: http.get
+
+    post: (u, cb) ->
+        # convenience similar to node.js http.get
+        options = url.parse u
+        options.method = 'POST'
+        console.log 'making POST request', options
+        req = http.request options, cb
+        req.end()
+
+
 commonGraphTests = (type, state) ->
     s = state
+    method = type.toLowerCase()
+    successCode = if method == 'post' then 202 else 301
 
     describe 'Missing authentication', ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
@@ -76,18 +90,17 @@ commonGraphTests = (type, state) ->
             # Enable auth
             s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
 
-            http.get u, (res) ->
+            HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
 
     describe 'Providing auth when not needed', ->
-        p = { height: 11, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-        u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
+        p = { height: 11, width: 130, input: "demo/grid-toastybob.jpg", ignored: type }
+        u = graph_url 'passthrough', p, 'ooShei0queigeeke', 'mysecret?'
 
         it 'request should succeed with redirect to file', (done) ->
-
-            http.get u, (res) ->
-                chai.expect(res.statusCode).to.equal 301
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal successCode
                 location = res.headers['location']
                 chai.expect(location).to.contain cacheurl
                 done()
@@ -100,12 +113,11 @@ commonGraphTests = (type, state) ->
             # Enable auth
             s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
 
-            http.get u, (res) ->
+            HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
 
     describe 'Invalid apikey', ->
-
         p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
         u = graph_url 'crop', p, 'apikey?', 'mysecret?'
 
@@ -114,7 +126,7 @@ commonGraphTests = (type, state) ->
             # Enable auth
             s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
 
-            http.get u, (res) ->
+            HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
 
