@@ -33,4 +33,8 @@ class Cache extends common.CacheServer
     handleKeyRequest: (key, request, response) ->
         @cache.handleKeyRequest? key, request, response
 
+    # TEMP: needed as long as we return cache url in POST requests, and not job urls
+    urlForKey: (key) ->
+        return @cache.urlForKey key
+
 exports.Cache = Cache
