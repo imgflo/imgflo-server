@@ -73,7 +73,6 @@ HTTP =
         # convenience similar to node.js http.get
         options = url.parse u
         options.method = 'POST'
-        console.log 'making POST request', options
         req = http.request options, cb
         req.end()
 
@@ -339,10 +338,8 @@ describe 'Server', ->
                     chai.expect(response.headers).to.contain.keys 'location'
                     done()
             it 'should have location header', () ->
-                console.log 'location is', location
                 chai.expect(location).to.contain cacheurl
             it 'location header should end with .jpg', () ->
-                console.log 'location is', location
                 chai.expect(location).to.contain '.jpg'
 
 
