@@ -99,12 +99,21 @@ class Server extends EventEmitter
     setupRoutes: (app) ->
 
         # processing
+        # GET /graph
         app.get '/graph/:graphname', (req, res) =>
-            @logEvent 'request-received', { request: req.url }
-            @handleGraphRequest req, res
+            @logEvent 'request-received', { request: req.url, method: 'GET' }
+            @getGraphRequest req, res
         app.get '/graph/:apikey/:apitoken/:graph', (req, res) =>
-            @logEvent 'request-received', { request: req.url }
-            @handleGraphRequest req, res
+            @logEvent 'request-received', { request: req.url, method: 'GET' }
+            @getGraphRequest req, res
+        # POST /graph
+        app.post '/graph/:graphname', (req, res) =>
+            @logEvent 'request-received', { request: req.url, method: 'POST' }
+            @postGraphRequest req, res
+        app.post '/graph/:apikey/:apitoken/:graph', (req, res) =>
+            @logEvent 'request-received', { request: req.url, method: 'POST' }
+            @postGraphRequest req, res
+        # GET /cache
         app.get '/cache/:key', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             key = req.params.key
@@ -169,7 +178,7 @@ class Server extends EventEmitter
                 return
             response.end JSON.stringify info
 
-    redirectToCache: (err, target, response) ->
+    redirectToCache: (err, target, response, successCode) ->
         if err
             if err.code?
                 response.writeHead err.code, { 'Content-Type': 'application/json' }
@@ -179,7 +188,7 @@ class Server extends EventEmitter
                 response.end JSON.stringify err
             return
         target = "http://#{@host}/cache/#{target.substr(2)}" if target.indexOf('./') == 0
-        response.writeHead 301, { 'Location': target }
+        response.writeHead successCode, { 'Location': target }
         response.end()
 
     checkAuth: (req) ->
@@ -193,42 +202,67 @@ class Server extends EventEmitter
         expectedToken = hash.digest 'hex'
         return req.token == expectedToken
 
-    # GET /process
+    # GET /graph
     # on new HTTP request:
     #   validate parameters & auth
     #   check S3 cache
     #   create job from request, submit
     # when job completes:
     #   set HTTP response with correct statuscode/data
-    handleGraphRequest: (request, response) ->
-        u = url.parse request.url, true
-        req = parseRequestUrl request.url
-
-        authenticated = @checkAuth req
-        if not authenticated
-            response.writeHead 403
-            return response.end()
+    getGraphRequest: (request, response) ->
+        req = @parseGraphRequest request
+        return if not @ensureAuthenticated req, response
 
         @cache.keyExists req.cachekey, (err, cached) =>
             if cached
                 @logEvent 'graph-in-cache', { request: request.url, key: req.cachekey, url: cached }
-                @redirectToCache err, cached, response
+                return @redirectToCache err, cached, response, 301
             else
-                @processAndCache request.url, req.cachekey, response, (err, cached) =>
-                    @logEvent 'serve-processed-file', { request: request.url, url: cached, err: err }
-                    @redirectToCache err, cached, response
+                onJobCompleted = (err, job) =>
+                    @logEvent 'serve-processed-file', { request: req.request, url: job.results?.url }
+                    return @redirectToCache err, job.results?.url, response, 301
+                @jobManager.doJob 'process-image', req, onJobCompleted, (err, job) =>
+                    return @redirectToCache err, null, null if err # failed to create job
 
-    processAndCache: (request_url, key, response, callback) ->
-        req = parseRequestUrl request_url
-        #  Resolve relative request to localhost
+    # POST /graph
+    # on new HTTP request:
+    #   validate parameters & auth
+    #   check S3 cache
+    #   create job from request, submit
+    #   return 202 with url
+    #
+    # Does not wait for or send results!
+    postGraphRequest: (request, response) ->
+        req = @parseGraphRequest request
+        return if not @ensureAuthenticated req, response
+
+        @cache.keyExists req.cachekey, (err, cached) =>
+            if cached
+                @logEvent 'graph-in-cache', { request: request.url, key: req.cachekey, url: cached }
+                return @redirectToCache err, cached, response, 301
+            else
+                onJobCompleted = null # not waiting for result
+                # TODO: return a job URL instead of the cache URL
+                cacheurl = @cache.urlForKey?(req.cachekey) # HACK, uses internal method
+                @jobManager.doJob 'process-image', req, onJobCompleted, (err, job) =>
+                    return @redirectToCache err, cacheurl, response, 202
+
+
+    ensureAuthenticated: (req, response) ->
+        authenticated = @checkAuth req
+        if not authenticated
+            response.writeHead 403
+            response.end()
+            return false
+        return true
+
+    parseGraphRequest: (request) ->
+        req = parseRequestUrl request.url
         for port, file of req.files
             if (file.src.indexOf 'http://') == -1 and (file.src.indexOf 'https://') == -1
                 file.src = 'http://localhost:'+@port+'/'+file.src
+        return req
 
-        # TODO: check that using req as job payload is sane
-        @jobManager.doJob 'process-image', req, (err, job) =>
-            @logEvent 'serve-processed-file', { request: req.request, url: job.results?.url }
-            return callback err, job.results?.url
 
 exports.Server = Server
 

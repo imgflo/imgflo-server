@@ -91,21 +91,25 @@ class JobManager extends EventEmitter
     logEvent: (id, data) ->
         @emit 'logevent', id, data
 
-    createJob: (type, data) ->
+    createJob: (type, data, callback) ->
         # TODO: validate type and data
         job =
             type: type
             data: data
             id: uuid.v4()
+            created_at: Date.now()
             callback: null
-        @jobs[job.id] = job
-        @frontend.send 'newjob', job, () =>
-        @logEvent 'job-created', { job: job.id }
-        return job
+        @frontend.send 'newjob', job, (err) =>
+            @logEvent 'job-created', { job: job.id, err: err }
+            return callback err if err
+            @jobs[job.id] = job
+            return callback null, job
 
-    doJob: (type, data, callback) ->
-        job = @createJob type, data
-        @jobs[job.id].callback = callback
+    doJob: (type, data, jobcallback, callback) ->
+        @createJob type, data, (err, job) =>
+            return callback err if err
+            @jobs[job.id].callback = jobcallback if jobcallback
+            return callback null
 
     onResult: (result) ->
         job = @jobs[result.id]

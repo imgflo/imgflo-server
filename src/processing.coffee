@@ -74,6 +74,7 @@ class JobExecutor extends EventEmitter
     doJob: (job, callback) ->
         @processAndCache job.data, (err, cachedUrl) ->
             resultsJob = common.clone job
+            resultsJob.completed_at = Date.now()
             resultsJob.results = {}
             resultsJob.results.url = cachedUrl if cachedUrl
             resultsJob.error = err if err
