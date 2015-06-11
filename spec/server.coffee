@@ -66,13 +66,68 @@ cacheurl = 'amazonaws.com' if config.cache_type.indexOf('s3') != -1
 graph_url = (graph, props, key, secret) ->
     return utils.formatRequest config.api_host, graph, props, key, secret
 
+commonGraphTests = (type, state) ->
+    s = state
+
+    describe 'Missing authentication', ->
+        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+
+        it 'should fail with a 403', (done) ->
+            # Enable auth
+            s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Providing auth when not needed', ->
+        p = { height: 11, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
+
+        it 'request should succeed with redirect to file', (done) ->
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 301
+                location = res.headers['location']
+                chai.expect(location).to.contain cacheurl
+                done()
+
+    describe 'Incorrect secret', ->
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
+
+        it 'should fail with a 403', (done) ->
+            # Enable auth
+            s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Invalid apikey', ->
+
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'apikey?', 'mysecret?'
+
+        it 'should fail with a 403', (done) ->
+            @timeout 5000
+            # Enable auth
+            s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+            http.get u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+
 describe 'Server', ->
     s = null
+    state =
+        server: null
 
     before (done) ->
         utils.rmrf config.workdir
         if startServer
-            s = new server.Server config
+            state.server = s = new server.Server config
             l = new utils.LogHandler s
             s.listen config.api_host, config.api_port, done
         else
@@ -125,7 +180,13 @@ describe 'Server', ->
             d = JSON.parse responseData
             chai.expect(d.graphs).to.not.have.key 'imgflo-server'
 
-    describe 'Graph request', ->
+    describe 'GET /graph', ->
+        beforeEach () ->
+            # Reset auth to disabled
+            state.server.authdb = null
+
+        commonGraphTests 'GET', state
+
         describe 'with invalid graph parameters', ->
             u = graph_url 'gradientmap', {skeke: 299, oooor:222, input: "demo/grid-toastybob.jpg"}
             data = ""
@@ -155,148 +216,99 @@ describe 'Server', ->
                 d = JSON.parse data
                 chai.expect(d.supported).to.eql ['jpg', 'jpeg', 'png', null]
 
-    describe 'Get image', ->
-        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-        res = null
-        location = null
+        describe 'Get new image', ->
+            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            res = null
+            location = null
 
-        it 'should be created on demand', (done) ->
-            @timeout 15000
-            checkProcessed = (id) ->
-                chai.expect(id).to.not.contain 'error'
-                if id == 'serve-processed-file'
-                    s.removeListener 'logevent', checkProcessed
-                    done()
-            s.on 'logevent', checkProcessed # NOTE: Grey-box
-            http.get u, (response) ->
-                res = response
-
-        it 'should redirect to cached file', () ->
-            chai.expect(res.statusCode).to.equal 301
-            chai.expect(res.headers).to.contain.keys 'location'
-            location = res.headers['location']
-            chai.expect(location).to.contain cacheurl
-        it 'redirect should end with .jpg', () ->
-            chai.expect(location).to.contain '.jpg'
-        it 'key should be deterministic', () ->
-            basename = path.basename (url.parse location).pathname, '.jpg'
-            chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
-        it 'redirect should point to created image', (done) ->
-            http.get location, (response) ->
-                chai.expect(response.statusCode).to.equal 200
-                response.on 'data', (chunk) ->
-                    fs.appendFile 'testout.png', chunk, ->
-                        #
-                response.on 'end', ->
-                    fs.exists 'testout.png', (exists) ->
-                        chai.assert exists, 'testout.png does not exist'
+            it 'should be created on demand', (done) ->
+                @timeout 15000
+                checkProcessed = (id) ->
+                    chai.expect(id).to.not.contain 'error'
+                    if id == 'serve-processed-file'
+                        s.removeListener 'logevent', checkProcessed
                         done()
+                s.on 'logevent', checkProcessed # NOTE: Grey-box
+                http.get u, (response) ->
+                    res = response
 
-    describe 'Get existing image', ->
-        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-        response = null
-        location = null
+            it 'should redirect to cached file', () ->
+                chai.expect(res.statusCode).to.equal 301
+                chai.expect(res.headers).to.contain.keys 'location'
+                location = res.headers['location']
+                chai.expect(location).to.contain cacheurl
+            it 'redirect should end with .jpg', () ->
+                chai.expect(location).to.contain '.jpg'
+            it 'key should be deterministic', () ->
+                basename = path.basename (url.parse location).pathname, '.jpg'
+                chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
+            it 'redirect should point to created image', (done) ->
+                http.get location, (response) ->
+                    chai.expect(response.statusCode).to.equal 200
+                    response.on 'data', (chunk) ->
+                        fs.appendFile 'testout.png', chunk, ->
+                            #
+                    response.on 'end', ->
+                        fs.exists 'testout.png', (exists) ->
+                            chai.assert exists, 'testout.png does not exist'
+                            done()
 
-        it 'should be in cache', (done) ->
-            checkProcessed = (id) ->
-                chai.expect(id).to.not.contain 'error'
-                if id == 'graph-in-cache'
-                    s.removeListener 'logevent', checkProcessed
+        describe 'Get existing image', ->
+            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            response = null
+            location = null
+
+            it 'should be in cache', (done) ->
+                checkProcessed = (id) ->
+                    chai.expect(id).to.not.contain 'error'
+                    if id == 'graph-in-cache'
+                        s.removeListener 'logevent', checkProcessed
+                        done()
+                s.on 'logevent', checkProcessed
+                http.get u, (res) ->
+                    response = res
+
+            it 'should be a redirect', () ->
+                chai.expect(response.statusCode).to.equal 301
+                location = response.headers['location']
+                chai.expect(location).to.contain cacheurl
+
+            it 'should end with .jpg', () ->
+                chai.expect(location).to.contain '.jpg'
+
+        describe 'Correct authentication', ->
+            location = null
+
+            p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
+
+            it 'request should succeed with redirect to file', (done) ->
+                # Enable auth
+                s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+
+                http.get u, (res) ->
+                    chai.expect(res.statusCode).to.equal 301
+                    location = res.headers['location']
+                    chai.expect(location).to.contain cacheurl
                     done()
-            s.on 'logevent', checkProcessed
-            http.get u, (res) ->
-                response = res
+            it 'file should be same as for non-authed request', () ->
+                chai.expect(location).to.be.a 'string'
+                basename = path.basename (url.parse location).pathname, '.jpg'
+                chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
 
-        it 'should be a redirect', () ->
-            chai.expect(response.statusCode).to.equal 301
-            location = response.headers['location']
-            chai.expect(location).to.contain cacheurl
+        describe.skip 'Input URL does not resolve', ->
 
-        it 'should end with .jpg', () ->
-            chai.expect(location).to.contain '.jpg'
+            p = { height: 110, width: 130, x: 200, y: 230, input: "demo/__nonexisting_image___.jpg" }
+            u = graph_url 'crop', p
 
-    describe 'Input URL does not resolve', ->
+            it 'should fail with a 504', (done) ->
+                @timeout 5000
 
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/__nonexisting_image___.jpg" }
-        u = graph_url 'crop', p
+                http.get u, (res) ->
+                    chai.expect(res.statusCode).to.equal 504
+                    done()
 
-        it 'should fail with a 504', (done) ->
-            @timeout 5000
-            # Enable auth
-            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
 
-            http.get u, (res) ->
-                chai.expect(res.statusCode).to.equal 403
-                done()
-
-    describe 'Missing authentication', ->
-        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-
-        it 'should fail with a 403', (done) ->
-            # Enable auth
-            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
-
-            http.get u, (res) ->
-                chai.expect(res.statusCode).to.equal 403
-                done()
-
-    describe 'Correct authentication', ->
-        location = null
-
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-        u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
-
-        it 'request should succeed with redirect to file', (done) ->
-            # Enable auth
-            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
-
-            http.get u, (res) ->
-                chai.expect(res.statusCode).to.equal 301
-                location = res.headers['location']
-                chai.expect(location).to.contain cacheurl
-                done()
-        it 'file should be same as for non-authed request', () ->
-            chai.expect(location).to.be.a 'string'
-            basename = path.basename (url.parse location).pathname, '.jpg'
-            chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
-
-    describe 'Providing auth when not needed', ->
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-        u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
-
-        it 'request should succeed with redirect to file', (done) ->
-            # Disable auth
-            s.authdb = null
-
-            http.get u, (res) ->
-                chai.expect(res.statusCode).to.equal 301
-                location = res.headers['location']
-                chai.expect(location).to.contain cacheurl
-                done()
-
-    describe 'Incorrect secret', ->
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-        u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
-
-        it 'should fail with a 403', (done) ->
-            # Enable auth
-            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
-
-            http.get u, (res) ->
-                chai.expect(res.statusCode).to.equal 403
-                done()
-
-    describe 'Invalid apikey', ->
-
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
-        u = graph_url 'crop', p, 'apikey?', 'mysecret?'
-
-        it 'should fail with a 403', (done) ->
-            @timeout 5000
-            # Enable auth
-            s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
-
-            http.get u, (res) ->
-                chai.expect(res.statusCode).to.equal 403
-                done()
+    describe.skip 'POST /graph', () ->
+        commonGraphTests 'POST', state
 
