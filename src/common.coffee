@@ -189,6 +189,7 @@ exports.mergeDefaultConfig = (overrides) ->
         graphdir: './graphs'
         resourcedir: './examples'
 
+        image_size_limit: 25 # megapixels
         worker_type: 'internal' # will start internal worker
         broker_url: 'direct://imgflo3'
 
@@ -216,6 +217,7 @@ exports.getProductionConfig = () ->
     config.broker_url = process.env.CLOUDAMQP_URL or null
     config.broker_url = process.env.IMGFLO_BROKER_URL or config.broker_url
     config.redis_url = process.env.REDISCLOUD_URL or null
+    config.image_size_limit = process.env.IMGFLO_SIZE_LIMIT or null
     config = exports.mergeDefaultConfig config
 
     return config

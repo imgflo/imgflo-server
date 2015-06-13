@@ -81,6 +81,7 @@ class Server extends EventEmitter
         @port = null
         @host = null
         @verbose = config.verbose
+        @config = config
 
         @authdb = null
         if config.api_key or config.api_secret
@@ -212,6 +213,7 @@ class Server extends EventEmitter
     getGraphRequest: (request, response) ->
         req = @parseGraphRequest request
         return if not @ensureAuthenticated req, response
+        return if not @ensureLimits req, response
 
         @cache.keyExists req.cachekey, (err, cached) =>
             if cached
@@ -235,6 +237,7 @@ class Server extends EventEmitter
     postGraphRequest: (request, response) ->
         req = @parseGraphRequest request
         return if not @ensureAuthenticated req, response
+        return if not @ensureLimits req, response
 
         @cache.keyExists req.cachekey, (err, cached) =>
             if cached
@@ -255,6 +258,16 @@ class Server extends EventEmitter
             response.end()
             return false
         return true
+
+    ensureLimits: (req, response) ->
+        image_size = req.iips.width * req.iips.height
+        sizeOk = image_size < @config.image_size_limit
+        if not sizeOk
+            response.writeHead 422
+            response.end()
+            return false
+        return true
+
 
     parseGraphRequest: (request) ->
         req = parseRequestUrl request.url

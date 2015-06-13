@@ -82,6 +82,15 @@ commonGraphTests = (type, state) ->
     method = type.toLowerCase()
     successCode = if method == 'post' then 202 else 301
 
+    describe 'Requested height*width higher than limit', ->
+        u = graph_url 'passthrough', { height: 30000, width: 3000, input: "demo/grid-toastybob.jpg" }
+
+        it 'should fail with a 422', (done) ->
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 422
+                done()
+
     describe 'Missing authentication', ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
 
