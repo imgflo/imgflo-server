@@ -92,7 +92,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe 'Requested height likely to make image higher than limit', ->
-        u = graph_url 'passthrough', { height: 5000, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'passthrough', { height: 5100, input: "demo/grid-toastybob.jpg" }
 
         it 'should fail with a 422', (done) ->
 
