@@ -261,7 +261,7 @@ class Server extends EventEmitter
 
     ensureLimits: (req, response) ->
         image_size = req.iips.width * req.iips.height
-        sizeOk = image_size < @config.image_size_limit
+        sizeOk = image_size < (@config.image_size_limit*1000*1000)
         if not sizeOk
             response.writeHead 422
             response.end()
