@@ -83,7 +83,16 @@ commonGraphTests = (type, state) ->
     successCode = if method == 'post' then 202 else 301
 
     describe 'Requested height*width higher than limit', ->
-        u = graph_url 'passthrough', { height: 30000, width: 3000, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'passthrough', { height: 30000, width: 1000, input: "demo/grid-toastybob.jpg" }
+
+        it 'should fail with a 422', (done) ->
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 422
+                done()
+
+    describe 'Requested height likely to make image higher than limit', ->
+        u = graph_url 'passthrough', { height: 5000, input: "demo/grid-toastybob.jpg" }
 
         it 'should fail with a 422', (done) ->
 
