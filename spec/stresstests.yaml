@@ -13,6 +13,10 @@ process_different_sizes:
     expected:
         'localhost': [1400, 1400, 2000, 5000, 14000]
         'imgflo.herokuapp.com': [6000, 6000, 6000]
+same_request_concurrently:
+    concurrent:
+        'localhost': [8, 10, 12]
+        'imgflo.herokuapp.com': [4, 16, 32]
 process_different_inputs:
     # var sources = [];
     # document.getElementsByTagName('img').forEach(function(el) { sources.push(el.src); } );
