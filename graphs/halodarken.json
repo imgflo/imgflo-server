@@ -1,0 +1,320 @@
+{
+    "properties": {
+        "name": "main",
+        "id": "imgflo2/main",
+        "project": "imgflo2",
+        "environment": {
+            "type": "imgflo"
+        },
+        "changed": true
+    },
+    "inports": {
+        "strength": {
+            "process": "gegl/opacity_pfovl",
+            "port": "value",
+            "metadata": {
+                "x": 108,
+                "y": -756,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "edgeblur-x": {
+            "process": "blur",
+            "port": "std-dev-x",
+            "metadata": {
+                "x": -72,
+                "y": -756,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "edgeblur-y": {
+            "process": "blur",
+            "port": "std-dev-y",
+            "metadata": {
+                "x": -216,
+                "y": -756,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "input": {
+            "process": "gegl/nop_iffbc",
+            "port": "input",
+            "metadata": {
+                "x": -324,
+                "y": -504,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "outports": {
+        "output": {
+            "process": "svg/color-dodge_p4ezy",
+            "port": "output",
+            "metadata": {
+                "x": 612,
+                "y": -684,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "groups": [],
+    "processes": {
+        "Processor_v4ewn": {
+            "component": "Processor",
+            "metadata": {
+                "label": "Processor",
+                "x": 612,
+                "y": -576,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/load_8lrli": {
+            "component": "gegl/load",
+            "metadata": {
+                "label": "gegl/load",
+                "x": -360,
+                "y": -648,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "edge": {
+            "component": "gegl/edge-sobel",
+            "metadata": {
+                "label": "edge",
+                "x": 72,
+                "y": -504,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "svg/color-dodge_p4ezy": {
+            "component": "svg/color-dodge",
+            "metadata": {
+                "label": "svg/color-dodge",
+                "x": 432,
+                "y": -612,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/opacity_pfovl": {
+            "component": "gegl/opacity",
+            "metadata": {
+                "label": "gegl/opacity",
+                "x": 216,
+                "y": -504,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/nop_iffbc": {
+            "component": "gegl/nop",
+            "metadata": {
+                "label": "gegl/nop",
+                "x": -180,
+                "y": -612,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/gray_oxupr": {
+            "component": "gegl/gray",
+            "metadata": {
+                "label": "gegl/gray",
+                "x": 324,
+                "y": -504,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "blur": {
+            "component": "gegl/gaussian-blur-iir",
+            "metadata": {
+                "label": "blur",
+                "x": -36,
+                "y": -504,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "connections": [
+        {
+            "src": {
+                "process": "gegl/load_8lrli",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/nop_iffbc",
+                "port": "input"
+            },
+            "metadata": {
+                "route": 0
+            }
+        },
+        {
+            "src": {
+                "process": "gegl/nop_iffbc",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "svg/color-dodge_p4ezy",
+                "port": "aux"
+            },
+            "metadata": {
+                "route": null
+            }
+        },
+        {
+            "src": {
+                "process": "gegl/opacity_pfovl",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/gray_oxupr",
+                "port": "input"
+            },
+            "metadata": {
+                "route": 0
+            }
+        },
+        {
+            "src": {
+                "process": "edge",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/opacity_pfovl",
+                "port": "input"
+            },
+            "metadata": {
+                "route": null
+            }
+        },
+        {
+            "src": {
+                "process": "gegl/gray_oxupr",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "svg/color-dodge_p4ezy",
+                "port": "input"
+            },
+            "metadata": {
+                "route": null
+            }
+        },
+        {
+            "src": {
+                "process": "blur",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "edge",
+                "port": "input"
+            },
+            "metadata": {}
+        },
+        {
+            "src": {
+                "process": "gegl/nop_iffbc",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "blur",
+                "port": "input"
+            },
+            "metadata": {
+                "route": 0
+            }
+        },
+        {
+            "src": {
+                "process": "svg/color-dodge_p4ezy",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "Processor_v4ewn",
+                "port": "input"
+            },
+            "metadata": {}
+        },
+        {
+            "data": "",
+            "tgt": {
+                "process": "gegl/load_8lrli",
+                "port": "uri"
+            }
+        },
+        {
+            "data": "CGC9GJrVAAAdJzd.jpg",
+            "tgt": {
+                "process": "gegl/load_8lrli",
+                "port": "path"
+            }
+        },
+        {
+            "data": true,
+            "tgt": {
+                "process": "svg/color-dodge_p4ezy",
+                "port": "srgb"
+            }
+        },
+        {
+            "data": true,
+            "tgt": {
+                "process": "blur",
+                "port": "clip-extent"
+            }
+        },
+        {
+            "data": 10,
+            "tgt": {
+                "process": "blur",
+                "port": "std-dev-x"
+            }
+        },
+        {
+            "data": 10,
+            "tgt": {
+                "process": "blur",
+                "port": "std-dev-y"
+            }
+        },
+        {
+            "data": false,
+            "tgt": {
+                "process": "edge",
+                "port": "keep-sign"
+            }
+        },
+        {
+            "data": true,
+            "tgt": {
+                "process": "edge",
+                "port": "vertical"
+            }
+        },
+        {
+            "data": true,
+            "tgt": {
+                "process": "edge",
+                "port": "horizontal"
+            }
+        },
+        {
+            "data": 0.7,
+            "tgt": {
+                "process": "gegl/opacity_pfovl",
+                "port": "value"
+            }
+        }
+    ]
+}
