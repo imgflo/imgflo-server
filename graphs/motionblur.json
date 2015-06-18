@@ -1,0 +1,294 @@
+{
+    "properties": {
+        "name": "next",
+        "project": "imgflo2",
+        "id": "imgflo2/next",
+        "environment": {
+            "type": "imgflo"
+        },
+        "changed": true
+    },
+    "inports": {
+        "strength": {
+            "process": "gegl/opacity_3gzk5",
+            "port": "value",
+            "metadata": {
+                "x": -180,
+                "y": -396,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "contrast": {
+            "process": "gegl/brightness-contrast_y9skm",
+            "port": "contrast",
+            "metadata": {
+                "x": -288,
+                "y": -396,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "brightness": {
+            "process": "gegl/brightness-contrast_y9skm",
+            "port": "brightness",
+            "metadata": {
+                "x": -396,
+                "y": -396,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "length": {
+            "process": "gegl/motion-blur-linear_wlned",
+            "port": "length",
+            "metadata": {
+                "x": -648,
+                "y": -396,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "angle": {
+            "process": "gegl/motion-blur-linear_wlned",
+            "port": "angle",
+            "metadata": {
+                "x": -540,
+                "y": -396,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "input": {
+            "process": "gegl/nop_3w3lj",
+            "port": "input",
+            "metadata": {
+                "x": -648,
+                "y": -72,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "outports": {
+        "output": {
+            "process": "svg/screen_4crhf",
+            "port": "output",
+            "metadata": {
+                "x": 216,
+                "y": -72,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "groups": [],
+    "processes": {
+        "Processor_uwer1": {
+            "component": "Processor",
+            "metadata": {
+                "label": "Processor",
+                "x": 216,
+                "y": -252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/motion-blur-linear_wlned": {
+            "component": "gegl/motion-blur-linear",
+            "metadata": {
+                "label": "gegl/motion-blur-linear",
+                "x": -360,
+                "y": -72,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/load_3ddd2": {
+            "component": "gegl/load",
+            "metadata": {
+                "label": "gegl/load",
+                "x": -648,
+                "y": -252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/nop_3w3lj": {
+            "component": "gegl/nop",
+            "metadata": {
+                "label": "gegl/nop",
+                "x": -504,
+                "y": -252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/opacity_3gzk5": {
+            "component": "gegl/opacity",
+            "metadata": {
+                "label": "gegl/opacity",
+                "x": -72,
+                "y": -72,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/brightness-contrast_y9skm": {
+            "component": "gegl/brightness-contrast",
+            "metadata": {
+                "label": "gegl/brightness-contrast",
+                "x": -216,
+                "y": -72,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "svg/screen_4crhf": {
+            "component": "svg/screen",
+            "metadata": {
+                "label": "svg/screen",
+                "x": 36,
+                "y": -252,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "connections": [
+        {
+            "src": {
+                "process": "gegl/load_3ddd2",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/nop_3w3lj",
+                "port": "input"
+            },
+            "metadata": {
+                "route": null
+            }
+        },
+        {
+            "src": {
+                "process": "gegl/nop_3w3lj",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/motion-blur-linear_wlned",
+                "port": "input"
+            },
+            "metadata": {}
+        },
+        {
+            "src": {
+                "process": "gegl/motion-blur-linear_wlned",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/brightness-contrast_y9skm",
+                "port": "input"
+            },
+            "metadata": {
+                "route": null
+            }
+        },
+        {
+            "src": {
+                "process": "gegl/brightness-contrast_y9skm",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/opacity_3gzk5",
+                "port": "input"
+            },
+            "metadata": {}
+        },
+        {
+            "src": {
+                "process": "svg/screen_4crhf",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "Processor_uwer1",
+                "port": "input"
+            },
+            "metadata": {}
+        },
+        {
+            "src": {
+                "process": "gegl/opacity_3gzk5",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "svg/screen_4crhf",
+                "port": "input"
+            },
+            "metadata": {
+                "route": null
+            }
+        },
+        {
+            "src": {
+                "process": "gegl/nop_3w3lj",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "svg/screen_4crhf",
+                "port": "aux"
+            },
+            "metadata": {
+                "route": null
+            }
+        },
+        {
+            "data": "",
+            "tgt": {
+                "process": "gegl/load_3ddd2",
+                "port": "uri"
+            }
+        },
+        {
+            "data": "Bzd09cECYAAQz47.png",
+            "tgt": {
+                "process": "gegl/load_3ddd2",
+                "port": "path"
+            }
+        },
+        {
+            "data": false,
+            "tgt": {
+                "process": "svg/screen_4crhf",
+                "port": "srgb"
+            }
+        },
+        {
+            "data": 100,
+            "tgt": {
+                "process": "gegl/motion-blur-linear_wlned",
+                "port": "length"
+            }
+        },
+        {
+            "data": 1.1,
+            "tgt": {
+                "process": "gegl/brightness-contrast_y9skm",
+                "port": "contrast"
+            }
+        },
+        {
+            "data": 1,
+            "tgt": {
+                "process": "gegl/opacity_3gzk5",
+                "port": "value"
+            }
+        },
+        {
+            "data": 90,
+            "tgt": {
+                "process": "gegl/motion-blur-linear_wlned",
+                "port": "angle"
+            }
+        }
+    ]
+}
