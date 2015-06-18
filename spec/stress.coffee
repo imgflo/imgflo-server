@@ -122,6 +122,17 @@ executeConcurrently = (testname, urls, concurrent, expect, done) ->
 
         writeResults testname, results, done
 
+requestAndDownload = (reqUrl, output, callback) ->
+    response = null
+    req = request reqUrl, (err, res) ->
+        chai.expect(err).to.be.a 'null'
+    req.pipe fs.createWriteStream output
+    req.on 'response', (res) ->
+        response = res
+        return callback new Error "Wrong statuscode (expected 200): #{response.statusCode}" if response.statusCode != 200
+    req.on 'end', () ->
+        return callback new Error "Wrong statuscode (expected 200): #{response.statusCode}" if response.statusCode != 200
+        return callback null, output
 
 # End-to-end stress-tests of image processing server, particularly performance
 describeSkipPerformance 'Stress', ->
@@ -222,3 +233,56 @@ describeSkipPerformance 'Stress', ->
                 it "average response time should be below #{expect} ms", (done) ->
                     @timeout 5*60*1000
                     executeConcurrently "#{testid}.#{concurrent}", requestUrls, concurrent, expect, done
+
+    describe "Processing same request concurrently", ->
+            datadir = 'spec/data/'
+            concurrent = 10
+            timeout = 4000*concurrent
+            testcase = 'stress.same_request_concurrently'
+
+            props =
+                width: 2000
+                ignored: randomString 4
+                input: 'demo/mountains.png'
+            reqUrl = utils.formatRequest config.api_host, 'passthrough', props, config.api_key, config.api_secret
+            ext = utils.requestFileFormat reqUrl
+            reference = path.join datadir, "#{testcase}.reference.#{ext}"
+
+            # Calculate request
+            requests = []
+            for index in [0...concurrent]
+                output = path.join datadir, "#{testcase}.out.#{index}.#{ext}"
+                fs.unlinkSync output if fs.existsSync output
+                requests.push
+                    url: reqUrl
+                    target: output
+                    reference: reference
+
+            it 'should have a reference result', (done) ->
+                fs.exists reference, (exists) ->
+                    chai.assert exists, 'Not found: '+reference
+                    done()
+
+            it 'all request should output a file', (done) ->
+                @timeout timeout
+                download = (data, cb) ->
+                    requestAndDownload data.url, data.target, cb
+                async.map requests, download, (err, results) ->
+                    chai.expect(err).to.not.exist
+                    chai.expect(results).to.have.length requests.length
+                    done()
+
+            it 'all results should be equal to reference', (done) ->
+                @timeout timeout
+                options = { timeout: timeout*2 }
+
+                compareToReference = (data, cb) ->
+                    utils.compareImages data.target, data.reference, options, (error, stderr, stdout) ->
+                        msg = "image comparison failed code=#{error?.code}\n#{stderr}\n#{stdout}"
+                        return cb null, { error: error, msg: msg }
+
+                async.map requests, compareToReference, (err, results) ->
+                    chai.expect(err).to.not.exist
+                    errors = results.filter((r) -> r.error != null)
+                    chai.expect(errors).to.eql []
+                    done()

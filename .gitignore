@@ -13,6 +13,7 @@ spec/data/*.out.png
 spec/data/*-diff.png
 spec/data/*.out.jpg
 spec/data/*.out.jpeg
+spec/data/*.out*
 testout.png
 *.includes
 *.autosave
