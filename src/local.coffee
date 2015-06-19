@@ -29,19 +29,29 @@ class Cache extends common.CacheServer
             callback null, cached
 
     putFile: (source, key, callback) ->
-        target = @filePathForKey key
-        from = fs.createReadStream source
-        to = new FsyncedWriteStream target
-        from.pipe to
-        from.on 'error', (err) ->
-            callback err, null
-        to.on 'error', (err) ->
-            callback err, null
-        to.on 'fsynced', () =>
-            # Somehow even waiting for fsync is not enough...
-            setTimeout () =>
-                callback null, @urlForKey key
-            , 300
+        # check if already existing, mostly to avoid corruption
+        @keyExists key, (err, cached) =>
+            return callback err if err
+            return callback null, cached if cached
+
+            # Not in cache, actually store
+            # To be atomic, write to temp file then rename to final location
+            temppath = temp.path
+                dir: @dir
+                prefix: key
+            from = fs.createReadStream source
+            to = new common.FsyncedWriteStream temppath
+            from.pipe to
+            from.on 'error', (err) ->
+                return callback err, null
+            to.on 'error', (err) ->
+                return callback err, null
+            to.on 'fsynced', () =>
+                # Somehow even waiting for fsync is not enough...
+                setTimeout () =>
+                    fs.rename temppath, @filePathForKey(key), (err) =>
+                        return callback err, @urlForKey(key)
+                , 300
 
     handleKeyRequest: (key, request, response) ->
         @server.serveFile key, 200, {}, request, response
