@@ -126,7 +126,7 @@ requestAndDownload = (reqUrl, output, callback) ->
     response = null
     req = request reqUrl, (err, res) ->
         chai.expect(err).to.be.a 'null'
-    req.pipe fs.createWriteStream output
+    req.pipe common.FsyncedWriteStream output
     req.on 'response', (res) ->
         response = res
         return callback new Error "Wrong statuscode (expected 200): #{response.statusCode}" if response.statusCode != 200

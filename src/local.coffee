@@ -9,14 +9,7 @@ fs = require 'fs'
 path = require 'path'
 url = require 'url'
 node_static = require 'node-static'
-
-class FsyncedWriteStream extends fs.WriteStream
-    close: (cb) ->
-        return super cb if not @fd
-        fs.fsync @fd, (err) =>
-            @emit 'error', err if err
-            @emit 'fsynced' if not err
-            super cb
+temp = require 'temp'
 
 class Cache extends common.CacheServer
     constructor: (options) ->

@@ -222,6 +222,15 @@ exports.getProductionConfig = () ->
 
     return config
 
+class FsyncedWriteStream extends fs.WriteStream
+    close: (cb) ->
+        return super cb if not @fd
+        fs.fsync @fd, (err) =>
+            @emit 'error', err if err
+            @emit 'fsynced' if not err
+            super cb
+exports.FsyncedWriteStream = FsyncedWriteStream
+
 exports.clone = clone
 exports.Processor = Processor
 exports.getInstalledVersions = getInstalledVersions
