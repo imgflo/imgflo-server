@@ -15,6 +15,7 @@ request = require 'request'
 async = require 'async'
 fs = require 'fs'
 path = require 'path'
+temp = require 'temp'
 
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control?
 
@@ -84,7 +85,7 @@ class JobExecutor extends EventEmitter
         key = jobData.cachekey
         request_url = jobData.request
 
-        workdir_filepath = path.join @workdir, key
+        workdir_filepath = require('temp').path { dir: @workdir, prefix: key+'-processed-' }
         @downloadAndRender workdir_filepath, jobData, (err, stderr) =>
             # FIXME: remove file from workdir
             @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, file: workdir_filepath }
@@ -92,10 +93,13 @@ class JobExecutor extends EventEmitter
 
             @logEvent 'put-into-cache', { request: request_url, path: workdir_filepath, key: key }
             @cache.putFile workdir_filepath, key, (err, cached) =>
-                return callback err, null if err
+                fs.unlink workdir_filepath, (e) =>
+                    @logEvent 'remove-tempfile-error', { file: workdir_filepath } if e
 
-                @logEvent 'job-completed', { request: request_url, url: cached, err: err }
-                return callback null, cached
+                    # temp file removed
+                    return callback err, null if err
+                    @logEvent 'job-completed', { request: request_url, url: cached, err: err }
+                    return callback null, cached
 
     downloadAndRender: (outf, jobData, callback) =>
         req = jobData
@@ -103,7 +107,10 @@ class JobExecutor extends EventEmitter
 
         # Add local paths for downloading to
         for port, file of req.files
-            file.path = path.join @workdir, (common.hashFile file.src) + file.extension
+            file.path = temp.path
+                dir: path.join @workdir
+                prefix: common.hashFile(file.src)+'-downloaded-'
+                suffix: file.extension
 
         @getGraph req.graph, (err, graph) =>
             if err
@@ -133,7 +140,10 @@ class JobExecutor extends EventEmitter
 
                 inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
-                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, callback
+                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (err, stderr) =>
+                    fs.unlink inputFile, (e) =>
+                        @logEvent 'remove-tempfile-error', { file: outf } if e and inputFile
+                        return callback err, stderr
 
 exports.JobExecutor = JobExecutor
 
