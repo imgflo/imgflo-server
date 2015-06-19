@@ -141,9 +141,13 @@ class JobExecutor extends EventEmitter
                 inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
                 processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (err, stderr) =>
-                    fs.unlink inputFile, (e) =>
-                        @logEvent 'remove-tempfile-error', { file: outf } if e and inputFile
-                        return callback err, stderr
+                    maybeUnlink = (f, cb) ->
+                        # handle null ...
+                        return cb null if not f
+                        fs.unlink f, cb
+                    maybeUnlink inputFile, (e) =>
+                        @logEvent 'remove-tempfile-error', { file: outf } if e
+                    return callback err, stderr
 
 exports.JobExecutor = JobExecutor
 
