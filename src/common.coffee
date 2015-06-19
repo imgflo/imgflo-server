@@ -41,6 +41,10 @@ class CacheServer
     keyExists: (key, callback) ->
         #
 
+    # callback (err, url)
+    removeFile: (key, callback) ->
+        #
+
 # Key used in cache
 exports.hashFile = (path) ->
     hash = crypto.createHash 'sha1'
@@ -182,6 +186,7 @@ exports.mergeDefaultConfig = (overrides) ->
         admin_key: process.env.IMGFLO_ADMIN_KEY
         admin_secret: process.env.IMGFLO_ADMIN_SECRET
         workdir: process.env.IMGFLO_WORKDIR or './temp'
+        admin_token: process.env.IMGFLO_ADMIN_TOKEN
         graphdir: './graphs'
         resourcedir: './examples'
 

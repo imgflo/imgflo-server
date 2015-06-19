@@ -159,7 +159,24 @@ class Server extends EventEmitter
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
 
-        # meta/management
+        # Management
+        # DELETE /cache
+        app['delete'] '/cache/:key', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            return if not @ensureAuthenticated req, res, 'admin'
+            return if not @ensureLimits req, res
+
+            @cache.keyExists req.params.key, (err, url) ->
+                if err or not url
+                    status = if err then 500 else 404
+                    return res.end()
+
+                @cache.deleteFile req.params.key, (err) ->
+                    status = if err then 500 else 204
+                    res.writeHead status
+                    return res.end()
+
+        # Meta
         app.get '/version', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @handleVersionRequest req, res
@@ -241,6 +258,12 @@ class Server extends EventEmitter
         return callback null, null if data.noCache # ignore fact that exists in cache
         return @cache.keyExists data.cachekey, callback
 
+    checkAdminAuth: (req) ->
+        auth = req.headers['Authentication']
+        return false if not auth
+        token = auth.replace('Bearer: ')
+        admin = @authdb[token]?.admin
+        return if admin then true else false
 
     # GET /graph
     # on new HTTP request:

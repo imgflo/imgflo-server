@@ -72,6 +72,15 @@ getBody = (res, callback) ->
     res.on 'end', () ->
         return callback null, body
 
+deleteCacheRequest = (key, token) ->
+    options =
+        method: 'DELETE'
+        path: '/cache'+key
+        host: config.api_host
+    options.headers = {}
+    options.headers['Authentication'] = 'Bearer ' + token if token
+    return options
+
 enableTestAuth = (server) ->
     server.authdb =
         'ooShei0queigeeke':
@@ -88,6 +97,13 @@ HTTP =
         # convenience similar to node.js http.get
         options = url.parse u
         options.method = 'POST'
+        req = http.request options, cb
+        req.end()
+
+    'delete': (options, cb) ->
+        # convenience similar to node.js http.get
+        options = url.parse options if typeof options == 'string'
+        options.method = 'DELETE'
         req = http.request options, cb
         req.end()
 
@@ -159,7 +175,6 @@ commonGraphTests = (type, state) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
 
-<<<<<<< HEAD
     describe '_nocache with non-admin key', ->
         p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg", _nocache: "true" }
         u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
@@ -181,18 +196,39 @@ commonGraphTests = (type, state) ->
             HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
-=======
+
 commonDeleteTests = (endpoint, state) ->
 
     describe 'missing authentication', ->
-        it 'should fail with 403'
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            key = ''
+            token = null
+            options = deleteCacheRequest key, token
+            http.request options, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
 
     describe 'non-admin authentication', ->
-        it 'should fail with 403'
+        it 'should fail with 403', (done) ->
+            enableTestAuth state.server
+
+            key = ''
+            token = 'ooShei0queigeeke'
+            options = deleteCacheRequest key, token
+            http.request options, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
 
     describe 'removing non-existing image', ->
-        it 'should return 404'
->>>>>>> 098d2ed... Tests: Skeletons for DELETE /cache
+        it 'should return 404', (done) ->
+            key = ''
+            token = null
+            options = deleteCacheRequest key, token
+            http.request options, (res) ->
+                chai.expect(res.statusCode).to.equal 404
+                done()
 
 
 describe 'Server', ->
