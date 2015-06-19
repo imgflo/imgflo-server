@@ -159,6 +159,7 @@ commonGraphTests = (type, state) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
 
+<<<<<<< HEAD
     describe '_nocache with non-admin key', ->
         p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg", _nocache: "true" }
         u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
@@ -180,6 +181,18 @@ commonGraphTests = (type, state) ->
             HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
+=======
+commonDeleteTests = (endpoint, state) ->
+
+    describe 'missing authentication', ->
+        it 'should fail with 403'
+
+    describe 'non-admin authentication', ->
+        it 'should fail with 403'
+
+    describe 'removing non-existing image', ->
+        it 'should return 404'
+>>>>>>> 098d2ed... Tests: Skeletons for DELETE /cache
 
 
 describe 'Server', ->
@@ -459,3 +472,19 @@ describe 'Server', ->
                     chai.expect(location).to.be.a 'string'
                     basename = path.basename (url.parse location).pathname, '.jpg'
                     chai.expect(basename).to.equal 'b5774b2bd2c5c94535432dec55a205a712bc5326'
+
+    describe 'DELETE /cache', () ->
+        beforeEach () ->
+            # Reset auth to disabled
+            state.server.authdb = null
+
+        # in case we want DELETE /graph also
+        commonDeleteTests '/cache', state
+
+        describe 'for image which exists', ->
+            before () ->
+                enableTestAuth state.server
+
+            it 'should return 204'
+
+            it 'should no longer be in cache'
