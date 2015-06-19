@@ -72,6 +72,12 @@ getBody = (res, callback) ->
     res.on 'end', () ->
         return callback null, body
 
+enableTestAuth = (server) ->
+    server.authdb =
+        'ooShei0queigeeke':
+            admin: false
+            secret: 'reeva9aijo1Ooj9w'
+
 HTTP =
     get: http.get
 
@@ -110,8 +116,7 @@ commonGraphTests = (type, state) ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
 
         it 'should fail with a 403', (done) ->
-            # Enable auth
-            s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+            enableTestAuth state.server
 
             HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
@@ -133,8 +138,7 @@ commonGraphTests = (type, state) ->
         u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
 
         it 'should fail with a 403', (done) ->
-            # Enable auth
-            s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+            enableTestAuth state.server
 
             HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
@@ -146,8 +150,7 @@ commonGraphTests = (type, state) ->
 
         it 'should fail with a 403', (done) ->
             @timeout 5000
-            # Enable auth
-            s.server.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+            enableTestAuth state.server
 
             HTTP[method] u, (res) ->
                 chai.expect(res.statusCode).to.equal 403
@@ -325,8 +328,7 @@ describe 'Server', ->
             u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
 
             it 'request should succeed with redirect to file', (done) ->
-                # Enable auth
-                s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+                enableTestAuth state.server
 
                 http.get u, (res) ->
                     chai.expect(res.statusCode).to.equal 301
@@ -407,8 +409,7 @@ describe 'Server', ->
                 u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
 
                 it 'request should succeed with redirect to file', (done) ->
-                    # Enable auth
-                    s.authdb = { 'ooShei0queigeeke': 'reeva9aijo1Ooj9w' }
+                    enableTestAuth state.server
 
                     HTTP.post u, (res) ->
                         chai.expect(res.statusCode).to.equal 301

@@ -179,6 +179,8 @@ exports.mergeDefaultConfig = (overrides) ->
         api_host: "localhost:#{port}"
         api_key: process.env.IMGFLO_API_KEY
         api_secret: process.env.IMGFLO_API_SECRET
+        admin_key: process.env.IMGFLO_ADMIN_KEY
+        admin_secret: process.env.IMGFLO_ADMIN_SECRET
         workdir: process.env.IMGFLO_WORKDIR or './temp'
         graphdir: './graphs'
         resourcedir: './examples'

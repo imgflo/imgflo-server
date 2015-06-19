@@ -87,8 +87,16 @@ class Server extends EventEmitter
 
         @authdb = null
         if config.api_key or config.api_secret
-            @authdb = {}
-            @authdb[config.api_key] = config.api_secret
+            @authdb = {} if not @authdb
+            @authdb[config.api_key] =
+                admin: false
+                secret: config.api_secret
+
+        if config.admin_key or config.admin_secret
+            @authdb = {} if not @authdb
+            @authdb[config.admin_key] =
+                admin: true
+                secret: config.admin_secret
 
         @cache = cache.fromOptions config
         @jobManager = new jobmanager.JobManager config
@@ -200,7 +208,7 @@ class Server extends EventEmitter
     checkAuth: (req) ->
         return true if not @authdb # Authentication disabled
 
-        secret = @authdb[req.apikey]
+        secret = @authdb[req.apikey]?.secret
         return false if not secret
 
         hash = crypto.createHash 'md5'
