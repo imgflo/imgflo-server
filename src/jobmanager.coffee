@@ -80,9 +80,9 @@ class JobManager extends EventEmitter
             @frontend = null
             return callback err if err
             stopWorker = (n, cb) =>
-                worker = @workers[n]
+                w = @workers[n]
                 delete @workers[n]
-                worker.stop cb
+                w.stop cb
             async.map Object.keys(@workers), stopWorker, callback
 
     logEvent: (id, data) ->
