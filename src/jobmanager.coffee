@@ -13,41 +13,29 @@ worker = require './worker'
 
 FrontendParticipant = (client, role) ->
 
+  outproxies = ['urgentjob', 'backgroundjob']
+  inproxies = ['jobresult']
+
   definition =
     component: 'imgflo-server/HttpApi'
     icon: 'code'
     label: 'Creates processing jobs from HTTP requests'
-    inports: [
-      {
-        id: 'newjob'
-        type: 'object'
-        hidden: true
-      },
-      {
-        id: 'jobresult'
-        type: 'object'
-      }
-    ]
-    outports: [
-      {
-        id: 'newjob'
-        type: 'object'
-      }
-      ,
-      {
-        id: 'jobresult'
-        type: 'object'
-        hidden: true
-      }
-    ]
+    inports: []
+    outports: []
+
+  for name in outproxies
+    definition.inports.push { id: name, hidden: true }
+    definition.outports.push { id: name }
+  for name in inproxies
+    definition.inports.push { id: name }
+    definition.outports.push { id: name, hidden: true }
+
 
   func = (inport, indata, send) ->
-    if inport == 'newjob'
-        # no-op, just forwards directly, so the job appears on output queue
-        send 'newjob', null, indata
-    else if inport == 'jobresult'
-        # no-op, just forwards directly, so the job appears on output queue
-        send 'jobresult', null, indata
+    isProxy = outproxies.indexOf(inport) != -1 or inproxies.indexOf(inport) != -1
+    throw new Error "Unknown port #{inport}" if not isProxy
+    # forward
+    send inport, null, indata
 
   return new msgflo.participant.Participant client, definition, func, role
 
