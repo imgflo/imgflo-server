@@ -41,6 +41,14 @@ waitForDownloads = (files, callback) ->
     else
         return callback null, files
 
+jobResult = (job, err, cachedUrl) ->
+    r = common.clone job
+    r.completed_at = Date.now()
+    r.results = {}
+    r.results.url = cachedUrl if cachedUrl
+    r.error = err if err
+    return r
+
 class JobExecutor extends EventEmitter
     constructor: (config) ->
 
@@ -73,13 +81,15 @@ class JobExecutor extends EventEmitter
     #   upload results to S3 cache
     #   post job results to output queue
     doJob: (job, callback) ->
-        @processAndCache job.data, (err, cachedUrl) ->
-            resultsJob = common.clone job
-            resultsJob.completed_at = Date.now()
-            resultsJob.results = {}
-            resultsJob.results.url = cachedUrl if cachedUrl
-            resultsJob.error = err if err
-            return callback resultsJob
+        @cache.keyExists job.data.cachekey, (err, u) =>
+            if u
+                # Was processed while job was in queue
+                result = jobResult job, err, existingUrl
+                return callback result
+
+            @processAndCache job.data, (err, u) ->
+                result = jobResult job, err, u
+                return callback result
 
     processAndCache: (jobData, callback) ->
         key = jobData.cachekey
