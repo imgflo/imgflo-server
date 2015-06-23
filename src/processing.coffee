@@ -84,7 +84,7 @@ class JobExecutor extends EventEmitter
         @cache.keyExists job.data.cachekey, (err, u) =>
             if u
                 # Was processed while job was in queue
-                result = jobResult job, err, existingUrl
+                result = jobResult job, err, u
                 return callback result
 
             @processAndCache job.data, (err, u) ->
