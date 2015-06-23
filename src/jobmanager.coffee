@@ -88,9 +88,10 @@ class JobManager extends EventEmitter
     logEvent: (id, data) ->
         @emit 'logevent', id, data
 
-    createJob: (type, data, callback) ->
+    createJob: (type, urgency, data, callback) ->
         # TODO: validate type and data
         job =
+            urgency: urgency
             type: type
             data: data
             id: uuid.v4()
@@ -101,13 +102,16 @@ class JobManager extends EventEmitter
             return callback err if err
             @jobs[job.id] = job
             return callback null, job
-        @frontend.send 'newjob', job
+        port = if urgency == 'urgent' then "urgentjob" else "backgroundjob"
+        @frontend.send port, job
         onSent null # FIXME: Participant.send should take callback
 
 
     doJob: (type, data, jobcallback, callback) ->
-        @createJob type, data, (err, job) =>
+        urgency = if jobcallback then 'urgent' else 'background'
+        @createJob type, urgency, data, (err, job) =>
             return callback err if err
+            # FIXME: callback should be in another mapping, to separate from plain,peristable data
             @jobs[job.id].callback = jobcallback if jobcallback
             return callback null
 
