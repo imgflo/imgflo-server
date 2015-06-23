@@ -38,7 +38,7 @@ exports.getParticipant = (config, role='imgflo_worker') ->
 
 exports.main = ->
   config = common.getProductionConfig()
-  role = process.argv[3]
+  role = process.argv[2]
   participant = exports.getParticipant config, role
 
   participant.executor.on 'logevent', (id, data) ->
@@ -47,6 +47,6 @@ exports.main = ->
   participant.start (err) ->
     throw callback err if err
 
-    console.log "worker started using broker #{config.broker_url}"
+    console.log "#{role} started using broker #{config.broker_url}"
     console.log "with workdir #{config.workdir}"
     console.log "with #{config.cache_type} cache"
