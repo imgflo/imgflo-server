@@ -5,6 +5,7 @@
 uuid = require 'uuid'
 msgflo = require 'msgflo'
 EventEmitter = require('events').EventEmitter
+async = require 'async'
 
 common = require './common'
 local = require './local'
@@ -50,10 +51,21 @@ FrontendParticipant = (client, role) ->
 
   return new msgflo.participant.Participant client, definition, func, role
 
+startInternalWorkers = (manager, roles, callback) =>
+  startWorker = (role, cb) =>
+      w = worker.getParticipant manager.options, role
+      manager.workers[role] = w
+      w.executor.on 'logevent', (id, data) =>
+        manager.logEvent id, data
+      w.start cb
+
+  return callback null if manager.options.worker_type != 'internal'
+  async.map roles, startWorker, callback
+
 class JobManager extends EventEmitter
     constructor: (@options) ->
         @jobs = {} # pending/in-flight
-        @worker = null
+        @workers = {} # internal workers
         @frontend = null
 
     start: (callback) ->
@@ -64,16 +76,12 @@ class JobManager extends EventEmitter
         @frontend.on 'data', (port, data) =>
             @onResult data if port == 'jobresult'
 
-        startInternalWorker = (callback) =>
-          return callback null if @options.worker_type != 'internal'
-          @worker = new worker.getParticipant @options
-          @worker.executor.on 'logevent', (id, data) => @logEvent id, data
-          @worker.start callback
-
         setup =
           broker: @options.broker_url
           graphfile: './graphs/imgflo-server.fbp'
-        startInternalWorker (err) =>
+        graph = require('fbp').parse(require('fs').readFileSync(setup.graphfile, 'utf-8'))
+        roles = Object.keys(graph.processes).filter((n) -> n != 'imgflo_api')
+        startInternalWorkers this, roles, (err) =>
           return callback err if err
           @frontend.start (err) =>
               return callback err if err
@@ -83,10 +91,11 @@ class JobManager extends EventEmitter
         @frontend.stop (err) =>
             @frontend = null
             return callback err if err
-            return callback null if not @worker
-            @worker.stop (err) =>
-                @worker = null
-                return callback err
+            stopWorker = (n, cb) =>
+                worker = @workers[n]
+                delete @workers[n]
+                worker.stop cb
+            async.map Object.keys(@workers), stopWorker, callback
 
     logEvent: (id, data) ->
         @emit 'logevent', id, data
