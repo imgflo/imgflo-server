@@ -28,17 +28,18 @@ ProcessImageParticipant = (client, role) ->
 
   return new msgflo.participant.Participant client, definition, func, role
 
-exports.getParticipant = (config) ->
+exports.getParticipant = (config, role='imgflo_worker') ->
   options =
     prefetch: 4
   client = msgflo.transport.getClient config.broker_url, options
-  participant = ProcessImageParticipant client, 'imgflo_worker'
+  participant = ProcessImageParticipant client, role
   participant.executor = new processing.JobExecutor config
   return participant
 
 exports.main = ->
   config = common.getProductionConfig()
-  participant = exports.getParticipant config
+  role = process.argv[3]
+  participant = exports.getParticipant config, role
 
   participant.executor.on 'logevent', (id, data) ->
     console.log "EVENT: #{id}:", data
