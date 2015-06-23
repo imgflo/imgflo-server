@@ -23,7 +23,7 @@ runtime:
 version:
 	echo 'No version info installed'
 
-install: env version runtime components
+install: env version procfile runtime components
 
 env:
 	mkdir -p $(PREFIX) || true
@@ -44,6 +44,9 @@ component: env
 		COMPONENTDIR=$(COMPONENTDIR) \
 		COMPONENT_NAME_PREFIX=$(COMPONENT_NAME_PREFIX) \
 		COMPONENT_NAME_SUFFIX=$(COMPONENT_NAME_SUFFIX)
+
+procfile:
+	./node_modules/.bin/msgflo-procfile --ignore imgflo_jobs ./graphs/imgflo-server.fbp > Procfile
 
 dependencies:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) dependencies
