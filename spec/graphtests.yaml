@@ -144,6 +144,9 @@
     _name: regcheck_jpeg_graph_extension
     _url: '/graph/vahj1ThiexotieMo/905d76b162a49871bba3697e323eaf08/passthrough.jpeg?input=https%3A%2F%2Fd262ilb51hltx0.cloudfront.net%2Ffit%2Ft%2F1200%2F504%2F0*g3xYNYyDOiaSyhhj.jpeg&width=600'
 -
+    _name: regcheck_unknown
+    _url: '/graph/vahj1ThiexotieMo/ea148b354aa53b8c40b672ebed6060ef/passthrough.jpg?input=https%3A%2F%2Fvice-images.vice.com%2Fimages%2Farticles%2Fmeta%2F2015%2F08%2F27%2Fadventure-video-games-are-steadily-delivering-better-stories-than-movies-130-1440679444.jpg%3Fresize%3D*%3A*%26output-quality%3D75&width=480&height=202'
+-
     _name: custom_component
     _graph: customgrey.jpg
     input: "demo/grid-toastybob.jpg"
