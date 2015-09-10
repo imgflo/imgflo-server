@@ -46,7 +46,7 @@ component: env
 		COMPONENT_NAME_SUFFIX=$(COMPONENT_NAME_SUFFIX)
 
 procfile:
-	./node_modules/.bin/msgflo-procfile --ignore imgflo_api --include 'web: node index.js' ./graphs/imgflo-server.fbp > Procfile
+	./node_modules/.bin/msgflo-procfile --ignore imgflo_api --ignore pubsub --include 'web: node index.js' ./graphs/imgflo-server.fbp > Procfile
 
 dependencies:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) dependencies

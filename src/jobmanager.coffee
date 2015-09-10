@@ -16,7 +16,11 @@ FrontendParticipant = (client, role) ->
   outproxies = ['urgentjob', 'backgroundjob']
   inproxies = ['jobresult']
 
+  id = if process.env.DYNO then process.env.DYNO else uuid.v4()
+  id = "#{role}-#{id}"
+
   definition =
+    id: id
     component: 'imgflo-server/HttpApi'
     icon: 'code'
     label: 'Creates processing jobs from HTTP requests'
@@ -27,11 +31,17 @@ FrontendParticipant = (client, role) ->
     definition.inports.push { id: name, hidden: true }
     definition.outports.push { id: name }
   for name in inproxies
-    definition.inports.push { id: name }
+    definition.inports.push { id: name, hidden: true }
     definition.outports.push { id: name, hidden: true }
-
+    # fanout handling, need unique queue for every participant.
+    uniqueQueue = "#{id}.#{name.toUpperCase()}"
+    definition.inports.push { id: name+'-unique', queue: uniqueQueue, '_originalid': name }
 
   func = (inport, indata, send) ->
+    # map unique ports back to base/logical name
+    normalized = inport.substring(0, inport.indexOf('-unique'))
+    inport = normalized if normalized
+
     isProxy = outproxies.indexOf(inport) != -1 or inproxies.indexOf(inport) != -1
     throw new Error "Unknown port #{inport}" if not isProxy
     # forward
@@ -49,6 +59,40 @@ startInternalWorkers = (manager, roles, callback) =>
 
   return callback null if manager.options.worker_type != 'internal'
   async.map roles, startWorker, callback
+
+getPubsubSource = (graph, node, port) ->
+    pubsubs = {}
+    for name, process of graph.processes
+        continue if process.component != 'msgflo/PubSub'
+        pubsubs[name] = {}
+    for connection in graph.connections
+        tgtnode = connection.tgt.process
+        srcnode = connection.src.process
+
+        pubsubs[tgtnode].src = connection.src if pubsubs[tgtnode]
+        pubsubs[srcnode].tgt = connection.tgt if pubsubs[srcnode]
+
+    queueName = (p) ->
+        return "#{p.process}.#{p.port.toUpperCase()}" # FIXME: relies on convention
+    for name, connection of pubsubs
+        return queueName(connection.src) if connection.tgt.port == port  and connection.tgt.process == node
+    return null
+
+pubsubBindings = (frontend, graph) ->
+    bindings = []
+    def = frontend.definition
+    for port in def.inports
+        original = port['_originalid']
+        if original
+            # bind shared queue to per-participant/unique queue
+            srcQueue = getPubsubSource graph, def.role, original
+            throw new Error "Cannot find target for port #{port.id}" if not srcQueue
+            bindings.push
+                type: 'pubsub'
+                src: srcQueue
+                tgt: port.queue
+
+    return bindings
 
 class JobManager extends EventEmitter
     constructor: (@options) ->
@@ -68,7 +112,9 @@ class JobManager extends EventEmitter
           broker: @options.broker_url
           graphfile: './graphs/imgflo-server.fbp'
         graph = require('fbp').parse(require('fs').readFileSync(setup.graphfile, 'utf-8'))
-        roles = Object.keys(graph.processes).filter((n) -> n != 'imgflo_api')
+        setup.extrabindings = pubsubBindings @frontend, graph
+        roles = Object.keys(graph.processes).filter((n) -> n != 'imgflo_api' and n != 'pubsub' )
+
         startInternalWorkers this, roles, (err) =>
           return callback err if err
           @frontend.start (err) =>

@@ -1,6 +1,6 @@
 
 # !runtime msgflo
 imgflo_api(imgflo-server/HttpApi) URGENTJOB -> JOB imgflo_urgentworker(imgflo-server/ProcessImage)
-imgflo_urgentworker JOBRESULT -> JOBRESULT imgflo_api
+imgflo_urgentworker JOBRESULT -> IN pubsub(msgflo/PubSub) OUT -> JOBRESULT imgflo_api
 
 imgflo_api BACKGROUNDJOB -> JOB imgflo_backgroundworker(imgflo-server/ProcessImage)
