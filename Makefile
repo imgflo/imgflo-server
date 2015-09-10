@@ -62,7 +62,8 @@ libsoup:
 check: install runtime-check server-check
 
 server-check:
-	./node_modules/.bin/mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee $(TEST_ARGUMENTS)
+	echo "WARNING: You need to setup RabbitMQ to run tests, due to https://github.com/msgflo/msgflo-nodejs/issues/1"
+	IMGFLO_BROKER_URL=amqp://localhost ./node_modules/.bin/mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee $(TEST_ARGUMENTS)
 
 runtime-check:
 	./node_modules/.bin/mocha --reporter spec --compilers .coffee:coffee-script/register ./runtime/spec/*.coffee $(TEST_ARGUMENTS)
