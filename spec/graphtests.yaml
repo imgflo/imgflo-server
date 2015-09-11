@@ -1,6 +1,15 @@
 # Every property except for _name and _graph are passed as graph properties/IIPs
 # The refencence the output is compared is '$_name+.reference.png'
 -
+    _name: 'preprocess'
+    _graph: 'preprocess.png'
+    degrees: 90
+    x: 0
+    y: 0
+    width: 100
+    height: 100
+    input: 'demo/gridbear.jpg'
+-
     _name: 'insta_1977'
     _graph: 'insta_1977.png'
     input: 'demo/gridbear.jpg'
