@@ -35,7 +35,7 @@ FrontendParticipant = (client, role) ->
     definition.outports.push { id: name, hidden: true }
     # fanout handling, need unique queue for every participant.
     uniqueQueue = "#{id}.#{name.toUpperCase()}"
-    definition.inports.push { id: name+'-unique', queue: uniqueQueue, '_originalid': name }
+    definition.inports.push { id: name+'-unique', queue: uniqueQueue, '_originalid': name, persistent: false }
 
   func = (inport, indata, send) ->
     # map unique ports back to base/logical name
