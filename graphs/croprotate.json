@@ -1,0 +1,125 @@
+{
+    "properties": {
+        "name": "croprotate",
+        "environment": {
+            "type": "imgflo"
+        }
+    },
+    "inports": {
+        "input": {
+            "process": "gegl/rotate-on-center_ldil0",
+            "port": "input",
+            "metadata": {
+                "x": 288,
+                "y": 144,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "degrees": {
+            "process": "gegl/rotate-on-center_ldil0",
+            "port": "degrees",
+            "metadata": {
+                "x": 288,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "x": {
+            "process": "gegl/crop_in8zn",
+            "port": "x",
+            "metadata": {
+                "x": 288,
+                "y": 360,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "y": {
+            "process": "gegl/crop_in8zn",
+            "port": "y",
+            "metadata": {
+                "x": 288,
+                "y": 468,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "width": {
+            "process": "gegl/crop_in8zn",
+            "port": "width",
+            "metadata": {
+                "x": 288,
+                "y": 576,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "height": {
+            "process": "gegl/crop_in8zn",
+            "port": "height",
+            "metadata": {
+                "x": 288,
+                "y": 684,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "outports": {
+        "output": {
+            "process": "gegl/crop_in8zn",
+            "port": "output",
+            "metadata": {
+                "x": 828,
+                "y": 144,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "groups": [],
+    "processes": {
+        "gegl/rotate-on-center_ldil0": {
+            "component": "gegl/rotate-on-center",
+            "metadata": {
+                "label": "gegl/rotate-on-center",
+                "x": 468,
+                "y": 144,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "gegl/crop_in8zn": {
+            "component": "gegl/crop",
+            "metadata": {
+                "label": "gegl/crop",
+                "x": 648,
+                "y": 144,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "connections": [
+        {
+            "src": {
+                "process": "gegl/rotate-on-center_ldil0",
+                "port": "output"
+            },
+            "tgt": {
+                "process": "gegl/crop_in8zn",
+                "port": "input"
+            },
+            "metadata": {}
+        },
+        {
+            "data": "nearest",
+            "tgt": {
+                "process": "gegl/rotate-on-center_ldil0",
+                "port": "sampler"
+            }
+        }
+    ]
+}
