@@ -6,8 +6,8 @@
     degrees: 90
     x: 10
     y: 15
-    width: 70
-    height: 65
+    cropwidth: 70
+    cropheight: 65
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_1977'

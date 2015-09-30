@@ -46,7 +46,7 @@
                 "height": 72
             }
         },
-        "width": {
+        "cropwidth": {
             "process": "gegl/crop_in8zn",
             "port": "width",
             "metadata": {
@@ -56,7 +56,7 @@
                 "height": 72
             }
         },
-        "height": {
+        "cropheight": {
             "process": "gegl/crop_in8zn",
             "port": "height",
             "metadata": {
