@@ -68,7 +68,7 @@ describe 'Graphs', ->
 
             describe "GET #{reqUrl}", ->
                 it 'should output a file', (done) ->
-                    @timeout 12*1000
+                    @timeout 15*1000
                     response = null
                     req = request reqUrl, (err, res) ->
                         chai.expect(err).to.be.a 'null'
