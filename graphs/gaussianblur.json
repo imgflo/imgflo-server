@@ -63,7 +63,7 @@
     "groups": [],
     "processes": {
         "gegl/gaussian-blur-iir_d4sgv": {
-            "component": "gegl/gaussian-blur-iir",
+            "component": "gegl/gaussian-blur",
             "metadata": {
                 "label": "gegl/gaussian-blur-iir",
                 "x": 648,

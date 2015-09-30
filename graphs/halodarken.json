@@ -135,7 +135,7 @@
             }
         },
         "blur": {
-            "component": "gegl/gaussian-blur-iir",
+            "component": "gegl/gaussian-blur",
             "metadata": {
                 "label": "blur",
                 "x": -36,
