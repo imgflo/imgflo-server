@@ -35,7 +35,7 @@
     "fbp": "^1.1.3",
     "flowhub-registry": "0.0.2",
     "knox": "^0.9.1",
-    "msgflo": "^0.5.4",
+    "msgflo": "^0.5.6",
     "newrelic": "1.17.3",
     "node-static": "^0.7.3",
     "noflo-canvas": "^0.1.16",
