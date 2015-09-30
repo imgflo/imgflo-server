@@ -25,7 +25,7 @@
     "test": "mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=0.12.0"
   },
   "dependencies": {
     "async": "^0.7.0",
