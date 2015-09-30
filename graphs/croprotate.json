@@ -1,6 +1,6 @@
 {
     "properties": {
-        "name": "preprocess",
+        "name": "croprotate",
         "environment": {
             "type": "imgflo"
         }
