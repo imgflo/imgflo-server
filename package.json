@@ -57,10 +57,10 @@
     "websocket": "~1.0.8"
   },
   "devDependencies": {
-    "chai": "~1.8.0",
+    "chai": "~3.3.0",
     "js-yaml": "^3.0.2",
     "jsftp": "^1.3.1",
-    "mocha": "~1.9.0",
+    "mocha": "~2.3.3",
     "needle": "^0.7.2"
   },
   "msgflo": {
