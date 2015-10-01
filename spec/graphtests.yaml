@@ -12,6 +12,7 @@
 -
     _name: 'insta_1977'
     _graph: 'insta_1977.png'
+    _timeout: 18000
     input: 'demo/gridbear.jpg'
 -
     _skip: true
@@ -23,38 +24,46 @@
 -
     _name: 'insta_brannan'
     _graph: 'insta_brannan.png'
+    _timeout: 18000
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_hefe'
     _graph: 'insta_hefe.png'
+    _timeout: 18000
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_lordkelvin'
     _graph: 'insta_lordkelvin.png'
+    _timeout: 18000
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_nashville'
     _graph: 'insta_nashville.png'
+    _timeout: 18000
     input: 'demo/gridbear.jpg'
 -
     _name: 'insta_xproii'
     _graph: 'insta_xproii.png'
+    _timeout: 180000
     input: 'demo/gridbear.jpg'
 -
     _name: 'noflo_resize_heightonly'
     _graph: 'insta_brannan.png'
+    _timeout: 18000
     height: 300
     input: "demo/gridbear.jpg"
 -
     _name: 'imgflo_resize_heightonly'
     _graph: 'desaturate'
     _tolerance: 100
+    _timeout: 18000
     height: 300
     input: "demo/grid-toastybob.jpg"
 -
     _name: 'delaunay_triangles_foobar100'
     _graph: 'delaunay_triangles.jpg'
     _tolerance: 20
+    _timeout: 20000
     seed: 'foobar'
     width: 100
     height: 100
@@ -146,6 +155,7 @@
 -
     _name: regcheck_canvas
     _url: '/graph/canvas.png?color=%2387a9a7'
+    _timeout: 180000
 -
     _name: regcheck_cmyk_jpeg
     _url: '/graph/passthrough.png?input=demo/cmyk-color.jpg'

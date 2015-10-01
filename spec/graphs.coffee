@@ -33,6 +33,8 @@ requestUrl = (testcase) ->
     return u
 
 # End-to-end tests of image processing pipeline and included graphs
+defaultTimeout = 5*1000
+
 describe 'Graphs', ->
     s = null
     testcases = yaml.safeLoad fs.readFileSync 'spec/graphtests.yaml', 'utf-8'
@@ -68,7 +70,8 @@ describe 'Graphs', ->
 
             describe "GET #{reqUrl}", ->
                 it 'should output a file', (done) ->
-                    @timeout 18*1000
+                    timeout = testcase._timeout or defaultTimeout
+                    @timeout timeout
                     response = null
                     req = request reqUrl, (err, res) ->
                         chai.expect(err).to.be.a 'null'
