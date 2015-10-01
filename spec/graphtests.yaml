@@ -63,7 +63,7 @@
     _name: 'delaunay_triangles_foobar100'
     _graph: 'delaunay_triangles.jpg'
     _tolerance: 20
-    _timeout: 20000
+    _timeout: 24000
     seed: 'foobar'
     width: 100
     height: 100
