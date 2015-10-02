@@ -7,7 +7,7 @@ PREFIX=$(shell echo `pwd`/install)
 PROJECTDIR=$(shell echo `pwd`)
 
 ifdef TESTS
-TEST_ARGUMENTS=--grep $(TESTS)
+TEST_ARGUMENTS=--grep "$(TESTS)"
 endif
 
 TRAVIS_DEPENDENCIES=$(shell echo `cat .vendor_urls | sed -e "s/heroku/travis/" | tr -d '\n'`)
