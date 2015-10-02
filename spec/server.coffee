@@ -100,6 +100,16 @@ commonGraphTests = (type, state) ->
                 chai.expect(res.statusCode).to.equal 422
                 done()
 
+    describe 'Input image larger than limit', ->
+        @timeout 10*1000
+        u = graph_url 'passthrough', { input: "demo/105-mpixel.jpg", width: 1000 }
+
+        it 'should fail with a 422', (done) ->
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 422
+                done()
+
     describe 'Missing authentication', ->
         u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
 
