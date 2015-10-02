@@ -20,16 +20,30 @@ temp = require 'temp'
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control?
 
 downloadFile = (src, out, callback) ->
+    contentType = null
     req = request src, (error, response) ->
+        contentType = response.headers['content-type']
         if error
-            return callback error, null
-        if response.statusCode != 200
-            return callback response.statusCode, null
-
-        callback null, response.headers['content-type']
+            return if not callback
+            callback error, null
+            callback = null
+        else if response.statusCode != 200
+            return if not callback
+            callback response.statusCode, null
+            callback = null
+    req.on 'error', (err) ->
+        return if not callback
+        callback err
+        callback = null
 
     stream = fs.createWriteStream out
     s = req.pipe stream
+    stream.on 'finish', () ->
+        console.log 'finish', src, out
+        return if not callback
+        callback null, contentType
+        callback = null
+
 
 waitForDownloads = (files, callback) ->
     f = files.input
