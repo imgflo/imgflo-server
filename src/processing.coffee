@@ -39,7 +39,6 @@ downloadFile = (src, out, callback) ->
     stream = fs.createWriteStream out
     s = req.pipe stream
     stream.on 'finish', () ->
-        console.log 'finish', src, out
         return if not callback
         callback null, contentType
         callback = null
