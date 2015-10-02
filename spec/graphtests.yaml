@@ -168,4 +168,5 @@
     input: "demo/grid-toastybob.jpg"
 -
     _name: chained_requests
+    _timeout: 10000
     _url: /graph/vahj1ThiexotieMo/81c7217c837a5f4e488be8767fd4cec1/passthrough.jpg?input=graph%2Fvahj1ThiexotieMo%2F081cdd5a2e1e54a9d69b4b9d39fb84b6%2Fcroprotate.jpg%3Finput%3Dhttp%253A%252F%252Fi.ytimg.com%252Fvi%252Fwk-PY2dBKaA%252Fhqdefault.jpg%26degrees%3D0%26x%3D0%26y%3D45%26cropwidth%3D480%26cropheight%3D270&width=480&height=270
