@@ -22,7 +22,6 @@ temp = require 'temp'
 downloadFile = (src, out, callback) ->
     contentType = null
     req = request src, (error, response) ->
-        contentType = response.headers['content-type']
         if error
             return if not callback
             callback error, null
@@ -31,6 +30,8 @@ downloadFile = (src, out, callback) ->
             return if not callback
             callback response.statusCode, null
             callback = null
+        else
+            contentType = response.headers['content-type']
     req.on 'error', (err) ->
         return if not callback
         callback err
