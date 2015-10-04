@@ -1,12 +1,14 @@
 language: node_js
 services:
 - rabbitmq
+- redis-server
 env:
   global:
   - AMAZON_API_BUCKET=the-grid-img
   - AMAZON_API_REGION=us-west-2
   - secure: lkm/6WpxNLhqHol6hQ4mkcoezFfrHtcFcD4XeFpLXorQeoZJSQ3e7Jf90t+6TY53rAgsdplCUG1p4Cth6PD6P6fQWpCVIJ2o4dWn6TJLUXLizzGHo8H6pSZclwLWGToKN6Su2i6Ik9t//T0XGzGaKGI3kqrPo3ybCLMtGuQfYIc=
   - secure: sMuerVUrthvDgfNGnWcvE11kKtQUNw8/VvIVAYNiYXKIjhiHKVXOvdLNca3jh1WUE7FM4R9LglqJMhgYmS+MBqY2heYaRb7FUfEk0TzK54qnYkXlEvMwmIzWYShkqqv1hqNCuwfW1IgWcVYSMSeE6JoJx+sSaBXmpYWY8AJ4raM=
+  - IMGFLO_TESTS_CACHE=redis-s3
 node_js:
 - '0.12'
 before_install:
