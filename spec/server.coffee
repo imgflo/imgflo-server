@@ -249,6 +249,7 @@ describe 'Server', ->
             u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
             res = null
             location = null
+            contentType = null
 
             it 'should be created on demand', (done) ->
                 @timeout 15000
@@ -274,6 +275,7 @@ describe 'Server', ->
             it 'redirect should point to created image', (done) ->
                 http.get location, (response) ->
                     chai.expect(response.statusCode).to.equal 200
+                    contentType = response.headers['content-type']
                     response.on 'data', (chunk) ->
                         fs.appendFile 'testout.png', chunk, ->
                             #
@@ -281,6 +283,8 @@ describe 'Server', ->
                         fs.exists 'testout.png', (exists) ->
                             chai.assert exists, 'testout.png does not exist'
                             done()
+            it "content-type should be 'image/jpeg'", () ->
+                chai.expect(contentType).to.equal 'image/jpeg'
 
         describe 'Get existing image', ->
             u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
