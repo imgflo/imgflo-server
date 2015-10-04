@@ -9,6 +9,7 @@ path = require 'path'
 url = require 'url'
 node_static = require 'node-static'
 knox = require 'knox'
+mime = require 'mime-types'
 
 class Cache extends common.CacheServer
     constructor: (config) ->
@@ -27,9 +28,12 @@ class Cache extends common.CacheServer
             return callback null, cached
 
     putFile: (source, key, callback) ->
+        # source may not have extension, so manually set mime-type based on key
+        contentType = mime.lookup(key) || 'application/octet-stream'
         maxAge = 60*60*24 # seconds
         headers =
             'Cache-Control': "max-age=#{maxAge}"
+            'Content-Type': contentType
         @client.putFile source, @fullKey(key), headers, (err, res) =>
             return callback err, null if err
             return callback null, @urlForKey key
