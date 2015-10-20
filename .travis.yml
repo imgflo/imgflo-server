@@ -1,6 +1,13 @@
 language: node_js
 services:
 - rabbitmq
+sudo: false
+addons:
+  apt:
+    packages:
+    - libjson-glib-dev
+    - libsdl1.2-dev
+    - libgif-dev
 env:
   global:
   - AMAZON_API_BUCKET=the-grid-img
@@ -9,9 +16,6 @@ env:
   - secure: sMuerVUrthvDgfNGnWcvE11kKtQUNw8/VvIVAYNiYXKIjhiHKVXOvdLNca3jh1WUE7FM4R9LglqJMhgYmS+MBqY2heYaRb7FUfEk0TzK54qnYkXlEvMwmIzWYShkqqv1hqNCuwfW1IgWcVYSMSeE6JoJx+sSaBXmpYWY8AJ4raM=
 node_js:
 - '0.12'
-before_install:
-- sudo apt-get update -qq
-- sudo apt-get install libjson-glib-dev libsdl1.2-dev libgif-dev gdb
 script:
 - export IMGFLO_TESTS_PERFORMANCE=1
 - export IMGFLO_BROKER_URL=amqp://localhost
