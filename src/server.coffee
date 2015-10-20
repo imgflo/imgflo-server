@@ -183,10 +183,10 @@ class Server extends EventEmitter
         if err
             if err.code?
                 response.writeHead err.code, { 'Content-Type': 'application/json' }
-                response.end JSON.stringify err.result
+                response.end JSON.stringify { error: err.result }
             else
-                response.writeHead 500
-                response.end JSON.stringify err
+                response.writeHead 500, { 'Content-Type': 'application/json' }
+                response.end JSON.stringify { error: err.message }
             return
         target = "http://#{@host}/cache/#{target.substr(2)}" if target.indexOf('./') == 0
         response.writeHead successCode, { 'Location': target }
@@ -217,7 +217,7 @@ class Server extends EventEmitter
 
         @cache.keyExists req.cachekey, (err, cached) =>
             if cached
-                @logEvent 'graph-in-cache', { request: request.url, key: req.cachekey, url: cached }
+                @logEvent 'graph-in-cache', { err: err, method: 'GET', request: request.url, key: req.cachekey, url: cached }
                 return @redirectToCache err, cached, response, 301
             else
                 onJobCompleted = (err, job) =>
@@ -241,7 +241,7 @@ class Server extends EventEmitter
 
         @cache.keyExists req.cachekey, (err, cached) =>
             if cached
-                @logEvent 'graph-in-cache', { request: request.url, key: req.cachekey, url: cached }
+                @logEvent 'graph-in-cache', { err: err, method: 'POST', request: request.url, key: req.cachekey, url: cached }
                 return @redirectToCache err, cached, response, 301
             else
                 onJobCompleted = null # not waiting for result
