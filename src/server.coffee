@@ -183,7 +183,7 @@ class Server extends EventEmitter
         if err
             if err.code?
                 response.writeHead err.code, { 'Content-Type': 'application/json' }
-                response.end JSON.stringify { error: err.result }
+                response.end JSON.stringify err.result
             else
                 response.writeHead 500, { 'Content-Type': 'application/json' }
                 response.end JSON.stringify { error: err.message }
