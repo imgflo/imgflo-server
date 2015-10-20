@@ -5,7 +5,6 @@ sudo: false
 addons:
   apt:
     packages:
-    - libjson-glib-dev
     - libsdl1.2-dev
     - libgif-dev
 env:
