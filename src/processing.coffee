@@ -21,7 +21,9 @@ temp = require 'temp'
 
 downloadFile = (src, out, callback) ->
     contentType = null
-    req = request src, (error, response) ->
+    requestOptions =
+        encoding: null # expect binary
+    req = request src, requestOptions, (error, response) ->
         if error
             return if not callback
             callback error, null
