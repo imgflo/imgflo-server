@@ -162,7 +162,7 @@ class JobExecutor extends EventEmitter
             waitForDownloads req.files, (err, downloads) =>
                 if err
                     @logEvent 'download-input-error', { request: request_url, files: req.files, err: err }
-                    return callback { code: 504, result: {} }, null
+                    return callback { code: 504, result: { error: err.message, files: req.files } }, null
 
                 inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
