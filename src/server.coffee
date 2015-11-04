@@ -175,18 +175,19 @@ class Server extends EventEmitter
         common.getInstalledVersions (err, info) ->
             if err
                 response.writeHead 500
-                response.end JSON.stringify { 'err': err }
+                response.end JSON.stringify { error: err, code: 500 }
                 return
             response.end JSON.stringify info
 
     redirectToCache: (err, target, response, successCode) ->
         if err
             if err.code?
+                err.result?.code = err.code if not err.result?.code
                 response.writeHead err.code, { 'Content-Type': 'application/json' }
                 response.end JSON.stringify err.result
             else
                 response.writeHead 500, { 'Content-Type': 'application/json' }
-                response.end JSON.stringify { error: err.message }
+                response.end JSON.stringify { error: err.message, code: 500 }
             return
         target = "http://#{@host}/cache/#{target.substr(2)}" if target.indexOf('./') == 0
         response.writeHead successCode, { 'Location': target }
