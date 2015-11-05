@@ -18,7 +18,6 @@
 #   error - unsupported content type (449)
 #   e - input parameter missing
 #   e - url gives 404 (404)
-#   e - url does not load for other reasons (504)
 #   e - invalid parameter value (422?)
 #      -- too big/small numbers
 #   e - valid ext,content-type, but invalid image
@@ -65,6 +64,13 @@ cacheurl = 'amazonaws.com' if config.cache_type.indexOf('s3') != -1
 
 graph_url = (graph, props, key, secret) ->
     return utils.formatRequest config.api_host, graph, props, key, secret
+
+getBody = (res, callback) ->
+    body = '';
+    res.on 'data', (chunk) ->
+        body += chunk.toString()
+    res.on 'end', () ->
+        return callback null, body
 
 HTTP =
     get: http.get
@@ -329,8 +335,8 @@ describe 'Server', ->
                 basename = path.basename (url.parse location).pathname, '.jpg'
                 chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
 
-        describe.skip 'Input URL does not resolve', ->
-
+        describe 'Input URL does not resolve', ->
+            info = null
             p = { height: 110, width: 130, x: 200, y: 230, input: "demo/__nonexisting_image___.jpg" }
             u = graph_url 'crop', p
 
@@ -338,9 +344,20 @@ describe 'Server', ->
                 @timeout 5000
 
                 http.get u, (res) ->
-                    chai.expect(res.statusCode).to.equal 504
-                    done()
+                    getBody res, (err, body) ->
+                        try
+                            info = JSON.parse body
+                        catch e
+                            chai.expect(e).to.not.exist
+                        chai.expect(res.statusCode).to.equal 504
+                        chai.expect(info.code).to.equal 504
+                        done()
 
+            it 'payload should have error and files', ->
+                chai.expect(info).to.exist
+                chai.expect(info).to.include.keys ['error', 'files', 'code']
+                chai.expect(info.error).to.contain '__nonexisting_image___'
+                chai.expect(info.error).to.contain '404'
 
     describe 'POST /graph', () ->
         beforeEach () ->
