@@ -165,7 +165,9 @@ class Server extends EventEmitter
             p = '/demo/index.html'
         p = p.replace '/demo', ''
         if p
-            @resourceserver.serveFile p, 200, {}, request, response
+            u.pathname = p
+            request.url = url.format u
+            @resourceserver.serve request, response
         else
             @getDemoData (err, data) ->
                 response.statusCode = 200
