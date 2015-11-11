@@ -20,7 +20,7 @@ exports.config = {
      * production applications.
      */
     level : 'info'
-  }
+  },
   /**
    * Don't report certain types of failures as errors
    */
