@@ -26,6 +26,6 @@ exports.config = {
    */
   error_collector : {
     enabled : true,
-    ignore_status_codes : [404,504]
+    ignore_status_codes : [403,404,504]
   }
 };
