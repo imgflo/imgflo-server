@@ -21,4 +21,11 @@ exports.config = {
      */
     level : 'info'
   }
+  /**
+   * Don't report certain types of failures as errors
+   */
+  error_collector : {
+    enabled : true,
+    ignore_status_codes : [404,504]
+  }
 };
