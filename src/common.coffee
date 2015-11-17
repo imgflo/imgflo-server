@@ -195,6 +195,7 @@ exports.mergeDefaultConfig = (overrides) ->
         cache_s3_folder: 'test'
         cache_local_directory: './temp/cache' # note: depends on workdir?
         redis_url: process.env.IMGFLO_REDIS_URL
+        cache_redis_ttl: 24*60*60 # seconds
 
     config = clone defaultConfig
     for key, value of overrides
@@ -212,6 +213,7 @@ exports.getProductionConfig = () ->
     config.broker_url = process.env.IMGFLO_BROKER_URL or config.broker_url
     config.redis_url = process.env.REDISCLOUD_URL or null
     config.image_size_limit = process.env.IMGFLO_SIZE_LIMIT or null
+    config.cache_redis_ttl = process.env.IMGFLO_REDIS_TTL
     config = exports.mergeDefaultConfig config
 
     return config
