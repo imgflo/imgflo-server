@@ -1,0 +1,15 @@
+{
+  "properties": {
+    "environment": {
+      "type": "noop"
+    }
+  },
+  "processes": {
+  },
+  "connections": [
+  ],
+  "inports": {
+  },
+  "outports": {
+  }
+}

@@ -59,14 +59,6 @@ exports.keysNotIn = (A, B) ->
             notIn.push a
     return notIn
 
-exports.typeFromMime = (mime) ->
-    type = null
-    if mime == 'image/jpeg'
-        type = 'jpg'
-    else if mime == 'image/png'
-        type = 'png'
-    return type
-
 exports.runtimeForGraph = (g) ->
     runtime = 'imgflo'
     if g.properties and g.properties.environment and g.properties.environment.type
@@ -96,6 +88,8 @@ exports.typeFromMime = (mime) ->
         type = 'jpg'
     else if mime == 'image/png'
         type = 'png'
+    else if mime == 'image/gif'
+        type = 'gif'
     return type
 
 exports.runtimeForGraph = (g) ->

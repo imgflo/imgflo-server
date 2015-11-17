@@ -30,7 +30,7 @@ parseRequestUrl = (u) ->
 
         # Add extension so GEGL load op can use the correct file loader
         ext = path.extname src
-        if ext not in ['.png', '.jpg', '.jpeg']
+        if ext not in ['.png', '.jpg', '.jpeg', '.gif']
             ext = ''
 
         files.input = { src: src, extension: ext, path: null }

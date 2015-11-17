@@ -17,6 +17,27 @@ fs = require 'fs'
 path = require 'path'
 temp = require 'temp'
 
+class NoopProcessor
+    constructor: (verbose) ->
+        @verbose = verbose
+
+    process: (outputFile, outType, graph, iips, inputFile, inputType, callback) ->
+        if outType != inputType
+            return callback new Error "noop must have matching input and output types. Got intype=#{inputType} and outtype=#{outType}"
+
+        # Just copy file byte-for-byte to expected output location
+        ins = fs.createReadStream inputFile
+        outs = fs.createWriteStream outputFile
+        outs.on 'error', (err) ->
+            return if not callback
+            callback err
+            callback = null
+        ins.pipe outs
+        outs.on 'finish', () ->
+            return if not callback
+            callback null
+            callback = null
+
 # TODO: support using long-lived workers as Processors, use FBP WebSocket API to control?
 
 downloadFile = (src, out, callback) ->
@@ -75,6 +96,7 @@ class JobExecutor extends EventEmitter
             imgflo: new imgflo.Processor config.verbose, common.installdir
             'noflo-browser': n
             'noflo-nodejs': n
+            'noop': new NoopProcessor config.verbose
 
         if not fs.existsSync @workdir
             fs.mkdirSync @workdir
