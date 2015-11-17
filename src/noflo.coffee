@@ -36,7 +36,7 @@ class NoFloProcessor extends common.Processor
 
     run: (graph, callback) ->
         s = JSON.stringify graph, null, "  "
-        cmd = 'node_modules/noflo-canvas/node_modules/.bin/noflo'
+        cmd = 'node_modules/.bin/noflo'
         console.log s if @verbose
 
         # TODO: add support for reading from stdin to NoFlo?
