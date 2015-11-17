@@ -12,17 +12,19 @@ class Cache extends common.CacheServer
             @client.auth params.auth.split(':')[1] if params.auth
         else
             @client = redis.createClient()
-        @mapName = @config.cache_redis_map or 'processed-file-url'
+        @prefix = @config.cache_redis_prefix or 'imgflo_cache'
+        @expireSeconds = @config.cache_redis_ttl
 
     keyExists: (key, callback) ->
-        @client.hget @mapName, key, (err, res) =>
+        redisKey = @redisPathForKey key
+        @client.get redisKey, (err, res) =>
             return callback err if err
             return callback null, res if res
 
             @cache.keyExists key, (err, cached) =>
                 return callback err if err
                 return callback null, cached if not cached
-                @client.hset @mapName, key, cached, (err) ->
+                @client.set redisKey, cached, 'EX', @expireSeconds, (err) ->
                     return callback err, cached
 
     putFile: (source, key, callback) ->
@@ -32,6 +34,9 @@ class Cache extends common.CacheServer
 
     handleKeyRequest: (key, request, response) ->
         @cache.handleKeyRequest? key, request, response
+
+    redisPathForKey: (key) ->
+        return "#{@prefix}/url/#{key}"
 
     # TEMP: needed as long as we return cache url in POST requests, and not job urls
     urlForKey: (key) ->
