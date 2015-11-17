@@ -23,17 +23,15 @@ downloadFile = (src, out, callback) ->
     contentType = null
     requestOptions =
         encoding: null # expect binary
-    req = request src, requestOptions, (error, response) ->
-        if error
+    req = request src, requestOptions
+    req.on 'response', (response) ->
+        if response.statusCode != 200
             return if not callback
-            callback error, null
-            callback = null
-        else if response.statusCode != 200
-            return if not callback
-            callback response.statusCode, null
+            callback new Error "Failed to download input #{src}: HTTP error #{response.statusCode}", null
             callback = null
         else
             contentType = response.headers['content-type']
+
     req.on 'error', (err) ->
         return if not callback
         callback err
@@ -45,7 +43,6 @@ downloadFile = (src, out, callback) ->
         return if not callback
         callback null, contentType
         callback = null
-
 
 waitForDownloads = (files, callback) ->
     f = files.input
