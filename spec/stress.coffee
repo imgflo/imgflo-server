@@ -140,6 +140,7 @@ describeSkipPerformance 'Stress', ->
     l = null
     stresstests = yaml.safeLoad fs.readFileSync 'spec/stresstests.yaml', 'utf-8'
     fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
+    target = if config.cache_type == 'redis-s3' then 'imgflo.herokuapp.com' else host
 
     before (done) ->
         utils.rmrf config.workdir
@@ -166,11 +167,11 @@ describeSkipPerformance 'Stress', ->
                 chai.expect(err).to.not.exist;
                 done()
 
-        testcases.expected[host].forEach (expect, i) ->
+        testcases.expected[target].forEach (expect, i) ->
             concurrent = testcases.concurrent[i]
 
             describe "#{concurrent} concurrent requests", (done) ->
-                total = testcases.concurrent[testcases.expected[host].length-1]
+                total = testcases.concurrent[testcases.expected[target].length-1]
                 requestUrls = identicalRequests requestUrl, total
 
                 it "average response time should be below #{expect} ms", (done) ->
@@ -183,11 +184,11 @@ describeSkipPerformance 'Stress', ->
         testid = 'process_same_input'
         testcases = stresstests[testid]
 
-        testcases.expected[host].forEach (expect, i) ->
+        testcases.expected[target].forEach (expect, i) ->
             concurrent = testcases.concurrent[i]
 
             describe "#{concurrent} concurrent requests", (done) ->
-                total = testcases.concurrent[testcases.expected[host].length-1]*10
+                total = testcases.concurrent[testcases.expected[target].length-1]*10
                 requestUrls = randomRequests 'passthrough', {input: 'demo/grid-toastybob.jpg'}, total, 'ignored'
 
                 it "average response time should be below #{expect} ms", (done) ->
@@ -200,7 +201,7 @@ describeSkipPerformance 'Stress', ->
         testcases = stresstests[testid]
         concurrent = 2
 
-        testcases.expected[host].forEach (expect, i) ->
+        testcases.expected[target].forEach (expect, i) ->
             size = testcases.sizes[i]
 
             describe "#{size}x#{size} pixels", (done) ->
@@ -216,7 +217,7 @@ describeSkipPerformance 'Stress', ->
     describe.skip "Processing different inputs", ->
         testid = 'process_different_inputs'
         testcases = stresstests[testid]
-        testcases.expected[host].forEach (expect, i) ->
+        testcases.expected[target].forEach (expect, i) ->
             concurrent = testcases.concurrent[i]
             total = concurrent*2
             total = concurrent if total > 16
@@ -239,7 +240,7 @@ describeSkipPerformance 'Stress', ->
         testid = 'same_request_concurrently'
 
         testcases = stresstests[testid]
-        testcases.concurrent[host].forEach (concurrent, i) ->
+        testcases.concurrent[target].forEach (concurrent, i) ->
             describe "#{concurrent} concurrent requests", (done) ->
 
                 testcase = "stress.#{testid}"
