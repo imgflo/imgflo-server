@@ -43,11 +43,19 @@ the server can also execute graphs built with NoFlo w/ noflo-canvas.
 API usage
 ======================
 
-JavaScript helpers
+## JavaScript / node.js / browser
 --------------------
 
 1. Forming valid imgflo urls: [imgflo-url](https://www.npmjs.org/package/imgflo-url)
 2. Creating responsive images using media-query: [rig](https://www.npmjs.org/package/rig-up)
+
+## Java / Android
+
+[imgflo-url-java](https://github.com/the-grid/imgflo-url-java)
+
+## Swift / iOSs
+
+[ImgFlo.swift](https://github.com/the-grid/ImgFlo.swift)
 
 
 Creating new image processing graphs
