@@ -279,7 +279,7 @@ describeSkipPerformance 'Stress', ->
 
                 it 'all results should be equal to reference', (done) ->
                     @timeout timeout
-                    options = { timeout: timeout*2 }
+                    options = { timeout: timeout*2, tolerance: 3.0 }
 
                     compareToReference = (data, cb) ->
                         utils.compareImages data.target, data.reference, options, (error, stderr, stdout) ->
