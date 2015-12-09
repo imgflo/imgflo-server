@@ -161,6 +161,7 @@ describeSkipPerformance 'Stress', ->
         testcases = stresstests[testid]
 
         it 'generating cache', (done) ->
+            @timeout 4000
             cacheUrl = requestUrl
             requestRecordTime cacheUrl, (err, res) ->
                 chai.expect(err).to.not.exist;
