@@ -11,7 +11,7 @@ process_same_input:
 process_different_sizes:
     sizes: [50, 200, 800, 1600, 3200]
     expected:
-        'localhost': [2000, 2000, 2500, 5000, 14000]
+        'localhost': [2500, 2500, 2500, 5000, 14000]
         'imgflo.herokuapp.com': [6000, 6000, 6000]
 same_request_concurrently:
     concurrent:
@@ -91,5 +91,5 @@ process_different_inputs:
         - "http://the-grid-user-content.s3-us-west-2.amazonaws.com/5cf5fadb-6e96-4537-872f-9ee23cf3ea24.jpg"
     concurrent: [1, 16, 64]
     expected:
-        'localhost': [1400, 1400, 2000]
+        'localhost': [2000, 2000, 2500]
         'imgflo.herokuapp.com': [6000, 6000, 12000]
