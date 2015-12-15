@@ -249,7 +249,7 @@ describe 'Server', ->
                         done()
             it 'should list supported types', ->
                 d = JSON.parse data
-                chai.expect(d.supported).to.eql ['jpg', 'jpeg', 'png', null]
+                chai.expect(d.supported).to.eql ['jpg', 'jpeg', 'png', 'mp4', null]
 
         describe 'Get new image', ->
             u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
