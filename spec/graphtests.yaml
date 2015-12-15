@@ -174,3 +174,9 @@
     _name: gif_animated_noop
     _graph: 'noop.gif'
     input: "demo/time.gif"
+-
+    _name: mp4_video
+    _graph: 'customgrey.mp4'
+    _skipcompare: true
+    _skiperrors: true
+    input: "demo/video-3dpmic.mp4"

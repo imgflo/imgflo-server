@@ -17,7 +17,6 @@ child = require 'child_process'
 
 config = utils.getTestConfig()
 startServer = (config.api_host.indexOf 'localhost') == 0
-itSkipRemote = if not startServer then it.skip else it
 urlbase = config.api_host # compat
 
 requestUrl = (testcase) ->
@@ -54,6 +53,8 @@ describe 'Graphs', ->
 
     testcases.forEach (testcase) ->
         describeOrSkip = if testcase._skip? and testcase._skip then describe.skip else describe
+        itOrSkipCompare = if testcase._skipcompare then it.skip else it
+        itSkipErrorCheck = if not startServer or testcase._skiperrors then it.skip else it
 
         describeOrSkip "#{testcase._name}", ->
             reqUrl = requestUrl testcase
@@ -63,7 +64,7 @@ describe 'Graphs', ->
             output = path.join datadir, "#{testcase._name}.out.#{ext}"
             fs.unlinkSync output if fs.existsSync output
 
-            it 'should have a reference result', (done) ->
+            itOrSkipCompare 'should have a reference result', (done) ->
                 fs.exists reference, (exists) ->
                     chai.assert exists, 'Not found: '+reference
                     done()
@@ -74,7 +75,7 @@ describe 'Graphs', ->
                     @timeout timeout
                     response = null
                     req = request reqUrl, (err, res) ->
-                        chai.expect(err).to.be.a 'null'
+                        chai.expect(err).to.not.exist
                     req.pipe fs.createWriteStream output
                     req.on 'response', (res) ->
                         response = res
@@ -82,7 +83,7 @@ describe 'Graphs', ->
                         chai.expect(response.statusCode).to.equal 200
                         done()
 
-                it 'results should be equal to reference', (done) ->
+                itOrSkipCompare 'results should be equal to reference', (done) ->
                     timeout = 8000
                     @timeout timeout
                     options = { timeout: timeout*2 }
@@ -93,6 +94,6 @@ describe 'Graphs', ->
                         chai.expect(error).to.be.a 'null', msg
                         done()
 
-                itSkipRemote 'should not cause errors', ->
+                itSkipErrorCheck 'should not cause errors', ->
                     chai.expect(l.popErrors()).to.deep.equal []
 
