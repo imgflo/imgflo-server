@@ -27,9 +27,10 @@ parseRequestUrl = (u) ->
     # TODO: transform urls to downloaded images for all attributes, not just "input"
     if parsedUrl.query.input
         src = parsedUrl.query.input.toString()
+        parsedSrc = url.parse src, true
 
         # Add extension so GEGL load op can use the correct file loader
-        ext = path.extname src
+        ext = path.extname parsedSrc.pathname
         if ext not in ['.png', '.jpg', '.jpeg', '.gif']
             ext = ''
 
