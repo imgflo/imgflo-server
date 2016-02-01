@@ -13,7 +13,7 @@ worker = require './worker'
 
 FrontendParticipant = (client, role) ->
 
-  outproxies = ['urgentjob', 'backgroundjob']
+  outproxies = ['urgentjob', 'backgroundjob', 'backgroundjobnoflo']
   inproxies = ['jobresult']
 
   id = if process.env.DYNO then process.env.DYNO else uuid.v4()
@@ -149,6 +149,8 @@ class JobManager extends EventEmitter
             @jobs[job.id] = job
             return callback null, job
         port = if urgency == 'urgent' then "urgentjob" else "backgroundjob"
+        if port == 'backgroundjob' and data.runtime == 'noflo'
+            port += data.runtime
         @frontend.send port, job
         onSent null # FIXME: Participant.send should take callback
 
