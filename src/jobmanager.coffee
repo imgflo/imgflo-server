@@ -149,7 +149,6 @@ class JobManager extends EventEmitter
             @jobs[job.id] = job
             return callback null, job
         port = if urgency == 'urgent' then "urgentjob" else "backgroundjob"
-        console.log 'gb', port, data
         if port == 'backgroundjob' and data.runtime == 'noflo-browser' or data.runtime == 'noflo-nodejs'
             port += 'noflo'
         @frontend.send port, job
