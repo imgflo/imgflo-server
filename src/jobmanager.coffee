@@ -60,7 +60,7 @@ startInternalWorkers = (manager, roles, callback) =>
   return callback null if manager.options.worker_type != 'internal'
   async.map roles, startWorker, callback
 
-getPubsubSource = (graph, node, port) ->
+getPubsubSource = (graph, pubSubNode) ->
     pubsubs = {}
     for name, process of graph.processes
         continue if process.component != 'msgflo/PubSub'
@@ -75,17 +75,21 @@ getPubsubSource = (graph, node, port) ->
     queueName = (p) ->
         return "#{p.process}.#{p.port.toUpperCase()}" # FIXME: relies on convention
     for name, connection of pubsubs
-        return queueName(connection.src) if connection.tgt.port == port  and connection.tgt.process == node
+        return queueName(connection.src) if name == pubSubNode
     return null
 
 pubsubBindings = (frontend, graph) ->
     bindings = []
     def = frontend.definition
-    for port in def.inports
+    for conn in graph.connections
+        continue if conn.tgt.process != def.role
+        portName = conn.tgt.port+'-unique'
+        port = def.inports.filter((p) -> p.id == portName)[0]
+        continue if not port
         original = port['_originalid']
         if original
             # bind shared queue to per-participant/unique queue
-            srcQueue = getPubsubSource graph, def.role, original
+            srcQueue = getPubsubSource graph, conn.src.process
             throw new Error "Cannot find target for port #{port.id}" if not srcQueue
             bindings.push
                 type: 'pubsub'
@@ -113,7 +117,11 @@ class JobManager extends EventEmitter
           graphfile: './graphs/imgflo-server.fbp'
         graph = require('fbp').parse(require('fs').readFileSync(setup.graphfile, 'utf-8'))
         setup.extrabindings = pubsubBindings @frontend, graph
-        roles = Object.keys(graph.processes).filter((n) -> n != 'imgflo_api' and n != 'pubsub' )
+        roles = []
+        for n, proc of graph.processes
+            continue if proc.component == 'msgflo/PubSub'
+            continue if n == 'imgflo_api'
+            roles.push n
 
         startInternalWorkers this, roles, (err) =>
           return callback err if err
