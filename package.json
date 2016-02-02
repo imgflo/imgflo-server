@@ -47,6 +47,7 @@
     "noflo-image": "^0.0.19",
     "noflo-math": "0.0.6",
     "noflo-md5": "automata/noflo-md5",
+    "noflo-nodejs": "^0.6.1",
     "noflo-objects": "^0.1.12",
     "noflo-seedrandom": "automata/noflo-seedrandom",
     "noflo-strings": "~0.1.9",

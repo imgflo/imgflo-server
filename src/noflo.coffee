@@ -36,17 +36,25 @@ class NoFloProcessor extends common.Processor
 
     run: (graph, callback) ->
         s = JSON.stringify graph, null, "  "
-        cmd = 'node_modules/.bin/noflo'
+        cmd = 'node_modules/.bin/noflo-nodejs'
         console.log s if @verbose
 
         # TODO: add support for reading from stdin to NoFlo?
         tmp.file {postfix: '.json'}, (err, graphPath) =>
             return callback err, null if err
             fs.writeFile graphPath, s, () =>
-                @execute cmd, [ graphPath ], callback
+                args = [
+                    '--catch-exceptions', 'false',
+                    '--register', 'false',
+                    '--cache', 'true',
+                    '--port', '3311',
+                    '--graph', graphPath
+                    '--batch', 'true',
+                ]
+                @execute cmd, args, callback
 
     execute: (cmd, args, callback) ->
-        # args.unshift '--debug'
+        args.unshift '--debug'
         console.log 'executing', cmd, args.join ' ' if @verbose
         stderr = ""
         process = child_process.spawn cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] }
