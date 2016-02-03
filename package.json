@@ -22,6 +22,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "postinstall": "./node_modules/.bin/noflo-cache-preheat",
     "test": "mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee"
   },
   "engines": {
@@ -39,7 +40,7 @@
     "msgflo": "^0.5.6",
     "newrelic": "1.17.3",
     "node-static": "^0.7.3",
-    "noflo": "^0.5.14",
+    "noflo": "^0.5.18",
     "noflo-canvas": "^0.1.17",
     "noflo-core": "^0.1.11",
     "noflo-geometry": "automata/noflo-geometry",
