@@ -1,0 +1,47 @@
+{
+  "properties": {
+      "name": "insta_brannan",
+      "environment": {
+          "type": "imgflo"
+      }
+  },
+  "processes": {
+    "filter": {
+      "component": "gegl/insta-filter"
+    },
+    "nop": {
+      "component": "gegl/nop"
+    }
+  },
+  "connections": [
+    {
+      "data": "brannan",
+      "tgt": {
+        "process": "filter",
+        "port": "preset"
+      }
+    },
+    {
+      "src": {
+        "process": "filter",
+        "port": "output"
+      },
+      "tgt": {
+        "process": "nop",
+        "port": "input"
+      }
+    }
+  ],
+  "inports": {
+    "input": {
+      "process": "filter",
+      "port": "input"
+    }
+  },
+  "outports": {
+    "output": {
+      "process": "nop",
+      "port": "output"
+    }
+  }
+}
