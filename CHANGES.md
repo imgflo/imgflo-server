@@ -16,6 +16,12 @@ Useful for proxying, like for getting rid of HTTP/S mixed content warnings.
 * Output image size now has a (configurable) limit, will return HTTP 422 if exceeded.
 * Failure to download input images now gives an informative HTTP 504 instead of 500 internal error
 
+New processing graphs
+----------------
+
+* halodarken
+* enhancelowres
+* motionblur
 
 Scaling improvements
 --------------------
@@ -37,6 +43,7 @@ Other
 
 * New Relic can optionally be used for metrics reporting
 * Since 0.4.16 using cedar-14 stack on Heroku instead of old 'cedar'.
+* Since 0.4.40 using nodejs 0.12
 
 
 imgflo-server 0.4.0
