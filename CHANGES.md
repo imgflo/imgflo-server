@@ -1,8 +1,31 @@
-imgflo-server 0.4
+imgflo-server 0.5
 ====================
 Released: N/A
 
 Since 0.4.16 using cedar-14 stack on Heroku instead of old 'cedar'.
+
+
+imgflo-server 0.4.0
+====================
+Released: March 4, 2015
+
+Processing is now separated from the HTTP sever frontend.
+On Heroku, it is ran as a separate dyno role on Heroku.
+This allows to scale these independently, which is very desirable
+for a good cost/performance ratio. For smaller setups, the workers
+can still be ran 'internally' in the web process.
+
+The web frontend and worker(s) communicate using AMQP, with RabbitMQ as the broker.
+[MsgFlo](http://msgflo.org) APIs and tools is used to make this easy.
+
+Minor
+--------
+
+* demoapp: Added visual previews available graphs
+* demoapp: Make responsive for different screensizes,
+using [GSS](http://gridstylesheets.org)
+* API: Attempting to use unsupported output types now return HTTP 449
+
 
 imgflo-server 0.3.0
 ==================
