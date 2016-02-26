@@ -13,7 +13,7 @@ See [./CHANGES.md](./CHANGES.md)
 
 License
 --------
-MIT
+[MIT](https://opensource.org/licenses/MIT)
 
 Note: GEGL itself is under LGPLv3.
 
