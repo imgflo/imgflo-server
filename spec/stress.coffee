@@ -161,6 +161,7 @@ describeSkipPerformance 'Stress', ->
         testcases = stresstests[testid]
 
         it 'generating cache', (done) ->
+            @timeout 4000
             cacheUrl = requestUrl
             requestRecordTime cacheUrl, (err, res) ->
                 chai.expect(err).to.not.exist;
@@ -278,7 +279,7 @@ describeSkipPerformance 'Stress', ->
 
                 it 'all results should be equal to reference', (done) ->
                     @timeout timeout
-                    options = { timeout: timeout*2 }
+                    options = { timeout: timeout*2, tolerance: 3.0 }
 
                     compareToReference = (data, cb) ->
                         utils.compareImages data.target, data.reference, options, (error, stderr, stdout) ->

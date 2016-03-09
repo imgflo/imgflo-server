@@ -1,6 +1,12 @@
 
 # !runtime msgflo
+# urgent / syncronous processing
 imgflo_api(imgflo-server/HttpApi) URGENTJOB -> JOB imgflo_urgentworker(imgflo-server/ProcessImage)
 imgflo_urgentworker JOBRESULT -> IN pubsub(msgflo/PubSub) OUT -> JOBRESULT imgflo_api
 
+imgflo_api URGENTJOBNOFLO -> JOB imgflo_urgent_noflo(imgflo-server/ProcessImage)
+imgflo_urgent_noflo JOBRESULT -> IN pubsub_noflo(msgflo/PubSub) OUT -> JOBRESULT imgflo_api
+
+# background processing
 imgflo_api BACKGROUNDJOB -> JOB imgflo_backgroundworker(imgflo-server/ProcessImage)
+imgflo_api BACKGROUNDJOBNOFLO -> JOB imgflo_background_noflo(imgflo-server/ProcessImage)

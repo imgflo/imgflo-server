@@ -1,8 +1,72 @@
-imgflo-server 0.4
+imgflo-server 0.5
 ====================
 Released: N/A
 
-Since 0.4.16 using cedar-14 stack on Heroku instead of old 'cedar'.
+Continued scalability improvements.
+Since June 2015, main deployment is using [guv](http://www.jonnor.com/2015/11/guv-automatic-scaling/)
+for automatic scaling of Heroku workers.
+
+API
+---
+
+* New `POST /graph/` allows to cause processing to happen without waiting for response.
+Otherwise identical to the syncronous `GET` interface.
+* Supports a `noop` graph, which cannot process images, just cache them.
+Useful for proxying, like for getting rid of HTTP/S mixed content warnings.
+* Output image size now has a (configurable) limit, will return HTTP 422 if exceeded.
+* Failure to download input images now gives an informative HTTP 504 instead of 500 internal error
+
+New processing graphs
+----------------
+
+* halodarken
+* enhancelowres
+* motionblur
+
+Scaling improvements
+--------------------
+
+* Redis cache frontend for Amazon S3, makes cache checks much faster (since 0.4.10)
+* Decicated worker(s) for urgent (GET) jobs, avoids non-syncronous jobs (POST) blocking.
+* Pub-sub connection from workers back to web, allows multiple web frontends (since .
+* Processing is separated by runtime type (imgflo, noflo), as they have different perf/scaling characteristics
+
+Bugfixes
+------
+
+* S3: Content-Type header is now correctly set for processed images.
+* Fixed a image corruption issue with high concurrency rates, due to different requests overwriting same files.
+* Fixed wrong parsing on inputs without Content-Type and query parameters
+
+Other
+------
+
+* New Relic can optionally be used for metrics reporting
+* Since 0.4.16 using cedar-14 stack on Heroku instead of old 'cedar'.
+* Since 0.4.40 using nodejs 0.12
+
+
+imgflo-server 0.4.0
+====================
+Released: March 4, 2015
+
+Processing is now separated from the HTTP sever frontend.
+On Heroku, it is ran as a separate dyno role on Heroku.
+This allows to scale these independently, which is very desirable
+for a good cost/performance ratio. For smaller setups, the workers
+can still be ran 'internally' in the web process.
+
+The web frontend and worker(s) communicate using AMQP, with RabbitMQ as the broker.
+[MsgFlo](http://msgflo.org) APIs and tools is used to make this easy.
+
+Minor
+--------
+
+* demoapp: Added visual previews available graphs
+* demoapp: Make responsive for different screensizes,
+using [GSS](http://gridstylesheets.org)
+* API: Attempting to use unsupported output types now return HTTP 449
+
 
 imgflo-server 0.3.0
 ==================

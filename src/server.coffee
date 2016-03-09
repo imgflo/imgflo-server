@@ -27,9 +27,10 @@ parseRequestUrl = (u) ->
     # TODO: transform urls to downloaded images for all attributes, not just "input"
     if parsedUrl.query.input
         src = parsedUrl.query.input.toString()
+        parsedSrc = url.parse src, true
 
         # Add extension so GEGL load op can use the correct file loader
-        ext = path.extname src
+        ext = path.extname parsedSrc.pathname
         if ext not in ['.png', '.jpg', '.jpeg', '.gif']
             ext = ''
 
@@ -226,8 +227,11 @@ class Server extends EventEmitter
                 onJobCompleted = (err, job) =>
                     @logEvent 'serve-processed-file', { request: req.request, url: job.results?.url }
                     return @redirectToCache err, job.results?.url, response, 301
-                @jobManager.doJob 'process-image', req, onJobCompleted, (err, job) =>
-                    return @redirectToCache err, null, null if err # failed to create job
+                @getGraphRuntime req.graph, (err, runtime) =>
+                    return @redirectToCache err, null, response if err
+                    req.runtime = runtime
+                    @jobManager.doJob 'process-image', req, onJobCompleted, (err, job) =>
+                        return @redirectToCache err, null, null if err # failed to create job
 
     # POST /graph
     # on new HTTP request:
@@ -250,8 +254,11 @@ class Server extends EventEmitter
                 onJobCompleted = null # not waiting for result
                 # TODO: return a job URL instead of the cache URL
                 cacheurl = @cache.urlForKey?(req.cachekey) # HACK, uses internal method
-                @jobManager.doJob 'process-image', req, onJobCompleted, (err, job) =>
-                    return @redirectToCache err, cacheurl, response, 202
+                @getGraphRuntime req.graph, (err, runtime) =>
+                    return @redirectToCache err, null, response if err
+                    req.runtime = runtime
+                    @jobManager.doJob 'process-image', req, onJobCompleted, (err, job) =>
+                        return @redirectToCache err, cacheurl, response, 202
 
 
     ensureAuthenticated: (req, response) ->
@@ -281,6 +288,11 @@ class Server extends EventEmitter
                 file.src = 'http://localhost:'+@port+'/'+file.src
         return req
 
+    getGraphRuntime: (graphName, callback) ->
+        @graphs.get graphName, (err, graphData) ->
+            return callback err if err
+            runtime = common.runtimeForGraph graphData
+            return callback null, runtime
 
 exports.Server = Server
 

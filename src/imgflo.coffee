@@ -20,7 +20,11 @@ enrichGraphDefinition = (graph, publicOnly) ->
         process: 'rescale'
         port: 'x'
 
-supportedTypes = ['jpg', 'jpeg', 'png', null]
+supportedVideoTypes = ['mp4']
+supportedTypes = ['jpg', 'jpeg', 'png', null].concat(supportedVideoTypes)
+
+typeIsVideo = (type) ->
+    return supportedVideoTypes.indexOf(type) != -1
 
 class ImgfloProcessor extends common.Processor
 
@@ -33,13 +37,15 @@ class ImgfloProcessor extends common.Processor
         return callback new errors.UnsupportedImageType outputType, supportedTypes if outputType not in supportedTypes
 
         g = prepareImgfloGraph graph, iips, inputFile, outputFile, inputType, outputType
-        @run g, callback
+        @run g, outputType, callback
 
-    run: (graph, callback) ->
+    run: (graph, outputType, callback) ->
 
         s = JSON.stringify graph, null, "  "
         cmd = @installdir+'env.sh'
-        args = [ @installdir+'bin/imgflo', "-"]
+        args = [ @installdir+'bin/imgflo']
+        args = args.concat ['--video'] if typeIsVideo outputType
+        args = args.concat ['-'] # passing graph over stdin
 
         console.log 'executing', cmd, args if @verbose
         stderr = ""
@@ -77,13 +83,20 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     # Avoid mutating original
     def = common.clone basegraph
 
+    isVideo = typeIsVideo outtype
     loader = 'gegl/load'
+    saver = "gegl/#{outtype}-save"
     if type
         loader = "gegl/#{type}-load"
+    if isVideo
+        loader = "gegl/ff-load"
+        saver = "gegl/ff-save"
+        def.processes._load_buf = { component: 'gegl/buffer-source' }
+        def.processes._store_buf = { component: 'gegl/buffer-sink' }
 
     # Add load, save, process nodes
     def.processes.load = { component: loader }
-    def.processes.save = { component: "gegl/#{outtype}-save" }
+    def.processes.save = { component: saver }
     def.processes.proc = { component: 'Processor' }
 
     # Connect them to actual graph
@@ -100,9 +113,13 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
         # Connect directly
         def.connections.push { src: {process: 'load', port: 'output'}, tgt: inp }
 
-
-    def.connections.push { src: out, tgt: {process: 'save', port: 'input'} }
-    def.connections.push { src: {process: 'save', port: 'output'}, tgt: {process: 'proc', port: 'node'} }
+    if isVideo
+        def.connections.push { src: out, tgt: { process: '_store_buf', port: 'input' } }
+        def.connections.push fbpConn "_load_buf OUTPUT -> INPUT save"
+        #outpath += '.mp4'
+    else
+        def.connections.push { src: out, tgt: {process: 'save', port: 'input'} }
+        def.connections.push fbpConn "save OUTPUT -> NODE proc"
 
     # Attach filepaths as IIPs
     def.connections.push { data: inpath, tgt: { process: 'load', port: 'path'} }

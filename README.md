@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.org/jonnor/imgflo.svg?branch=master)](https://travis-ci.org/jonnor/imgflo)
+[![Build Status](https://travis-ci.org/imgflo/imgflo-server.svg?branch=master)](https://travis-ci.org/imgflo/imgflo-server)
 
 imgflo-server
 ==========
 imgflo-server is an image-processing server with HTTP built using the
-[imgflo](http://github.com/jonnor/imgflo) dataflow runtime.
+[imgflo](http://github.com/imgflo/imgflo) dataflow runtime.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
@@ -13,7 +13,7 @@ See [./CHANGES.md](./CHANGES.md)
 
 License
 --------
-MIT
+[MIT](https://opensource.org/licenses/MIT)
 
 Note: GEGL itself is under LGPLv3.
 
@@ -43,11 +43,19 @@ the server can also execute graphs built with NoFlo w/ noflo-canvas.
 API usage
 ======================
 
-JavaScript helpers
+## JavaScript / node.js / browser
 --------------------
 
 1. Forming valid imgflo urls: [imgflo-url](https://www.npmjs.org/package/imgflo-url)
 2. Creating responsive images using media-query: [rig](https://www.npmjs.org/package/rig-up)
+
+## Java / Android
+
+[imgflo-url-java](https://github.com/the-grid/imgflo-url-java)
+
+## Swift / iOSs
+
+[ImgFlo.swift](https://github.com/the-grid/ImgFlo.swift)
 
 
 Creating new image processing graphs
@@ -77,7 +85,7 @@ After creating the app, login at Heroku:
 
 Clone `imgflo-server`:
 
-    git clone https://github.com/jonnor/imgflo-server.git
+    git clone https://github.com/imgflo/imgflo-server.git
     cd imgflo-server
 
 Add YOURAPP as remote:

@@ -1,6 +1,8 @@
 language: node_js
 services:
 - rabbitmq
+sudo: required
+dist: trusty
 env:
   global:
   - AMAZON_API_BUCKET=the-grid-img
@@ -11,7 +13,7 @@ node_js:
 - '4.2'
 before_install:
 - sudo apt-get update -qq
-- sudo apt-get install libsdl1.2-dev libgif-dev
+- sudo apt-get --assume-yes install libsdl1.2-dev libgif-dev libjson-glib-dev libglib2.0-dev
 script:
 - export IMGFLO_TESTS_PERFORMANCE=1
 - export IMGFLO_BROKER_URL=amqp://localhost
@@ -24,7 +26,7 @@ deploy:
   strategy: git
   app: imgflo
   on:
-    repo: jonnor/imgflo-server
+    repo: imgflo/imgflo-server
     all_branches: true
     tags: true
   api_key:

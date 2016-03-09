@@ -174,3 +174,8 @@
     _name: gif_animated_noop
     _graph: 'noop.gif'
     input: "demo/time.gif"
+-
+    _name: regcheck_nocontenttype_queryparams
+    _graph: passthrough.jpg
+    input: http://www.sgvtribune.com/apps/pbcsi.dll/storyimage/LC/20160124/NEWS/160129737/AR/0/AR-160129737.jpg?Maxh=1500&Maxw=1500
+    width: 23
