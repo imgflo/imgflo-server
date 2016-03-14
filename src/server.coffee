@@ -231,7 +231,7 @@ class Server extends EventEmitter
                     return @redirectToCache err, null, response if err
                     req.runtime = runtime
                     @jobManager.doJob 'process-image', req, onJobCompleted, (err, job) =>
-                        return @redirectToCache err, null, null if err # failed to create job
+                        return @redirectToCache err, null, response if err # failed to create job
 
     # POST /graph
     # on new HTTP request:
