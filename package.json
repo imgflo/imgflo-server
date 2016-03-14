@@ -44,7 +44,7 @@
     "noflo-canvas": "^0.2.0",
     "noflo-core": "^0.1.11",
     "noflo-geometry": "automata/noflo-geometry",
-    "noflo-image": "https://github.com/noflo/noflo-image.git#nodejs4",
+    "noflo-image": "0.2.0",
     "noflo-math": "0.0.6",
     "noflo-md5": "automata/noflo-md5",
     "noflo-objects": "^0.1.12",
