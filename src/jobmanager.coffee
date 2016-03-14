@@ -10,6 +10,7 @@ async = require 'async'
 common = require './common'
 local = require './local'
 worker = require './worker'
+processing = require './processing'
 
 FrontendParticipant = (client, role) ->
 
@@ -151,6 +152,12 @@ class JobManager extends EventEmitter
             id: uuid.v4()
             created_at: Date.now()
             callback: null
+
+        if typeErr = processing.runtimeSupportsType data.runtime, data.outtype
+            console.log 'typerr', data.outtype, data.runtime, typeErr
+            # check here to avoid useless traffic in queue, causing workers to stay up and waste money
+            return callback typeErr, job
+
         onSent = (err) =>
             @logEvent 'job-created', { job: job.id, err: err }
             return callback err if err

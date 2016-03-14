@@ -145,3 +145,4 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
 
 exports.Processor = ImgfloProcessor
 exports.enrichGraphDefinition = enrichGraphDefinition
+exports.supportedTypes = supportedTypes

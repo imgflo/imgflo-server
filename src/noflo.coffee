@@ -122,3 +122,4 @@ prepareNoFloGraph = (basegraph, attributes, inpath, outpath, inType, outType) ->
 
 exports.Processor = NoFloProcessor
 exports.enrichGraphDefinition = enrichGraphDefinition
+exports.supportedTypes = supportedTypes

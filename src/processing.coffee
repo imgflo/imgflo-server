@@ -83,6 +83,18 @@ jobResult = (job, err, cachedUrl) ->
     r.error = err if err
     return r
 
+runtimeSupportsType = (runtime, type) ->
+    err = null
+    if runtime == 'noflo-browser' or runtime == 'noflo-nodejs'
+        err = new common.errors.UnsupportedImageType type, noflo.supportedTypes if type not in noflo.supportedTypes
+    else if runtime == 'imgflo'
+        err = new common.errors.UnsupportedImageType type, imgflo.supportedTypes if type not in imgflo.supportedTypes
+    else if runtime == 'noop'
+        # does not care, support everything
+    else
+        err = new Error "runtimeSupportsType: Unknown runtime #{runtime}"
+    return err
+
 class JobExecutor extends EventEmitter
     constructor: (config) ->
 
@@ -195,4 +207,4 @@ class JobExecutor extends EventEmitter
                     return callback err, stderr
 
 exports.JobExecutor = JobExecutor
-
+exports.runtimeSupportsType = runtimeSupportsType
