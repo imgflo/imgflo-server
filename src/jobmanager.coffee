@@ -154,7 +154,6 @@ class JobManager extends EventEmitter
             callback: null
 
         if typeErr = processing.runtimeSupportsType data.runtime, data.outtype
-            console.log 'typerr', data.outtype, data.runtime, typeErr
             # check here to avoid useless traffic in queue, causing workers to stay up and waste money
             return callback typeErr, job
 
