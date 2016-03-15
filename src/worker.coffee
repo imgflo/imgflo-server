@@ -45,7 +45,7 @@ exports.main = ->
     console.log "EVENT: #{id}:", data
 
   participant.start (err) ->
-    throw callback err if err
+    throw err if err
 
     console.log "#{role} started using broker #{config.broker_url}"
     console.log "with workdir #{config.workdir}"
