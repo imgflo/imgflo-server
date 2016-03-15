@@ -3,7 +3,6 @@
 #     imgflo-server may be freely distributed under the MIT license
 
 async = require 'async'
-pkginfo = (require 'pkginfo')(module, 'version')
 path = require 'path'
 child_process = require 'child_process'
 fs = require 'fs'
