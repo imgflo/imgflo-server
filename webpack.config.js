@@ -5,8 +5,8 @@ var fs = require('fs');
 module.exports = {
   module: {
 	  loaders: [
-		  { test: /\.coffee$/, loader: "coffee" },
-      { test: /\.json$/, loader: "json" }
+		{ test: /\.coffee$/, loader: "coffee-loader" },
+        { test: /\.json$/, loader: "json-loader" }
 	  ]
   },
   resolve: {
@@ -21,7 +21,6 @@ module.exports = {
   externals: {
     'websocket': 'commonjs websocket', // has native deps, looks them up dynamically
     'coffee-script': 'commonjs coffee-script', // should not be needed at all?
-    'mqtt': 'commonjs mqtt', // has some file with #! in it
     'hiredis': 'commonjs hiredis', // needed by redis, could not be found
     'vertx': 'commonjs vertx', // needed by amqplib, could not be found
     'request': 'commonjs request', // failed with some amd define error at runtime
