@@ -29,6 +29,7 @@
     "node": ">=4.2.0 <4.4.0"
   },
   "dependencies": {
+    "amqplib": "^0.4.1",
     "async": "^0.7.0",
     "coffee-script": "^1.7.1",
     "commander": "~2.1.0",
