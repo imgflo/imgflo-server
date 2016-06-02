@@ -38,6 +38,7 @@
     "knox": "^0.9.1",
     "mime-types": "^2.1.7",
     "msgflo": "^0.5.6",
+    "msgflo-nodejs": "^0.4.13",
     "newrelic": "^1.25.5",
     "node-static": "^0.7.3",
     "noflo": "~0.5.18",

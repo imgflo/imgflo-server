@@ -2,7 +2,7 @@
 processing = require './processing'
 common = require './common'
 
-msgflo = require 'msgflo'
+msgflo = require 'msgflo-nodejs'
 
 ProcessImageParticipant = (client, role) ->
 

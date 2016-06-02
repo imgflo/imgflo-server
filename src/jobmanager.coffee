@@ -3,6 +3,7 @@
 #     imgflo-server may be freely distributed under the MIT license
 
 uuid = require 'uuid'
+msgflo_nodejs = require 'msgflo-nodejs'
 msgflo = require 'msgflo'
 EventEmitter = require('events').EventEmitter
 async = require 'async'
@@ -48,7 +49,7 @@ FrontendParticipant = (client, role) ->
     # forward
     send inport, null, indata
 
-  return new msgflo.participant.Participant client, definition, func, role
+  return new msgflo_nodejs.participant.Participant client, definition, func, role
 
 startInternalWorkers = (manager, roles, callback) =>
   startWorker = (role, cb) =>
@@ -106,9 +107,9 @@ class JobManager extends EventEmitter
         @frontend = null
 
     start: (callback) ->
-        broker = msgflo.transport.getBroker @options.broker_url if @options.broker_url.indexOf('direct://') == 0
+        broker = msgflo_nodejs.transport.getBroker @options.broker_url if @options.broker_url.indexOf('direct://') == 0
         broker.connect(->) if broker # HACK
-        c = msgflo.transport.getClient @options.broker_url
+        c = msgflo_nodejs.transport.getClient @options.broker_url
         @frontend = FrontendParticipant c, 'imgflo_api'
         @frontend.on 'data', (port, data) =>
             @onResult data if port == 'jobresult'
