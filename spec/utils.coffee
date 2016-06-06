@@ -110,7 +110,6 @@ exports.getTestConfig = () ->
 
     config =
         workdir: './testtemp'
-        cache_local_directory: './testtemp/cache'
         cache_type: cachetype
         api_host: urlbase
         verbose: verbose

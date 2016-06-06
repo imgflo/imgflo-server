@@ -62,8 +62,10 @@ startInternalWorkers = (manager, roles, options, callback) =>
   if manager.options.worker_type == 'internal'
     async.map roles, startWorker, callback
   else if manager.options.worker_type == 'subprocess'
+    process.env.IMGFLO_WORKDIR = manager.options.workdir # FIXME: pass as options.env instead, needs support in MsgFlo
     options.only = roles
     msgflo.setup.participants options, (err, workers) ->
+      process.env.IMGFLO_WORKDIR = null
       manager.workers = workers
       return callback err
   else

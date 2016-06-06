@@ -174,12 +174,12 @@ exports.mergeDefaultConfig = (overrides) ->
     defaultPort = 8080
     port = overrides.api_port or defaultPort
     defaultConfig =
-        verbose: false
+        verbose: process.env.IMGFLO_VERBOSE?
         api_port: 8080
         api_host: "localhost:#{port}"
         api_key: process.env.IMGFLO_API_KEY
         api_secret: process.env.IMGFLO_API_SECRET
-        workdir: './temp'
+        workdir: process.env.IMGFLO_WORKDIR or './temp'
         graphdir: './graphs'
         resourcedir: './examples'
 
@@ -193,13 +193,17 @@ exports.mergeDefaultConfig = (overrides) ->
         cache_s3_bucket: process.env.AMAZON_API_BUCKET
         cache_s3_region: process.env.AMAZON_API_REGION
         cache_s3_folder: 'test'
-        cache_local_directory: './temp/cache' # note: depends on workdir?
+        cache_local_directory: null
         redis_url: process.env.IMGFLO_REDIS_URL
         cache_redis_ttl: 24*60*60 # seconds
 
     config = clone defaultConfig
     for key, value of overrides
         config[key] = value if value
+
+    # derived defaults
+    config.cache_local_directory = "#{config.workdir}/cache" if not config.cache_local_directory?
+
     return config
 
 exports.getProductionConfig = () ->
