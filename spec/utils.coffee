@@ -115,6 +115,7 @@ exports.getTestConfig = () ->
         api_host: urlbase
         verbose: verbose
         broker_url: process.env.IMGFLO_BROKER_URL or null
+        worker_type: process.env.IMGFLO_WORKER or null
 
     config.api_port = port if port
 
