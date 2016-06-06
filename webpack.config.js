@@ -22,6 +22,7 @@ module.exports = {
     filename: 'worker.js'
   },
   externals: {
+    'tv4': 'commonjs tv4', // needed by fbp, could not be found
     'websocket': 'commonjs websocket', // has native deps, looks them up dynamically
     'hiredis': 'commonjs hiredis', // needed by redis, could not be found
     'vertx': 'commonjs vertx', // needed by amqplib, could not be found
