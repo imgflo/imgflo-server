@@ -172,10 +172,11 @@ updateInstalledVersions = (callback) ->
 
 exports.mergeDefaultConfig = (overrides) ->
     defaultPort = 8080
+    port = overrides.api_port or defaultPort
     defaultConfig =
         verbose: false
         api_port: 8080
-        api_host: "localhost:#{defaultPort}" # note: depends on port
+        api_host: "localhost:#{port}"
         api_key: process.env.IMGFLO_API_KEY
         api_secret: process.env.IMGFLO_API_SECRET
         workdir: './temp'
