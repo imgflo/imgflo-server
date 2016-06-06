@@ -51,7 +51,7 @@ FrontendParticipant = (client, role) ->
 
   return new msgflo_nodejs.participant.Participant client, definition, func, role
 
-startInternalWorkers = (manager, roles, callback) =>
+startInternalWorkers = (manager, roles, options, callback) =>
   startWorker = (role, cb) =>
       w = worker.getParticipant manager.options, role
       manager.workers[role] = w
@@ -59,8 +59,30 @@ startInternalWorkers = (manager, roles, callback) =>
         manager.logEvent id, data
       w.start cb
 
-  return callback null if manager.options.worker_type != 'internal'
-  async.map roles, startWorker, callback
+  if manager.options.worker_type == 'internal'
+    async.map roles, startWorker, callback
+  else if manager.options.worker_type == 'subprocess'
+    options.only = roles
+    msgflo.setup.participants options, (err, workers) ->
+      manager.workers = workers
+      return callback err
+  else
+    # no internal workers, assume processes are set up by someone else
+    return callback null
+
+stopInternalWorkers = (manager, options, callback) ->
+    if manager.options.worker_type == 'internal'
+        stopWorker = (n, cb) =>
+            w = manager.workers[n]
+            delete manager.workers[n]
+            w.stop cb
+        async.map Object.keys(manager.workers), stopWorker, callback
+    else if manager.options.worker_type == 'subprocess'
+        msgflo.setup.killProcesses manager.workers, 'SIGTERM', (err) ->
+            manager.workers = null
+            return callback err
+    else
+        return callback null
 
 getPubsubSource = (graph, pubSubNode) ->
     pubsubs = {}
@@ -125,21 +147,18 @@ class JobManager extends EventEmitter
             continue if n == 'imgflo_api'
             roles.push n
 
-        startInternalWorkers this, roles, (err) =>
+        startInternalWorkers this, roles, setup, (err) =>
           return callback err if err
           @frontend.start (err) =>
               return callback err if err
               msgflo.setup.bindings setup, callback
 
     stop: (callback) ->
-        @frontend.stop (err) =>
-            @frontend = null
+        stopInternalWorkers this, {}, (err) =>
             return callback err if err
-            stopWorker = (n, cb) =>
-                w = @workers[n]
-                delete @workers[n]
-                w.stop cb
-            async.map Object.keys(@workers), stopWorker, callback
+            @frontend.stop (err) =>
+                @frontend = null
+                return callback err
 
     logEvent: (id, data) ->
         @emit 'logevent', id, data
