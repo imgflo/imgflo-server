@@ -74,7 +74,7 @@
   "msgflo": {
     "variables": {},
     "components": {
-      "imgflo-server/ProcessImage": "node worker.js #ROLE",
+      "imgflo-server/ProcessImage": "node build/worker.js #ROLE",
       "imgflo-server/HttpApi": "node web.js"
     }
   }
