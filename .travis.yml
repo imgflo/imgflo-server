@@ -17,6 +17,7 @@ before_install:
 script:
 - export IMGFLO_TESTS_PERFORMANCE=1
 - export IMGFLO_BROKER_URL=amqp://localhost
+- export IMGFLO_WORKER=subprocess
 - make travis-deps
 - make release RELOCATE_DEPS=true
 before_deploy:
