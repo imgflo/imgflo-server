@@ -142,6 +142,7 @@ describeSkipPerformance 'Stress', ->
     fs.writeFileSync outdir+'/stresstests.json', (JSON.stringify(stresstests))
 
     before (done) ->
+        @timeout 8*1000
         utils.rmrf config.workdir
         if startServer
             s = new server.Server config

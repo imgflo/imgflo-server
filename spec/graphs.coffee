@@ -41,6 +41,7 @@ describe 'Graphs', ->
     l = null
 
     before (done) ->
+        @timeout 8*1000
         wd = './testtemp'
         utils.rmrf config.workdir
         if startServer

@@ -160,6 +160,7 @@ describe 'Server', ->
         server: null
 
     before (done) ->
+        @timeout 8*1000
         utils.rmrf config.workdir
         if startServer
             state.server = s = new server.Server config
