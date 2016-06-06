@@ -14,6 +14,9 @@ module.exports = {
   },
   entry: './worker.webpack.js',
   target: 'node',
+  node: {
+    __dirname: true,
+  },
   output: {
     path: path.join(__dirname, 'build'),
     filename: 'worker.js'
