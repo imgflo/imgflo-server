@@ -2,6 +2,7 @@ bin/imgflo
 bin/imgflo-runtime
 install/
 *~
+Procfile
 out.png
 node_modules
 *.creator.user
