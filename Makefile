@@ -23,7 +23,7 @@ runtime:
 version:
 	echo 'No version info installed'
 
-install: env version procfile runtime components
+install: env version procfile runtime components webpack
 
 env:
 	mkdir -p $(PREFIX) || true
@@ -47,6 +47,8 @@ component: env
 
 procfile:
 	./node_modules/.bin/msgflo-procfile --ignore imgflo_api --ignore pubsub --ignore pubsub_noflo --include 'web: node index.js' ./graphs/imgflo-server.fbp > Procfile
+webpack:
+	./node_modules/.bin/webpack
 
 dependencies:
 	cd runtime/dependencies && make PREFIX=$(PREFIX) dependencies

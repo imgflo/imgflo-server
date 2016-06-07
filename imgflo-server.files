@@ -58,3 +58,4 @@ graphs/insta_xproii.json
 graphs/passthrough.fbp
 graphs/passthrough.json
 graphs/imgflo-server.fbp
+webpack.config.js
