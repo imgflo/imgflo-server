@@ -27,6 +27,7 @@ module.exports = {
     'hiredis': 'commonjs hiredis', // needed by redis, could not be found
     'vertx': 'commonjs vertx', // needed by amqplib, could not be found
     'request': 'commonjs request', // failed with some amd define error at runtime
+    'newrelic': 'commonjs newrelic', // needed by redis, could not be found
   },
   plugins: [
     new webpack.IgnorePlugin(/\.(css|less)$/),
