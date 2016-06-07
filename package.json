@@ -62,7 +62,7 @@
     "coffee-loader": "^0.7.2",
     "json-loader": "^0.5.4",
     "source-map-support": "^0.4.0",
-    "webpack": "^1.12.14",
+    "webpack": "^1.12.14"
   },
   "devDependencies": {
     "chai": "~3.3.0",
