@@ -44,6 +44,7 @@ downloadFile = (src, out, callback) ->
     contentType = null
     requestOptions =
         encoding: null # expect binary
+        timeout: 20*1000
     req = request src, requestOptions
     req.on 'response', (response) ->
         if response.statusCode != 200
