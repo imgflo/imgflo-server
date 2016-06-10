@@ -16,6 +16,8 @@ all: install
 
 run: install
 	npm start
+run-runtime: runtime
+	cd runtime && make PREFIX=$(PREFIX) run
 
 runtime:
 	cd runtime && make PREFIX=$(PREFIX) install
