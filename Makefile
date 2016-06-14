@@ -10,7 +10,7 @@ ifdef TESTS
 TEST_ARGUMENTS=--grep "$(TESTS)"
 endif
 
-TRAVIS_DEPENDENCIES=$(shell echo `cat .vendor_urls | sed -e "s/heroku/travis/" | tr -d '\n'`)
+TRAVIS_DEPENDENCIES=$(shell echo `cat .vendor_urls | sed -e "s/heroku/travis-${TRAVIS_OS_NAME}/" | tr -d '\n'`)
 
 all: install
 
