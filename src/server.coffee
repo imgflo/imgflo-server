@@ -46,13 +46,14 @@ parseRequestUrl = (u) ->
     p = pathComponents[pathComponents.length-1]
     outtype = (path.extname p).replace '.', ''
     graph = path.basename p, path.extname p
-    if not outtype
+    if not outtype and graph != 'noop' # XXX: not nice to special-case noop here
         outtype = 'jpg'
     if outtype == 'jpeg'
         outtype = 'jpg'
     apikey = if pathComponents.length > 2 then pathComponents[1] else null
     token = if pathComponents.length > 3 then pathComponents[2] else null
-    cachekey = (common.hashFile "/graph/#{graph}#{parsedUrl.search}") + '.'+outtype
+    cachekey = (common.hashFile "/graph/#{graph}#{parsedUrl.search}")
+    cachekey = cachekey + '.'+outtype if outtype
 
     out =
         graphspec: path.basename p

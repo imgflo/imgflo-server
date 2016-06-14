@@ -22,8 +22,10 @@ class NoopProcessor
         @verbose = verbose
 
     process: (outputFile, outType, graph, iips, inputFile, inputType, callback) ->
-        if outType != inputType
-            return callback new Error "noop must have matching input and output types. Got intype=#{inputType} and outtype=#{outType}"
+        if outType and (outType != inputType)
+            err = new Error "noop must have matching input and output types. Got intype=#{inputType} and outtype=#{outType}"
+            err.code = 422
+            return callback err
 
         # Just copy file byte-for-byte to expected output location
         ins = fs.createReadStream inputFile
