@@ -59,9 +59,10 @@ describe 'Graphs', ->
         describeOrSkip "#{testcase._name}", ->
             reqUrl = requestUrl testcase
             ext = utils.requestFileFormat reqUrl
+            ext = '.'+ext if ext
             datadir = 'spec/data/'
-            reference = path.join datadir, "#{testcase._name}.reference.#{ext}"
-            output = path.join datadir, "#{testcase._name}.out.#{ext}"
+            reference = path.join datadir, "#{testcase._name}.reference#{ext}"
+            output = path.join datadir, "#{testcase._name}.out#{ext}"
             fs.unlinkSync output if fs.existsSync output
 
             it 'should have a reference result', (done) ->

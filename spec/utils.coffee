@@ -84,8 +84,13 @@ exports.compareImages = (actual, expected, opts, callback) ->
 exports.requestFileFormat = (u) ->
     parsed = url.parse u
     graph = parsed.pathname.replace '/graph/', ''
-    ext = (path.extname graph).replace '.', ''
-    return ext || 'jpg'
+    graphParts = graph.split '/'
+    if graphParts.length == 3
+        [auth, token, graph] = graphParts
+    ext = path.extname(graph).replace '.', ''
+    if not ext and graph != 'noop'
+      ext = 'jpg'
+    return ext
 
 exports.formatRequest = (host, graph, params, key, secret) ->
     if key and secret
