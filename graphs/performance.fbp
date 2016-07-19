@@ -1,14 +1,14 @@
 # @runtime none
 
 # in HTTP api frontend
-pre(CheckCache) NO -> IN queue(ProcessingQueue)
-uploadOutput OUT -> IN redirect(Redirect)
+pre(CheckCache) NO -> queue(ProcessingQueue)
+uploadOutput -> redirect(Redirect)
 
-pre YES -> IN redirect
+pre YES -> redirect
 
 # in the worker
-queue OUT -> IN download(Download) OUT -> IN load(LoadInput) OUT -> IN calc(ActuallyProcessPixels) OUT -> IN scale(Downscale) OUT -> IN save(SaveOutput)
-save OUT -> IN uploadOutput(Upload)
+queue -> download(Download) -> load(LoadInput) -> calc(ActuallyProcessPixels) -> scale(Downscale) -> save(SaveOutput)
+save -> uploadOutput(Upload)
 
 # in the client
-redirect OUT -> IN downloadOutput(Download)
+redirect -> downloadOutput(Download)
