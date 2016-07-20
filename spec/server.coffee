@@ -369,6 +369,7 @@ describe 'Server', ->
             p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg", _nocache: "true" }
             u = graph_url 'crop', p, 'niem4Hoodaku', 'reiL1ohqu1do'
 
+            # TODO: verify that . Maybe set a header indicating when image was processed? or that it was a cache hit
             it 'should succeed with a redirect', (done) ->
                 enableTestAuth state.server
 
