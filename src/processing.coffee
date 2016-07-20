@@ -10,6 +10,8 @@ imgflo = require './imgflo'
 cache = require './cache'
 GraphsStore = require './graphs'
 
+metrics = require './newrelic'
+
 EventEmitter = require('events').EventEmitter
 request = require 'request'
 async = require 'async'
@@ -130,7 +132,10 @@ class JobExecutor extends EventEmitter
     #   load graph, chose & run Processor
     #   upload results to S3 cache
     #   post job results to output queue
-    doJob: (job, callback) ->
+    doJob: (job, done) ->
+        callback = (r) ->
+            metrics.onJobCompleted r
+            return done r
         checkCache = (key, callback) =>
             return callback null, null if job.data.noCache # ignore fact that exists in cache
             return @cache.keyExists key, callback

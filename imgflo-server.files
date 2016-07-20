@@ -59,3 +59,4 @@ graphs/passthrough.fbp
 graphs/passthrough.json
 graphs/imgflo-server.fbp
 webpack.config.js
+src/newrelic.coffee
