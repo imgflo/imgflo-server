@@ -11,15 +11,35 @@ exports.onJobCompleted = (job) ->
     runtime = d.runtime
     runtime = 'noflo' if runtime == 'noflo-browser' or runtime == 'noflo-nodejs'
     totalDuration = job.completed_at-job.created_at
+
+    steps =
+        queue: job.started_at-job.created_at
+        download: job.downloaded_at-job.started_at
+        processing: job.processed_at-job.downloaded_at
+    stepsTotal = 0
+    for k,v of steps
+        if isNaN(v)
+            steps[k] = undefined
+        else
+            stepsTotal += v
+
+    slush = totalDuration - stepsTotal
     event =
+        # request info
         client: d.apikey
         graph: d.graph
         runtime: runtime
-        duration: totalDuration
         outtype: d.outtype
         width: d.iips.width
         height: d.iips.height
-        error: job.error
+        # metrics
+        duration: totalDuration
+        processing: steps.processing
+        downloading: steps.download
+        queueing: steps.queue
+        slush: slush
+        # error
+        error: job.error.result.error
 
     name = 'ImgfloImageComputed'
     nr.recordCustomEvent name, event

@@ -140,22 +140,23 @@ class JobExecutor extends EventEmitter
             return callback null, null if job.data.noCache # ignore fact that exists in cache
             return @cache.keyExists key, callback
 
+        job.started_at = Date.now()
         checkCache job.data.cachekey, (err, u) =>
             if u
                 # Was processed while job was in queue
                 result = jobResult job, err, u
                 return callback result
 
-            @processAndCache job.data, (err, u) ->
+            @processAndCache job, (err, u) ->
                 result = jobResult job, err, u
                 return callback result
 
-    processAndCache: (jobData, callback) ->
-        key = jobData.cachekey
-        request_url = jobData.request
+    processAndCache: (job, callback) ->
+        key = job.data.cachekey
+        request_url = job.data.request
 
         workdir_filepath = require('temp').path { dir: @workdir, prefix: key+'-processed-' }
-        @downloadAndRender workdir_filepath, jobData, (err, stderr) =>
+        @downloadAndRender workdir_filepath, job, (err, stderr) =>
             # FIXME: remove file from workdir
             @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, file: workdir_filepath }
             return callback err, null if err
@@ -170,9 +171,9 @@ class JobExecutor extends EventEmitter
                     @logEvent 'job-completed', { request: request_url, url: cached, err: err }
                     return callback null, cached
 
-    downloadAndRender: (outf, jobData, callback) =>
-        req = jobData
-        request_url = jobData.request
+    downloadAndRender: (outf, job, callback) =>
+        req = job.data
+        request_url = job.data.request
 
         # Add local paths for downloading to
         for port, file of req.files
@@ -203,6 +204,7 @@ class JobExecutor extends EventEmitter
 
             @logEvent 'download-inputs-start', { request: request_url, files: req.files }
             waitForDownloads req.files, (err, downloads) =>
+                job.downloaded_at = Date.now()
                 if err
                     @logEvent 'download-input-error', { request: request_url, files: req.files, err: err }
                     return callback { code: 504, result: { error: err.message, files: req.files } }, null
@@ -210,6 +212,7 @@ class JobExecutor extends EventEmitter
                 inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
                 processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (err, stderr) =>
+                    job.processed_at = Date.now()
                     maybeUnlink = (f, cb) ->
                         # handle null ...
                         return cb null if not f
