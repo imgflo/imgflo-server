@@ -77,6 +77,9 @@ enableTestAuth = (server) ->
         'ooShei0queigeeke':
             admin: false
             secret: 'reeva9aijo1Ooj9w'
+        'niem4Hoodaku':
+            admin: true
+            secret: 'reiL1ohqu1do'
 
 HTTP =
     get: http.get
@@ -150,6 +153,28 @@ commonGraphTests = (type, state) ->
 
         it 'should fail with a 403', (done) ->
             @timeout 5000
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe '_nocache with non-admin key', ->
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg", _nocache: "true" }
+        u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
+
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe '_nocache without key', ->
+        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg", _nocache: "true" }
+        u = graph_url 'crop', p
+
+        it 'should fail with a 403', (done) ->
             enableTestAuth state.server
 
             HTTP[method] u, (res) ->
@@ -339,6 +364,19 @@ describe 'Server', ->
                 chai.expect(location).to.be.a 'string'
                 basename = path.basename (url.parse location).pathname, '.jpg'
                 chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
+
+        describe '_nocache with correct auth', ->
+            p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg", _nocache: "true" }
+            u = graph_url 'crop', p, 'niem4Hoodaku', 'reiL1ohqu1do'
+
+            it 'should succeed with a redirect', (done) ->
+                enableTestAuth state.server
+
+                http.get u, (res) ->
+                    chai.expect(res.statusCode).to.equal 301
+                    location = res.headers['location']
+                    chai.expect(location).to.contain cacheurl
+                    done()
 
         describe 'Input URL does not resolve', ->
             info = null
