@@ -40,7 +40,7 @@ exports.onJobCompleted = (job) ->
         queueing: steps.queue
         slush: slush
         # error
-        error: job.error.result.error
+        error: job.error?.result?.error
 
     name = 'ImgfloImageComputed'
     nr.recordCustomEvent name, event
