@@ -32,6 +32,7 @@ exports.onJobCompleted = (job) ->
         outtype: d.outtype
         width: d.iips.width
         height: d.iips.height
+        urgency: job.urgency
         # metrics
         duration: totalDuration
         processing: steps.processing
