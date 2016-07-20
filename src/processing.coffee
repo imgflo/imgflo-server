@@ -131,7 +131,11 @@ class JobExecutor extends EventEmitter
     #   upload results to S3 cache
     #   post job results to output queue
     doJob: (job, callback) ->
-        @cache.keyExists job.data.cachekey, (err, u) =>
+        checkCache = (key, callback) =>
+            return callback null, null if job.data.noCache # ignore fact that exists in cache
+            return @cache.keyExists key, callback
+
+        checkCache job.data.cachekey, (err, u) =>
             if u
                 # Was processed while job was in queue
                 result = jobResult job, err, u
