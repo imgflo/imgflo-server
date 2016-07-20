@@ -38,7 +38,7 @@ parseRequestUrl = (u) ->
 
     iips = {}
     for key, value of parsedUrl.query
-        iips[key] = value if key != 'input'
+        iips[key] = value if key != 'input' and key != '_nocache'
 
     pathComponents = parsedUrl.pathname.split '/'
     pathComponents = pathComponents.splice(1)
@@ -52,6 +52,10 @@ parseRequestUrl = (u) ->
         outtype = 'jpg'
     apikey = if pathComponents.length > 2 then pathComponents[1] else null
     token = if pathComponents.length > 3 then pathComponents[2] else null
+
+    # TODO: prevent noCache from affecting cache key
+    noCache = parsedUrl.query._nocache == 'true'
+
     cachekey = (common.hashFile "/graph/#{graph}#{parsedUrl.search}")
     cachekey = cachekey + '.'+outtype if outtype
 
@@ -66,6 +70,7 @@ parseRequestUrl = (u) ->
         cachekey: cachekey
         query: parsedUrl.search
         request: u
+        noCache: noCache
     return out
 
 
@@ -87,8 +92,16 @@ class Server extends EventEmitter
 
         @authdb = null
         if config.api_key or config.api_secret
-            @authdb = {}
-            @authdb[config.api_key] = config.api_secret
+            @authdb = {} if not @authdb
+            @authdb[config.api_key] =
+                admin: false
+                secret: config.api_secret
+
+        if config.admin_key or config.admin_secret
+            @authdb = {} if not @authdb
+            @authdb[config.admin_key] =
+                admin: true
+                secret: config.admin_secret
 
         @cache = cache.fromOptions config
         @jobManager = new jobmanager.JobManager config
@@ -197,16 +210,24 @@ class Server extends EventEmitter
         response.writeHead successCode, { 'Location': target }
         response.end()
 
-    checkAuth: (req) ->
+    checkAuth: (req, scope) ->
         return true if not @authdb # Authentication disabled
 
-        secret = @authdb[req.apikey]
+        secret = @authdb[req.apikey]?.secret
         return false if not secret
+
+        if scope == 'admin' and not @authdb[req.apikey]?.admin
+          return false
 
         hash = crypto.createHash 'md5'
         hash.update req.graphspec+req.query+secret
         expectedToken = hash.digest 'hex'
         return req.token == expectedToken
+
+    checkCache: (data, callback) ->
+        return callback null, null if data.noCache # ignore fact that exists in cache
+        return @cache.keyExists data.cachekey, callback
+
 
     # GET /graph
     # on new HTTP request:
@@ -220,7 +241,7 @@ class Server extends EventEmitter
         return if not @ensureAuthenticated req, response
         return if not @ensureLimits req, response
 
-        @cache.keyExists req.cachekey, (err, cached) =>
+        @checkCache req, (err, cached) =>
             if cached
                 @logEvent 'graph-in-cache', { err: err, method: 'GET', request: request.url, key: req.cachekey, url: cached }
                 return @redirectToCache err, cached, response, 301
@@ -247,7 +268,7 @@ class Server extends EventEmitter
         return if not @ensureAuthenticated req, response
         return if not @ensureLimits req, response
 
-        @cache.keyExists req.cachekey, (err, cached) =>
+        @checkCache req, (err, cached) =>
             if cached
                 @logEvent 'graph-in-cache', { err: err, method: 'POST', request: request.url, key: req.cachekey, url: cached }
                 return @redirectToCache err, cached, response, 301
@@ -263,7 +284,8 @@ class Server extends EventEmitter
 
 
     ensureAuthenticated: (req, response) ->
-        authenticated = @checkAuth req
+        scope = if req.noCache then 'admin' else null
+        authenticated = @checkAuth req, scope
         if not authenticated
             response.writeHead 403
             response.end()
