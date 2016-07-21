@@ -59,8 +59,15 @@ parseRequestUrl = (u) ->
     cachekey = (common.hashFile "/graph/#{graph}#{parsedUrl.search}")
     cachekey = cachekey + '.'+outtype if outtype
 
+    graphspec = path.basename p
+
+    debugUrl = null
+    if parsedUrl.query.debug
+        auth = if token then "#{apikey}/#{token}/" else "/"
+        debugUrl = "/debug/graph/#{auth}#{graphspec}/" + parsedUrl.search
+
     out =
-        graphspec: path.basename p
+        graphspec: graphspec
         graph: graph
         files: files
         iips: iips
@@ -71,6 +78,7 @@ parseRequestUrl = (u) ->
         query: parsedUrl.search
         request: u
         noCache: noCache
+        debugUrl: debugUrl
     return out
 
 
@@ -147,7 +155,7 @@ class Server extends EventEmitter
         app.get '/', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
-        app.get '/demo', (req, res) =>
+        app.get '/debug/*', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
 
@@ -188,10 +196,8 @@ class Server extends EventEmitter
     serveDemoPage: (request, response) ->
         u = url.parse request.url
         p = u.pathname
-        if p == '/'
-            p = '/index.html'
-        p = p.replace '/demo', ''
-        u.pathname = p
+        # Serve the HTML single-page app
+        u.pathname = '/index.html'
         request.url = url.format u
         return @serveFile request, response
 
@@ -247,6 +253,7 @@ class Server extends EventEmitter
         req = @parseGraphRequest request
         return if not @ensureAuthenticated req, response
         return if not @ensureLimits req, response
+        return response.redirect req.debugUrl if req.debugUrl
 
         @checkCache req, (err, cached) =>
             if cached
