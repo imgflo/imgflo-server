@@ -88,7 +88,7 @@ var getVersionInfo = function(callback) {
     req.send();
 }
 
-var createGraphProperties = function(container, name, graph) {
+var createGraphProperties = function(container, name, graph, values) {
     if (typeof graph.inports === 'undefined') {
         return null;
     }
@@ -96,6 +96,7 @@ var createGraphProperties = function(container, name, graph) {
     var inports = Object.keys(graph.inports);
     inports.forEach(function (name) {
         var port = inports[name];
+        var value = values[name];
         if (name === "input") {
             return;
         }
@@ -109,6 +110,9 @@ var createGraphProperties = function(container, name, graph) {
         portName.innerHTML = "<span>"+name+"</span>";
         portInput.name = name;
         portInput.className = "portInput";
+        if (typeof(value) !== 'undefined') {
+            portInput.value = value
+        }
 
         // TODO: show information about type,value ranges, default value, description etc
         portInfo.appendChild(portName);
@@ -174,6 +178,20 @@ var getGraphProperties = function(container, name, graphdef) {
     return props;
 }
 
+var parseQuery = function(qstr) {
+    var query = {};
+    var a = qstr.substr(1).split('&');
+    for (var i = 0; i < a.length; i++) {
+        var b = a[i].split('=');
+        query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] || '');
+    }
+    return query;
+}
+
+var startsWith = function(str, sub) {
+    return str.indexOf(sub) === 0;
+}
+
 var main = function() {
 
     var id = function(n) {
@@ -217,18 +235,23 @@ var main = function() {
     }
     id('runButton').onclick = processCurrent;
 
-    var onInputChanged = function(event) {
-        var url = id('inputUrl').value;
+    var setInputUrl = function(url) {
         console.log('setting input', url);
-
+        if (id('inputUrl').value !== url) {
+            id('inputUrl').value = url;
+        }
         var bg = 'url("'+url+'")';
         id('originalImage').style.backgroundImage = bg;
-        //id('originalImage').src = url;
+    }
+
+    var onInputChanged = function(event) {
+        var url = id('inputUrl').value;
+        setInputUrl(url);
     }
     id('inputUrl').onblur = onInputChanged;
     onInputChanged();
 
-    var setActiveGraph = function(name) {
+    var setActiveGraph = function(name, properties) {
         if (typeof availableGraphs[name] === 'undefined') {
             return false;
         }
@@ -239,14 +262,14 @@ var main = function() {
         for (var i=0; i<len; i++) {
             container.removeChild(container.children[0]);
         }
-        createGraphProperties(container, name, availableGraphs[name]);
+        createGraphProperties(container, name, availableGraphs[name], properties);
         return true;
     }
 
     var onGraphClicked = function(event) {
         var name = event.currentTarget.getAttribute('data-graph-id');
         console.log("onGraphClicked", name);
-        setActiveGraph(name);
+        setActiveGraph(name, {});
     }
 
     getDemoData(function(err, demo) {
@@ -266,7 +289,20 @@ var main = function() {
             graph.thumbnailUrl = createRequestUrl(name, props, apiKey, apiSecret);
         });
 
-        setActiveGraph(Object.keys(availableGraphs)[0]);
+        if (startsWith(window.location.pathname, '/debug')) {
+            // Set the UI widgets state based on what is in the URL
+            var params = parseQuery(window.location.search);
+            var parts = window.location.pathname.split('/');
+            var graph = parts[1];
+            if (parts.length >= 5) {
+                graph = parts[4];
+            }
+            setInputUrl(params.input);
+            setActiveGraph(graph, params);
+        } else {
+            setActiveGraph(Object.keys(availableGraphs)[0], {});
+        }
+
         processCurrent();
         createGraphList(id('graphList'), demo.graphs, onGraphClicked);
     });
