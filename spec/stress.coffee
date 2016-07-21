@@ -157,7 +157,7 @@ describeSkipPerformance 'Stress', ->
 
     describe "Cached graph", ->
         testid = 'cached_graph'
-        props = {input: 'demo/gradient-black-white.png'}
+        props = {input: 'files/gradient-black-white.png'}
         requestUrl = utils.formatRequest urlbase, 'gradientmap', props, config.api_key, config.api_secret
         testcases = stresstests[testid]
 
@@ -190,7 +190,7 @@ describeSkipPerformance 'Stress', ->
 
             describe "#{concurrent} concurrent requests", (done) ->
                 total = testcases.concurrent[testcases.expected[host].length-1]*10
-                requestUrls = randomRequests 'passthrough', {input: 'demo/grid-toastybob.jpg'}, total, 'ignored'
+                requestUrls = randomRequests 'passthrough', {input: 'files/grid-toastybob.jpg'}, total, 'ignored'
 
                 it "average response time should be below #{expect} ms", (done) ->
                     @timeout 5*60*1000
@@ -207,7 +207,7 @@ describeSkipPerformance 'Stress', ->
 
             describe "#{size}x#{size} pixels", (done) ->
                 total = concurrent*5
-                props = {input: 'demo/mountains.png', height: size, width: size}
+                props = {input: 'files/mountains.png', height: size, width: size}
                 requestUrls = randomRequests 'passthrough', props, total, 'ignored'
 
                 it "average response time should be below #{expect} ms", (done) ->
@@ -249,7 +249,7 @@ describeSkipPerformance 'Stress', ->
                 props =
                     width: 2000
                     ignored: randomString 4
-                    input: 'demo/mountains.png'
+                    input: 'files/mountains.png'
                 reqUrl = utils.formatRequest config.api_host, 'passthrough', props, config.api_key, config.api_secret
                 ext = utils.requestFileFormat reqUrl
                 reference = path.join datadir, "#{testcase}.reference.#{ext}"

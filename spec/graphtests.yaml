@@ -8,57 +8,57 @@
     y: 15
     cropwidth: 70
     cropheight: 65
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _name: 'insta_1977'
     _graph: 'insta_1977.png'
     _timeout: 18000
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _skip: true
     _name: 'insta_1977_resized'
     _graph: 'insta_1977.png'
     height: 100
     width: 100
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _name: 'insta_brannan'
     _graph: 'insta_brannan.png'
     _timeout: 18000
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _name: 'insta_hefe'
     _graph: 'insta_hefe.png'
     _timeout: 18000
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _name: 'insta_lordkelvin'
     _graph: 'insta_lordkelvin.png'
     _timeout: 18000
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _name: 'insta_nashville'
     _graph: 'insta_nashville.png'
     _timeout: 18000
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _name: 'insta_xproii'
     _graph: 'insta_xproii.png'
     _timeout: 180000
-    input: 'demo/gridbear.jpg'
+    input: 'files/gridbear.jpg'
 -
     _name: 'noflo_resize_heightonly'
     _graph: 'insta_brannan.png'
     _timeout: 18000
     height: 300
-    input: "demo/gridbear.jpg"
+    input: "files/gridbear.jpg"
 -
     _name: 'imgflo_resize_heightonly'
     _graph: 'desaturate'
     _tolerance: 100
     _timeout: 18000
     height: 300
-    input: "demo/grid-toastybob.jpg"
+    input: "files/grid-toastybob.jpg"
 -
     _name: 'delaunay_triangles_foobar100'
     _graph: 'delaunay_triangles.jpg'
@@ -70,7 +70,7 @@
 -
     _name: 'crop_all_options'
     _graph: "crop.png"
-    input: "demo/grid-toastybob.jpg"
+    input: "files/grid-toastybob.jpg"
     cropheight: 110
     cropwidth: 130
     x: 200
@@ -78,11 +78,11 @@
 -
     _name: 'crop_default'
     _graph: "crop.png"
-    input: "demo/grid-toastybob.jpg"
+    input: "files/grid-toastybob.jpg"
 -
     _name: 'crop_default_jpeg'
     _graph: "crop.jpg"
-    input: "demo/grid-toastybob.jpg"
+    input: "files/grid-toastybob.jpg"
 -
     _name: 'gradient_unused_params'
     _graph: 'gradientmap.png'
@@ -92,7 +92,7 @@
 -
     _name: 'gradient_multiple_stops'
     _graph: 'gradientmap.png'
-    input: "demo/gradient-black-white.png"
+    input: "files/gradient-black-white.png"
     color1: '#555555'
     color2: '#ff0000'
     color3: '#00ff00'
@@ -108,7 +108,7 @@
 -
     _name: gradient_pscompat_bw100
     _graph: 'gradientmap.png'
-    input: "demo/gradient-black-white.png"
+    input: "files/gradient-black-white.png"
     color1: '#0A2A2F'
     color2: '#FDE7A0'
     stop1: 0.0
@@ -117,7 +117,7 @@
 -
     _name: gradient_pscompat_bw80
     _graph: 'gradientmap.png'
-    input: "demo/gradient-black-white.png"
+    input: "files/gradient-black-white.png"
     color1: '#0A2A2F'
     color2: '#FDE7A0'
     stop1: 0.0
@@ -127,7 +127,7 @@
 -
     _name: gradient_scaled
     _graph: 'gradientmap.png'
-    input: "demo/gradient-black-white.png"
+    input: "files/gradient-black-white.png"
     color1: '#0A2A2F'
     color2: '#FDE7A0'
     stop1: 0.0
@@ -139,7 +139,7 @@
 -
     _name: gaussian
     _graph: gaussianblur.png
-    input: "demo/mountains.png"
+    input: "files/mountains.png"
     'std-dev-x': 60
     'std-dev-y': 60
     #'abyss-policy': none
@@ -158,14 +158,14 @@
     _timeout: 180000
 -
     _name: regcheck_cmyk_jpeg
-    _url: '/graph/passthrough.png?input=demo/cmyk-color.jpg'
+    _url: '/graph/passthrough.png?input=files/cmyk-color.jpg'
 -
     _name: regcheck_jpeg_graph_extension
     _url: '/graph/vahj1ThiexotieMo/905d76b162a49871bba3697e323eaf08/passthrough.jpeg?input=https%3A%2F%2Fd262ilb51hltx0.cloudfront.net%2Ffit%2Ft%2F1200%2F504%2F0*g3xYNYyDOiaSyhhj.jpeg&width=600'
 -
     _name: custom_component
     _graph: customgrey.jpg
-    input: "demo/grid-toastybob.jpg"
+    input: "files/grid-toastybob.jpg"
 -
     _name: chained_requests
     _timeout: 10000
@@ -173,7 +173,7 @@
 -
     _name: gif_animated_noop
     _graph: 'noop.gif'
-    input: "demo/time.gif"
+    input: "files/time.gif"
 -
     _name: regcheck_nocontenttype_queryparams
     _graph: passthrough.jpg

@@ -138,7 +138,7 @@ class Server extends EventEmitter
         # Resources
         app.get '/files/*', (req, res) =>
             @logEvent 'request-received', { request: req.url }
-            @serveDemoPage req, res
+            @serveFile req, res
         app.get '/graphs', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @listGraphs req, res
@@ -148,9 +148,6 @@ class Server extends EventEmitter
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
         app.get '/demo', (req, res) =>
-            @logEvent 'request-received', { request: req.url }
-            @serveDemoPage req, res
-        app.get '/demo/*', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
 
@@ -180,16 +177,23 @@ class Server extends EventEmitter
             response.statusCode = 200
             return response.end JSON.stringify data
 
+    serveFile: (request, response) ->
+        u = url.parse request.url
+        p = u.pathname
+        p = p.replace '/files', ''
+        u.pathname = p
+        request.url = url.format u
+        @resourceserver.serve request, response
+
     serveDemoPage: (request, response) ->
         u = url.parse request.url
         p = u.pathname
         if p == '/'
-            p = '/demo/index.html'
+            p = '/index.html'
         p = p.replace '/demo', ''
-        if p
-            u.pathname = p
-            request.url = url.format u
-            @resourceserver.serve request, response
+        u.pathname = p
+        request.url = url.format u
+        return @serveFile request, response
 
     handleVersionRequest: (request, response) ->
         common.getInstalledVersions (err, info) ->
