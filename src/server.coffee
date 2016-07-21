@@ -135,6 +135,14 @@ class Server extends EventEmitter
             key = req.params.key
             @cache.handleKeyRequest? key, req, res
 
+        # Resources
+        app.get '/files/*', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @serveDemoPage req, res
+        app.get '/graphs', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @listGraphs req, res
+
         # UI
         app.get '/', (req, res) =>
             @logEvent 'request-received', { request: req.url }
@@ -165,13 +173,12 @@ class Server extends EventEmitter
     logEvent: (id, data) ->
         @emit 'logevent', id, data
 
-    getDemoData: (callback) ->
-
-        # TODO: this should be GET /graphs, useful not limited to demo page
+    listGraphs: (request, response) ->
         @graphs.getAll (err, res) =>
-            d =
+            data =
                 graphs: res
-            return callback null, d
+            response.statusCode = 200
+            return response.end JSON.stringify data
 
     serveDemoPage: (request, response) ->
         u = url.parse request.url
@@ -183,10 +190,6 @@ class Server extends EventEmitter
             u.pathname = p
             request.url = url.format u
             @resourceserver.serve request, response
-        else
-            @getDemoData (err, data) ->
-                response.statusCode = 200
-                response.end JSON.stringify data
 
     handleVersionRequest: (request, response) ->
         common.getInstalledVersions (err, info) ->

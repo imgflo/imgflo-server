@@ -226,7 +226,7 @@ describe 'Server', ->
             expected.push g.replace '.json', '' if (g.indexOf '.json') != -1
         responseData = ""
         it 'HTTP request gives 200', (done) ->
-            u = url.format {protocol:'http:',host: urlbase, pathname:'/demo'}
+            u = url.format {protocol:'http:',host: urlbase, pathname:'/graphs'}
             http.get u, (response) ->
                 chai.expect(response.statusCode).to.equal 200
                 response.on 'data', (chunk) ->

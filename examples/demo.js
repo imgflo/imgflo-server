@@ -67,7 +67,7 @@ var getDemoData = function(callback) {
             }
         }
     }
-    req.open("GET", "/demo", true);
+    req.open("GET", "/graphs", true);
     req.send();
 }
 
