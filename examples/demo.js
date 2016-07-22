@@ -305,7 +305,7 @@ var main = function() {
             setInputUrl(params.input);
             setActiveGraph(graph, params);
         } else {
-            setActiveGraph(Object.keys(availableGraphs)[0], {});
+            setActiveGraph('desaturate', {});
         }
 
         processCurrent();
