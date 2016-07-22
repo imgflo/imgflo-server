@@ -98,7 +98,7 @@ commonGraphTests = (type, state) ->
     successCode = if method == 'post' then 202 else 301
 
     describe 'Requested height*width higher than limit', ->
-        u = graph_url 'passthrough', { height: 30000, width: 1000, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'passthrough', { height: 30000, width: 1000, input: "files/grid-toastybob.jpg" }
 
         it 'should fail with a 422', (done) ->
 
@@ -107,7 +107,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe 'Requested height likely to make image higher than limit', ->
-        u = graph_url 'passthrough', { height: 5100, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'passthrough', { height: 5100, input: "files/grid-toastybob.jpg" }
 
         it 'should fail with a 422', (done) ->
 
@@ -116,7 +116,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe 'Missing authentication', ->
-        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
 
         it 'should fail with a 403', (done) ->
             enableTestAuth state.server
@@ -126,7 +126,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe 'Providing auth when not needed', ->
-        p = { height: 11, width: 130, input: "demo/grid-toastybob.jpg", ignored: type }
+        p = { height: 11, width: 130, input: "files/grid-toastybob.jpg", ignored: type }
         u = graph_url 'passthrough', p, 'ooShei0queigeeke', 'mysecret?'
 
         it 'request should succeed with redirect to file', (done) ->
@@ -137,7 +137,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe 'Incorrect secret', ->
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
         u = graph_url 'crop', p, 'ooShei0queigeeke', 'mysecret?'
 
         it 'should fail with a 403', (done) ->
@@ -148,7 +148,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe 'Invalid apikey', ->
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+        p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
         u = graph_url 'crop', p, 'apikey?', 'mysecret?'
 
         it 'should fail with a 403', (done) ->
@@ -160,7 +160,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe '_nocache with non-admin key', ->
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg", _nocache: "true" }
+        p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg", _nocache: "true" }
         u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
 
         it 'should fail with a 403', (done) ->
@@ -171,7 +171,7 @@ commonGraphTests = (type, state) ->
                 done()
 
     describe '_nocache without key', ->
-        p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg", _nocache: "true" }
+        p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg", _nocache: "true" }
         u = graph_url 'crop', p
 
         it 'should fail with a 403', (done) ->
@@ -226,7 +226,7 @@ describe 'Server', ->
             expected.push g.replace '.json', '' if (g.indexOf '.json') != -1
         responseData = ""
         it 'HTTP request gives 200', (done) ->
-            u = url.format {protocol:'http:',host: urlbase, pathname:'/demo'}
+            u = url.format {protocol:'http:',host: urlbase, pathname:'/graphs'}
             http.get u, (response) ->
                 chai.expect(response.statusCode).to.equal 200
                 response.on 'data', (chunk) ->
@@ -252,7 +252,7 @@ describe 'Server', ->
         commonGraphTests 'GET', state
 
         describe 'with invalid graph parameters', ->
-            u = graph_url 'gradientmap', {skeke: 299, oooor:222, input: "demo/grid-toastybob.jpg"}
+            u = graph_url 'gradientmap', {skeke: 299, oooor:222, input: "files/grid-toastybob.jpg"}
             data = ""
             it 'should give HTTP 449', (done) ->
                 http.get u, (response) ->
@@ -267,7 +267,7 @@ describe 'Server', ->
                     "stop1", "stop2", "stop3", "stop4", "stop5", "srgb", "opacity"]
                 chai.expect(Object.keys(d.inports)).to.deep.equal
         describe 'with unsupported image type', ->
-            u = graph_url 'gradientmap.svg', { input: "demo/happy-kitten.svg" }
+            u = graph_url 'gradientmap.svg', { input: "files/happy-kitten.svg" }
             data = ""
             it 'should give HTTP 449', (done) ->
                 http.get u, (response) ->
@@ -283,7 +283,7 @@ describe 'Server', ->
                 chai.expect(supported).to.eql expected
 
         describe 'Get new image', ->
-            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             res = null
             location = null
             contentType = null
@@ -308,7 +308,7 @@ describe 'Server', ->
                 chai.expect(location).to.contain '.jpg'
             it 'key should be deterministic', () ->
                 basename = path.basename (url.parse location).pathname, '.jpg'
-                chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
+                chai.expect(basename).to.equal 'b5774b2bd2c5c94535432dec55a205a712bc5326'
             it 'redirect should point to created image', (done) ->
                 http.get location, (response) ->
                     chai.expect(response.statusCode).to.equal 200
@@ -324,7 +324,7 @@ describe 'Server', ->
                 chai.expect(contentType).to.equal 'image/jpeg'
 
         describe 'Get existing image', ->
-            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             response = null
             location = null
 
@@ -349,7 +349,7 @@ describe 'Server', ->
         describe 'Correct authentication', ->
             location = null
 
-            p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
 
             it 'request should succeed with redirect to file', (done) ->
@@ -363,10 +363,10 @@ describe 'Server', ->
             it 'file should be same as for non-authed request', () ->
                 chai.expect(location).to.be.a 'string'
                 basename = path.basename (url.parse location).pathname, '.jpg'
-                chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
+                chai.expect(basename).to.equal 'b5774b2bd2c5c94535432dec55a205a712bc5326'
 
         describe '_nocache with correct auth', ->
-            p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg", _nocache: "true" }
+            p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg", _nocache: "true" }
             u = graph_url 'crop', p, 'niem4Hoodaku', 'reiL1ohqu1do'
 
             # TODO: verify that . Maybe set a header indicating when image was processed? or that it was a cache hit
@@ -381,7 +381,7 @@ describe 'Server', ->
 
         describe 'Input URL does not resolve', ->
             info = null
-            p = { height: 110, width: 130, x: 200, y: 230, input: "demo/__nonexisting_image___.jpg" }
+            p = { height: 110, width: 130, x: 200, y: 230, input: "files/__nonexisting_image___.jpg" }
             u = graph_url 'crop', p
 
             it 'should fail with a 504', (done) ->
@@ -411,7 +411,7 @@ describe 'Server', ->
         commonGraphTests 'POST', state
 
         describe 'Create new image', ->
-            u = graph_url 'crop', { height: 44, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            u = graph_url 'crop', { height: 44, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             location = null
 
             it 'should return 202 accepted', (done) ->
@@ -429,7 +429,7 @@ describe 'Server', ->
             it.skip 'location URL should eventually return created image', (done) ->
 
         describe 'Get existing image', ->
-            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+            u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             location = null
 
             it 'should be a 301 redirect', () ->
@@ -444,7 +444,7 @@ describe 'Server', ->
             location = null
 
             describe 'get existing image', ->
-                p = { height: 110, width: 130, x: 200, y: 230, input: "demo/grid-toastybob.jpg" }
+                p = { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
                 u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
 
                 it 'request should succeed with redirect to file', (done) ->
@@ -458,4 +458,4 @@ describe 'Server', ->
                 it 'file should be same as for non-authed / GET request', () ->
                     chai.expect(location).to.be.a 'string'
                     basename = path.basename (url.parse location).pathname, '.jpg'
-                    chai.expect(basename).to.equal '41866f4ea03c094cf47d6c8c7e0c8f48b974c241'
+                    chai.expect(basename).to.equal 'b5774b2bd2c5c94535432dec55a205a712bc5326'

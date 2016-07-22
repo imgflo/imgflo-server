@@ -59,8 +59,15 @@ parseRequestUrl = (u) ->
     cachekey = (common.hashFile "/graph/#{graph}#{parsedUrl.search}")
     cachekey = cachekey + '.'+outtype if outtype
 
+    graphspec = path.basename p
+
+    debugUrl = null
+    if parsedUrl.query.debug
+        auth = if token then "#{apikey}/#{token}/" else "/"
+        debugUrl = "/debug/graph/#{auth}#{graphspec}/" + parsedUrl.search
+
     out =
-        graphspec: path.basename p
+        graphspec: graphspec
         graph: graph
         files: files
         iips: iips
@@ -71,6 +78,7 @@ parseRequestUrl = (u) ->
         query: parsedUrl.search
         request: u
         noCache: noCache
+        debugUrl: debugUrl
     return out
 
 
@@ -135,14 +143,19 @@ class Server extends EventEmitter
             key = req.params.key
             @cache.handleKeyRequest? key, req, res
 
+        # Resources
+        app.get '/files/*', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @serveFile req, res
+        app.get '/graphs', (req, res) =>
+            @logEvent 'request-received', { request: req.url }
+            @listGraphs req, res
+
         # UI
         app.get '/', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
-        app.get '/demo', (req, res) =>
-            @logEvent 'request-received', { request: req.url }
-            @serveDemoPage req, res
-        app.get '/demo/*', (req, res) =>
+        app.get '/debug/*', (req, res) =>
             @logEvent 'request-received', { request: req.url }
             @serveDemoPage req, res
 
@@ -165,28 +178,28 @@ class Server extends EventEmitter
     logEvent: (id, data) ->
         @emit 'logevent', id, data
 
-    getDemoData: (callback) ->
-
-        # TODO: this should be GET /graphs, useful not limited to demo page
+    listGraphs: (request, response) ->
         @graphs.getAll (err, res) =>
-            d =
+            data =
                 graphs: res
-            return callback null, d
+            response.statusCode = 200
+            return response.end JSON.stringify data
+
+    serveFile: (request, response) ->
+        u = url.parse request.url
+        p = u.pathname
+        p = p.replace '/files', ''
+        u.pathname = p
+        request.url = url.format u
+        @resourceserver.serve request, response
 
     serveDemoPage: (request, response) ->
         u = url.parse request.url
         p = u.pathname
-        if p == '/'
-            p = '/demo/index.html'
-        p = p.replace '/demo', ''
-        if p
-            u.pathname = p
-            request.url = url.format u
-            @resourceserver.serve request, response
-        else
-            @getDemoData (err, data) ->
-                response.statusCode = 200
-                response.end JSON.stringify data
+        # Serve the HTML single-page app
+        u.pathname = '/index.html'
+        request.url = url.format u
+        return @serveFile request, response
 
     handleVersionRequest: (request, response) ->
         common.getInstalledVersions (err, info) ->
@@ -240,6 +253,7 @@ class Server extends EventEmitter
         req = @parseGraphRequest request
         return if not @ensureAuthenticated req, response
         return if not @ensureLimits req, response
+        return response.redirect req.debugUrl if req.debugUrl
 
         @checkCache req, (err, cached) =>
             if cached
