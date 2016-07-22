@@ -379,6 +379,25 @@ describe 'Server', ->
                     chai.expect(location).to.contain cacheurl
                     done()
 
+        describe 'appending &debug to', ->
+            p = { height: 111, x: 130, input: "files/grid-toastybob.jpg" }
+            u = graph_url 'crop', p, 'ooShei0queigeeke', 'reeva9aijo1Ooj9w'
+
+            # TODO: verify that . Maybe set a header indicating when image was processed? or that it was a cache hit
+            it 'should redirect to debug UI', (done) ->
+                enableTestAuth state.server
+
+                u += '&debug=1'
+                http.get u, (res) ->
+                    chai.expect(res.statusCode).to.equal 302
+                    location = res.headers['location']
+                    chai.expect(location).to.contain '/debug'
+                    chai.expect(location).to.contain '/crop/'
+                    chai.expect(location).to.contain 'height=111'
+                    chai.expect(location).to.contain 'x=130'
+                    chai.expect(location).to.contain 'input=files'
+                    done()
+
         describe 'Input URL does not resolve', ->
             info = null
             p = { height: 110, width: 130, x: 200, y: 230, input: "files/__nonexisting_image___.jpg" }
