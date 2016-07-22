@@ -251,9 +251,10 @@ class Server extends EventEmitter
     #   set HTTP response with correct statuscode/data
     getGraphRequest: (request, response) ->
         req = @parseGraphRequest request
+        return response.redirect req.debugUrl if req.debugUrl # allowed unauthenticated
         return if not @ensureAuthenticated req, response
         return if not @ensureLimits req, response
-        return response.redirect req.debugUrl if req.debugUrl
+
 
         @checkCache req, (err, cached) =>
             if cached
