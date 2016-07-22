@@ -293,9 +293,9 @@ var main = function() {
             // Set the UI widgets state based on what is in the URL
             var params = parseQuery(window.location.search);
             var parts = window.location.pathname.split('/');
-            var graph = parts[1];
-            if (parts.length >= 5) {
-                graph = parts[4];
+            var graph = parts[3];
+            if (parts.length >= 6) {
+                graph = parts[5];
             }
             setInputUrl(params.input);
             setActiveGraph(graph, params);
