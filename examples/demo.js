@@ -237,6 +237,11 @@ var main = function() {
 
     var setInputUrl = function(url) {
         console.log('setting input', url);
+        if (!startsWith(url, 'http')) {
+            // Resolve to fully qualified URL
+            var loc = window.location;
+            url = loc.protocol + '//' + loc.host + '/' + url;
+        }
         if (id('inputUrl').value !== url) {
             id('inputUrl').value = url;
         }
