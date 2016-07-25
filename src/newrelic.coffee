@@ -25,6 +25,8 @@ exports.onJobCompleted = (job) ->
 
     slush = totalDuration - stepsTotal
     event =
+        # id
+        request: d.request
         # request info
         client: d.apikey
         graph: d.graph
@@ -33,6 +35,7 @@ exports.onJobCompleted = (job) ->
         width: d.iips.width
         height: d.iips.height
         urgency: job.urgency
+        input: d.files?.input?.src
         # metrics
         duration: totalDuration
         processing: steps.processing
