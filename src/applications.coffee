@@ -35,6 +35,10 @@ getDatabaseConnection = (config) ->
         # debug: true
     return Knex options
 
+exports.deleteAll = (config, options = {}) ->
+    db = getDatabaseConnection config
+    db('applications').del()
+
 exports.add = add = (config, data) ->
     db = getDatabaseConnection config
 
