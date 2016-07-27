@@ -19,3 +19,4 @@ testout.png
 *.includes
 *.autosave
 .noflo.json
+*.db

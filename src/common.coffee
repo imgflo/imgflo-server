@@ -184,6 +184,7 @@ exports.mergeDefaultConfig = (overrides) ->
         workdir: process.env.IMGFLO_WORKDIR or './temp'
         graphdir: './graphs'
         resourcedir: './examples'
+        database_url: "sqlite://user:pass@localhost#{__dirname}/../imgflo-server.db"
 
         image_size_limit: 25 # megapixels
         worker_type: 'internal' # will start internal worker
@@ -220,8 +221,9 @@ exports.getProductionConfig = () ->
     config.redis_url = process.env.REDISCLOUD_URL or null
     config.image_size_limit = process.env.IMGFLO_SIZE_LIMIT or null
     config.cache_redis_ttl = process.env.IMGFLO_REDIS_TTL
-    config = exports.mergeDefaultConfig config
+    config.database_url = process.env.DATABASE_URL or null
 
+    config = exports.mergeDefaultConfig config
     return config
 
 class FsyncedWriteStream extends fs.WriteStream

@@ -43,7 +43,9 @@
 #  w - list available graphs, and their properties
 
 server = require '../src/server'
+applications = require '../src/applications'
 utils = require './utils'
+
 http = require 'http'
 fs = require 'fs'
 path = require 'path'
@@ -451,11 +453,12 @@ describe 'Server', ->
             u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             location = null
 
-            it 'should be a 301 redirect', () ->
+            it 'should be a 301 redirect', (done) ->
                 HTTP.post u, (response) ->
                     location = response.headers?['location']
                     chai.expect(response.statusCode).to.equal 301
                     chai.expect(location).to.contain cacheurl
+                    done()
             it 'should end with .jpg', () ->
                 chai.expect(location).to.contain '.jpg'
 
@@ -478,3 +481,44 @@ describe 'Server', ->
                     chai.expect(location).to.be.a 'string'
                     basename = path.basename (url.parse location).pathname, '.jpg'
                     chai.expect(basename).to.equal 'b5774b2bd2c5c94535432dec55a205a712bc5326'
+
+
+describe 'Applications in database', ->
+    state =
+        server: null
+    addedApp =
+        key: "123123123123123"
+        secret: "321321321321321"
+        label: "Added via database"
+        owner_email: "test@example.com"
+
+    before (done) ->
+        applications.deleteAll(config)
+        .then () -> return done()
+        .catch(done)
+
+    after (done) ->
+        applications.deleteAll(config).catch(done)
+        .then () ->
+            if state.server
+                state.server.close done
+            else
+                done()
+
+    it 'adding an application should succeed', (done) ->
+        applications.add config, addedApp
+        .then () -> return done()
+        .catch done
+
+    it 'should be loaded into server on start', (done) ->
+        @timeout 8*1000
+        state.server = new server.Server config
+        state.server.listen config.api_host, config.api_port, (err) ->
+            return done err if err
+            try
+                auth = state.server.authdb
+                chai.expect(auth, Object.keys(auth)).to.have.property addedApp.key
+                chai.expect(auth[addedApp.key].secret).to.equal addedApp.secret
+            catch e
+                return done e
+            return done()
