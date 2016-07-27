@@ -25,6 +25,9 @@
     "postinstall": "./node_modules/.bin/noflo-cache-preheat",
     "test": "mocha --reporter spec --compilers .coffee:coffee-script/register ./spec/*.coffee"
   },
+  "bin": {
+    "imgflo-server-application-add": "./bin/imgflo-server-application-add"
+  },
   "engines": {
     "node": ">=4.2.0 <4.4.0"
   },

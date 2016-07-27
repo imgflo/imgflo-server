@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+require('coffee-script/register');
+var applications = require('../src/applications');
+applications.main();
