@@ -53,6 +53,15 @@ exports.add = add = (config, data) ->
     .then () ->
         return db('applications').insert(data)
 
+exports.list = (config, options) ->
+    db = getDatabaseConnection config
+
+    db('applications').select('*')
+    .then (apps) ->
+        for a in apps
+            a.secret = undefined if not options.showSecrets
+        return apps
+
 randomValueHex = (len) ->
     crypto = require 'crypto'
     return crypto.randomBytes(Math.ceil(len/2))

@@ -6,6 +6,7 @@ jobmanager = require './jobmanager'
 common = require './common'
 cache = require './cache'
 processing = require './processing'
+applications = require './applications'
 GraphsStore = require './graphs'
 
 http = require 'http'
@@ -167,9 +168,25 @@ class Server extends EventEmitter
     listen: (host, port, callback) ->
         @host = host
         @port = port
-        @httpserver.listen port, (err) =>
-            return callback err if err
-            @jobManager.start callback
+
+        applications.list(@config, {showSecrets: true})
+        .then (apps) =>
+            # Load in authentication info from DB
+            for a in apps
+                @authdb = {} if not @authdb
+                @authdb[a.key] =
+                    secret: a.secret
+                    admin: false # TODO: support in DB?
+        .then () =>
+            return new Promise (reject, resolve) =>
+                @httpserver.listen port, (err) =>
+                    return reject err if err
+                    @jobManager.start (err) ->
+                        return reject err if err
+                        return resolve()
+        .then () -> return callback null
+        .catch (err) -> return callback err
+
     close: (callback) ->
         @httpserver.close()
         @jobManager.stop (err) ->
