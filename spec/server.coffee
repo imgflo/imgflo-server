@@ -453,11 +453,12 @@ describe 'Server', ->
             u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             location = null
 
-            it 'should be a 301 redirect', () ->
+            it 'should be a 301 redirect', (done) ->
                 HTTP.post u, (response) ->
                     location = response.headers?['location']
                     chai.expect(response.statusCode).to.equal 301
                     chai.expect(location).to.contain cacheurl
+                    done()
             it 'should end with .jpg', () ->
                 chai.expect(location).to.contain '.jpg'
 
