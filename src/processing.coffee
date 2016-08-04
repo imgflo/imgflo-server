@@ -25,9 +25,7 @@ class NoopProcessor
 
     process: (outputFile, outType, graph, iips, inputFile, inputType, callback) ->
         if outType and (outType != inputType)
-            err = new Error "noop must have matching input and output types. Got intype=#{inputType} and outtype=#{outType}"
-            err.code = 422
-            return callback err
+            console.log "WARNING: noop with mismatching input and output types. Got intype=#{inputType} and outtype=#{outType}"
 
         # Just copy file byte-for-byte to expected output location
         ins = fs.createReadStream inputFile
