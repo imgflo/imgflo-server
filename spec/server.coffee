@@ -491,6 +491,8 @@ describe 'Applications in database', ->
         secret: "321321321321321"
         label: "Added via database"
         owner_email: "test@example.com"
+        processing_quota: 0
+        enabled: false
 
     before (done) ->
         applications.deleteAll(config)
@@ -519,6 +521,8 @@ describe 'Applications in database', ->
                 auth = state.server.authdb
                 chai.expect(auth, Object.keys(auth)).to.have.property addedApp.key
                 chai.expect(auth[addedApp.key].secret).to.equal addedApp.secret
+                chai.expect(auth[addedApp.key].processing_quota).to.equal addedApp.processing_quota
+                chai.expect(auth[addedApp.key].enabled).to.equal addedApp.enabled
             catch e
                 return done e
             return done()

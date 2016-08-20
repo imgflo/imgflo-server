@@ -177,6 +177,8 @@ class Server extends EventEmitter
                 @authdb[a.key] =
                     secret: a.secret
                     admin: false # TODO: support in DB?
+                    processing_quota: a.processing_quota
+                    enabled: Boolean a.enabled
         .then () =>
             return new Promise (reject, resolve) =>
                 @httpserver.listen port, (err) =>
