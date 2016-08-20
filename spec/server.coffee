@@ -79,9 +79,23 @@ enableTestAuth = (server) ->
         'ooShei0queigeeke':
             admin: false
             secret: 'reeva9aijo1Ooj9w'
+            enabled: true
+            processing_quota: 1
         'niem4Hoodaku':
             admin: true
             secret: 'reiL1ohqu1do'
+            enabled: true
+            processing_quota: 1
+        'zero-processing-quota':
+            admin: false
+            secret: 'zero0zero'
+            processing_quota: 0
+            enabled: true
+        'not-enabled':
+            admin: false
+            secret: 'disabled4reasons'
+            enabled: false
+            processing_quota: 1
 
 HTTP =
     get: http.get
@@ -183,6 +197,49 @@ commonGraphTests = (type, state) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
 
+    describe 'Disabled application making processing request', ->
+        p = { height: 110, width: 133, y: 230, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'not-enabled', 'disabled4reasons'
+
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Disabled application making cache request', ->
+        p = { height: 110, width: 133, y: 230, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'not-enabled', 'disabled4reasons'
+
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Application with processing_quota=0 making cache request', ->
+        p = { height: 110, width: 133, y: 230, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'zero-processing-quota', 'zero0zero'
+
+        it 'should succeed with redirect to file', (done) ->
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 301
+                location = res.headers['location']
+                chai.expect(location).to.contain cacheurl
+                done()
+
+    describe 'Application with processing_quota=0 making processing request', ->
+        p = { height: 110, width: 134, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'zero-processing-quota', 'zero0zero'
+
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
 
 describe 'Server', ->
     s = null
@@ -491,6 +548,8 @@ describe 'Applications in database', ->
         secret: "321321321321321"
         label: "Added via database"
         owner_email: "test@example.com"
+        processing_quota: 0
+        enabled: false
 
     before (done) ->
         applications.deleteAll(config)
@@ -519,6 +578,8 @@ describe 'Applications in database', ->
                 auth = state.server.authdb
                 chai.expect(auth, Object.keys(auth)).to.have.property addedApp.key
                 chai.expect(auth[addedApp.key].secret).to.equal addedApp.secret
+                chai.expect(auth[addedApp.key].processing_quota).to.equal addedApp.processing_quota
+                chai.expect(auth[addedApp.key].enabled).to.equal addedApp.enabled
             catch e
                 return done e
             return done()

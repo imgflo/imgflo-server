@@ -105,12 +105,16 @@ class Server extends EventEmitter
             @authdb[config.api_key] =
                 admin: false
                 secret: config.api_secret
+                enabled: true
+                processing_quota: 1
 
         if config.admin_key or config.admin_secret
             @authdb = {} if not @authdb
             @authdb[config.admin_key] =
                 admin: true
                 secret: config.admin_secret
+                enabled: true
+                processing_quota: 1
 
         @cache = cache.fromOptions config
         @jobManager = new jobmanager.JobManager config
@@ -177,6 +181,8 @@ class Server extends EventEmitter
                 @authdb[a.key] =
                     secret: a.secret
                     admin: false # TODO: support in DB?
+                    processing_quota: a.processing_quota
+                    enabled: Boolean a.enabled
         .then () =>
             return new Promise (reject, resolve) =>
                 @httpserver.listen port, (err) =>
@@ -243,14 +249,19 @@ class Server extends EventEmitter
     checkAuth: (req, scope) ->
         return true if not @authdb # Authentication disabled
 
-        secret = @authdb[req.apikey]?.secret
-        return false if not secret
+        auth = @authdb[req.apikey]
+        return false if not auth?
+        return false if not auth.secret
+        return false if not auth.enabled
 
-        if scope == 'admin' and not @authdb[req.apikey]?.admin
-          return false
+        if scope == 'admin' and not auth.admin
+            return false
+
+        if scope == 'processing' and auth.processing_quota <= 0
+            return false
 
         hash = crypto.createHash 'md5'
-        hash.update req.graphspec+req.query+secret
+        hash.update req.graphspec+req.query+auth.secret
         expectedToken = hash.digest 'hex'
         return req.token == expectedToken
 
@@ -278,6 +289,8 @@ class Server extends EventEmitter
                 @logEvent 'graph-in-cache', { err: err, method: 'GET', request: request.url, key: req.cachekey, url: cached }
                 return @redirectToCache err, cached, response, 301
             else
+                return if not @ensureAuthenticated req, response, 'processing'
+
                 onJobCompleted = (err, job) =>
                     @logEvent 'serve-processed-file', { request: req.request, url: job.results?.url }
                     return @redirectToCache err, job.results?.url, response, 301
@@ -305,6 +318,8 @@ class Server extends EventEmitter
                 @logEvent 'graph-in-cache', { err: err, method: 'POST', request: request.url, key: req.cachekey, url: cached }
                 return @redirectToCache err, cached, response, 301
             else
+                return if not @ensureAuthenticated req, response, 'processing'
+
                 onJobCompleted = null # not waiting for result
                 # TODO: return a job URL instead of the cache URL
                 cacheurl = @cache.urlForKey?(req.cachekey) # HACK, uses internal method
@@ -315,8 +330,8 @@ class Server extends EventEmitter
                         return @redirectToCache err, cacheurl, response, 202
 
 
-    ensureAuthenticated: (req, response) ->
-        scope = if req.noCache then 'admin' else null
+    ensureAuthenticated: (req, response, scope = null) ->
+        scope = 'admin' if req.noCache
         authenticated = @checkAuth req, scope
         if not authenticated
             response.writeHead 403
