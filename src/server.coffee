@@ -105,12 +105,16 @@ class Server extends EventEmitter
             @authdb[config.api_key] =
                 admin: false
                 secret: config.api_secret
+                enabled: true
+                processing_quota: 1
 
         if config.admin_key or config.admin_secret
             @authdb = {} if not @authdb
             @authdb[config.admin_key] =
                 admin: true
                 secret: config.admin_secret
+                enabled: true
+                processing_quota: 1
 
         @cache = cache.fromOptions config
         @jobManager = new jobmanager.JobManager config

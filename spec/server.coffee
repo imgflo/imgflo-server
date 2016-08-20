@@ -79,9 +79,13 @@ enableTestAuth = (server) ->
         'ooShei0queigeeke':
             admin: false
             secret: 'reeva9aijo1Ooj9w'
+            enabled: true
+            processing_quota: 1
         'niem4Hoodaku':
             admin: true
             secret: 'reiL1ohqu1do'
+            enabled: true
+            processing_quota: 1
 
 HTTP =
     get: http.get
