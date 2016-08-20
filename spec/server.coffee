@@ -86,6 +86,16 @@ enableTestAuth = (server) ->
             secret: 'reiL1ohqu1do'
             enabled: true
             processing_quota: 1
+        'zero-processing-quota':
+            admin: false
+            secret: 'zero0zero'
+            processing_quota: 0
+            enabled: true
+        'not-enabled':
+            admin: false
+            secret: 'disabled4reasons'
+            enabled: false
+            processing_quota: 1
 
 HTTP =
     get: http.get
@@ -187,6 +197,49 @@ commonGraphTests = (type, state) ->
                 chai.expect(res.statusCode).to.equal 403
                 done()
 
+    describe 'Disabled application making processing request', ->
+        p = { height: 110, width: 133, y: 230, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'not-enabled', 'disabled4reasons'
+
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Disabled application making cache request', ->
+        p = { height: 110, width: 133, y: 230, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'not-enabled', 'disabled4reasons'
+
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
+
+    describe 'Application with processing_quota=0 making cache request', ->
+        p = { height: 110, width: 133, y: 230, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'zero-processing-quota', 'zero0zero'
+
+        it 'should succeed with redirect to file', (done) ->
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 301
+                location = res.headers['location']
+                chai.expect(location).to.contain cacheurl
+                done()
+
+    describe 'Application with processing_quota=0 making processing request', ->
+        p = { height: 110, width: 134, input: "files/grid-toastybob.jpg" }
+        u = graph_url 'crop', p, 'zero-processing-quota', 'zero0zero'
+
+        it 'should fail with a 403', (done) ->
+            enableTestAuth state.server
+
+            HTTP[method] u, (res) ->
+                chai.expect(res.statusCode).to.equal 403
+                done()
 
 describe 'Server', ->
     s = null
