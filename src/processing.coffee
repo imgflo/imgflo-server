@@ -98,6 +98,11 @@ runtimeSupportsType = (runtime, type) ->
         err = new Error "runtimeSupportsType: Unknown runtime #{runtime}"
     return err
 
+maybeUnlink = (f, cb) ->
+    # handle null ...
+    return cb null if not f
+    fs.unlink f, cb
+
 class JobExecutor extends EventEmitter
     constructor: (config) ->
 
@@ -155,14 +160,13 @@ class JobExecutor extends EventEmitter
 
         workdir_filepath = require('temp').path { dir: @workdir, prefix: key+'-processed-' }
         @downloadAndRender workdir_filepath, job, (err, stderr) =>
-            # FIXME: remove file from workdir
             @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, file: workdir_filepath }
             return callback err, null if err
 
             @logEvent 'put-into-cache', { request: request_url, path: workdir_filepath, key: key }
             @cache.putFile workdir_filepath, key, (err, cached) =>
                 fs.unlink workdir_filepath, (e) =>
-                    @logEvent 'remove-tempfile-error', { file: workdir_filepath } if e
+                    @logEvent 'remove-tempfile-error', { request: request_url, file: workdir_filepath, err: e } if e
 
                     # temp file removed
                     return callback err, null if err
@@ -211,13 +215,24 @@ class JobExecutor extends EventEmitter
                 inputFile = if downloads.input? then downloads.input.path else null
                 processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (err, stderr) =>
                     job.processed_at = Date.now()
-                    maybeUnlink = (f, cb) ->
-                        # handle null ...
-                        return cb null if not f
-                        fs.unlink f, cb
-                    maybeUnlink inputFile, (e) =>
-                        @logEvent 'remove-tempfile-error', { file: outf } if e
-                    return callback err, stderr
+
+                    @collectImageStats inputFile, (err, inStats) =>
+                        @logEvent 'image-stats-error', { request: request_url, err: err } if err
+                        @collectImageStats outf, (err, outStats) =>
+                            @logEvent 'image-stats-error', { request: request_url, err: err } if err
+                            job.input_bytes = inStats?.bytes
+                            job.output_bytes = outStats?.bytes
+
+                            maybeUnlink inputFile, (e) =>
+                                @logEvent 'remove-tempfile-error', { request: request_url, file: inputFile, err: e } if e
+                            return callback err, stderr
+
+    collectImageStats: (filepath, callback) ->
+        return callback null, {} if not filepath # optional
+        # TODO: also collect size in pixels
+        fs.stat filepath, (err, stat) ->
+            return callback err if err
+            return callback null, { bytes: stat.size }
 
 exports.JobExecutor = JobExecutor
 exports.runtimeSupportsType = runtimeSupportsType
