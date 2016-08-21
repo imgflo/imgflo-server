@@ -24,7 +24,7 @@ class Processor
         @verbose = verbose
 
     # FIXME: clean up interface
-    # callback should be called with (err, error_string)
+    # callback should be called with (err, error_string, metadata={})
     process: (outputFile, outType, graph, iips, inputFile, inputType, callback) ->
         throw new Error 'Processor.process() not implemented'
 

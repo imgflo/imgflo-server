@@ -42,6 +42,10 @@ prepareEvent = (job) ->
         slush: slush
         input_bytes: job.input_bytes
         output_bytes: job.output_bytes
+        input_width: job.input_width
+        input_height: job.input_height
+        output_width: job.output_width
+        output_height: job.output_height
         # error
         error: job.error?.result?.error
 
