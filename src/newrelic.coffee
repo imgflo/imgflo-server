@@ -40,6 +40,8 @@ prepareEvent = (job) ->
         downloading: steps.download
         queueing: steps.queue
         slush: slush
+        input_bytes: job.input_bytes
+        output_bytes: job.output_bytes
         # error
         error: job.error?.result?.error
 
