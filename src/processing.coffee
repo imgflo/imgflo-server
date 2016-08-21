@@ -155,14 +155,13 @@ class JobExecutor extends EventEmitter
 
         workdir_filepath = require('temp').path { dir: @workdir, prefix: key+'-processed-' }
         @downloadAndRender workdir_filepath, job, (err, stderr) =>
-            # FIXME: remove file from workdir
             @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, file: workdir_filepath }
             return callback err, null if err
 
             @logEvent 'put-into-cache', { request: request_url, path: workdir_filepath, key: key }
             @cache.putFile workdir_filepath, key, (err, cached) =>
                 fs.unlink workdir_filepath, (e) =>
-                    @logEvent 'remove-tempfile-error', { file: workdir_filepath } if e
+                    @logEvent 'remove-tempfile-error', { request: request_url, file: workdir_filepath, err: e } if e
 
                     # temp file removed
                     return callback err, null if err
@@ -216,7 +215,7 @@ class JobExecutor extends EventEmitter
                         return cb null if not f
                         fs.unlink f, cb
                     maybeUnlink inputFile, (e) =>
-                        @logEvent 'remove-tempfile-error', { file: outf } if e
+                        @logEvent 'remove-tempfile-error', { request: request_url, file: inputFile, err: e } if e
                     return callback err, stderr
 
 exports.JobExecutor = JobExecutor
