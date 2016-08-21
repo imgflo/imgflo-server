@@ -23,6 +23,22 @@ enrichGraphDefinition = (graph, publicOnly) ->
 supportedVideoTypes = ['mp4']
 supportedTypes = ['jpg', 'jpeg', 'png', null].concat(supportedVideoTypes)
 
+extractMetadata = (stdout) ->
+    data = {}
+    lines = stdout.split '\n'
+    nodeInfo = {}
+    for line in lines
+        if line.indexOf('NodeInfo: ') == 0
+            json = line.replace('NodeInfo: ', '')
+            info = JSON.parse json
+            nodeInfo[info.name] = info
+        else
+            #console.log 'unknown line', line
+
+    data.input = nodeInfo.load
+    data.output = nodeInfo.save
+    return data
+
 typeIsVideo = (type) ->
     return supportedVideoTypes.indexOf(type) != -1
 
@@ -45,18 +61,22 @@ class ImgfloProcessor extends common.Processor
         cmd = @installdir+'env.sh'
         args = [ @installdir+'bin/imgflo']
         args = args.concat ['--video'] if typeIsVideo outputType
+        args = args.concat ['--nodeinfo', 'load,save']
         args = args.concat ['-'] # passing graph over stdin
 
         console.log 'executing', cmd, args if @verbose
         stderr = ""
+        stdout = ""
         process = child_process.spawn cmd, args, { stdio: ['pipe', 'pipe', 'pipe'] }
         process.on 'error', (err) ->
             return callback err, null
         process.on 'close', (exitcode) ->
             err = if exitcode then new Error "processor returned exitcode: #{exitcode}" else null
-            return callback err, stderr
+            metadata = extractMetadata stdout
+            return callback err, stderr, metadata
         process.stdout.on 'data', (d) =>
             console.log d.toString() if @verbose
+            stdout += d.toString()
         process.stderr.on 'data', (d)->
             console.log d.toString() if @verbose
             stderr += d.toString()
