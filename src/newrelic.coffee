@@ -1,12 +1,10 @@
 
+debug = process.env.IMGFLO_DEBUG_METRICS
 enabled = process.env.NEW_RELIC_LICENSE_KEY?
 if enabled
     nr = require('newrelic');
 
-exports.onJobCompleted = (job) ->
-    return if not job.type == 'process-image'
-    return if not enabled
-
+prepareEvent = (job) ->
     d = job.data
     runtime = d.runtime
     runtime = 'noflo' if runtime == 'noflo-browser' or runtime == 'noflo-nodejs'
@@ -45,5 +43,15 @@ exports.onJobCompleted = (job) ->
         # error
         error: job.error?.result?.error
 
+    return event
+
+exports.onJobCompleted = (job) ->
+    return if not job.type == 'process-image'
+    return if not (enabled or debug)
+
     name = 'ImgfloImageComputed'
+    event = prepareEvent job
+    console.log 'MetricEvent', name, '\n', event if debug
+
+    return if not enabled
     nr.recordCustomEvent name, event
