@@ -213,9 +213,13 @@ class JobExecutor extends EventEmitter
 
                 inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
-                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (err, stderr) =>
+                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (err, stderr, metadata={}) =>
                     job.processed_at = Date.now()
 
+                    job.input_width = metadata.input?.width
+                    job.input_height = metadata.input?.height
+                    job.output_width = metadata.output?.width
+                    job.output_height = metadata.output?.height
                     @collectImageStats inputFile, (err, inStats) =>
                         @logEvent 'image-stats-error', { request: request_url, err: err } if err
                         @collectImageStats outf, (err, outStats) =>
