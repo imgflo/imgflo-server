@@ -37,7 +37,7 @@ travis-deps:
 	tar -xf imgflo-dependencies.tgz
 
 components: env
-	cd runtime && make components PREFIX=$(PREFIX) COMPONENTDIR=$(PROJECTDIR)/components
+	cd runtime && make components PREFIX=$(PREFIX) COMPONENTDIR=$(PROJECTDIR)/components/extra
 
 component: env
 	cd runtime && make component PREFIX=$(PREFIX) \
