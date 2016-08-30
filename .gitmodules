@@ -1,3 +1,6 @@
 [submodule "runtime"]
 	path = runtime
-	url = git://github.com/jonnor/imgflo.git
+	url = git://github.com/imgflo/imgflo.git
+[submodule "components/extra"]
+	path = components/extra
+	url = git://github.com/imgflo/imgflo-components-extra.git

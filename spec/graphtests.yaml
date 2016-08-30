@@ -144,6 +144,11 @@
     'std-dev-y': 60
     #'abyss-policy': none
 -
+    _name: retro_batcave
+    _graph: retro.png
+    input: "files/mountains.png"
+    preset: batcave
+-
     _name: regcheck_https_protocol
     _url: '/graph/gradientmap.png?input=https%3A%2F%2Fpbs.twimg.com%2Fmedia%2FBo5budLIcAAWEAB.jpg%3Alarge&color1=%23082A31&color2=%23FFE79B'
 -
