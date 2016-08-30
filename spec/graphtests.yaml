@@ -146,6 +146,7 @@
 -
     _name: retro_batcave
     _graph: retro.png
+    _timeout: 8000
     input: "files/mountains.png"
     preset: batcave
 -
