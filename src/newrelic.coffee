@@ -14,6 +14,8 @@ prepareEvent = (job) ->
         queue: job.started_at-job.created_at
         download: job.downloaded_at-job.started_at
         processing: job.processed_at-job.downloaded_at
+        stats: job.stated_at-job.processed_at
+        upload: job.uploaded_at-job.stated_at
     stepsTotal = 0
     for k,v of steps
         if isNaN(v)
@@ -34,12 +36,15 @@ prepareEvent = (job) ->
         height: d.iips.height
         urgency: job.urgency
         input: d.files?.input?.src
-        # metrics
+        # execution metrics
         duration: totalDuration
         processing: steps.processing
         downloading: steps.download
         queueing: steps.queue
+        stating: steps.stats
+        uploading: steps.upload
         slush: slush
+        # image metrics
         input_bytes: job.input_bytes
         output_bytes: job.output_bytes
         input_width: job.input_width

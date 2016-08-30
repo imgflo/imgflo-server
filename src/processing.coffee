@@ -165,6 +165,7 @@ class JobExecutor extends EventEmitter
 
             @logEvent 'put-into-cache', { request: request_url, path: workdir_filepath, key: key }
             @cache.putFile workdir_filepath, key, (err, cached) =>
+                job.uploaded_at = Date.now()
                 fs.unlink workdir_filepath, (e) =>
                     @logEvent 'remove-tempfile-error', { request: request_url, file: workdir_filepath, err: e } if e
 
@@ -229,6 +230,7 @@ class JobExecutor extends EventEmitter
 
                             maybeUnlink inputFile, (e) =>
                                 @logEvent 'remove-tempfile-error', { request: request_url, file: inputFile, err: e } if e
+                            job.stated_at = Date.now()
                             return callback err, stderr
 
     collectImageStats: (filepath, callback) ->
