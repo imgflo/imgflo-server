@@ -57,6 +57,7 @@ class ImgfloProcessor extends common.Processor
     process: (outputFile, outputType, graph, iips, inputFile, inputType, callback) ->
         return callback new errors.UnsupportedImageType inputType, supportedTypes if inputType not in supportedTypes
         return callback new errors.UnsupportedImageType outputType, supportedTypes if outputType not in supportedTypes
+        return callback new Error 'Requested graph has no "output" outport defined' if not graph.outports?.output
 
         g = prepareImgfloGraph graph, iips, inputFile, outputFile, inputType, outputType
         @run g, outputType, callback
