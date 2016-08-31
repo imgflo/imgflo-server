@@ -44,6 +44,7 @@
 
 server = require '../src/server'
 applications = require '../src/applications'
+common = require '../src/common'
 utils = require './utils'
 
 http = require 'http'
@@ -281,8 +282,9 @@ describe 'Server', ->
 
     describe 'List graphs', ->
         expected = []
+        graphSuffix = '.json.info'
         for g in fs.readdirSync './graphs'
-            expected.push g.replace '.json', '' if (g.indexOf '.json') != -1
+            expected.push g.replace graphSuffix, '' if common.endsWith(g, graphSuffix)
         responseData = ""
         it 'HTTP request gives 200', (done) ->
             u = url.format {protocol:'http:',host: urlbase, pathname:'/graphs'}
