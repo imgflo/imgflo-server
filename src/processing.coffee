@@ -214,7 +214,7 @@ class JobExecutor extends EventEmitter
 
                 inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
-                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (err, stderr, metadata={}) =>
+                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (processingErr, stderr, metadata={}) =>
                     job.processed_at = Date.now()
 
                     job.input_width = metadata.input?.width
@@ -232,7 +232,7 @@ class JobExecutor extends EventEmitter
                             maybeUnlink inputFile, (e) =>
                                 @logEvent 'remove-tempfile-error', { request: request_url, file: inputFile, err: e } if e
                             job.stated_at = Date.now()
-                            return callback err, stderr
+                            return callback processingErr, stderr
 
     collectImageStats: (filepath, callback) ->
         return callback null, {} if not filepath # optional
