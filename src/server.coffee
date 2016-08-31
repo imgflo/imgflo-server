@@ -359,7 +359,7 @@ class Server extends EventEmitter
         return req
 
     getGraphRuntime: (graphName, callback) ->
-        @graphs.get graphName, (err, graphData) ->
+        @graphs.get graphName, {}, (err, graphData) ->
             return callback err if err
             runtime = common.runtimeForGraph graphData
             return callback null, runtime

@@ -17,8 +17,10 @@ enrichGraphDefinition = (graph, publicOnly) ->
     else if (runtime.indexOf 'imgflo') != -1
         imgflo.enrichGraphDefinition graph, publicOnly
 
+graphSuffix = '.json'
+
 validGraph = (filepath) ->
-    return path.extname(filepath) == '.json' and filepath.indexOf('Test') == -1
+    return path.extname(filepath) == graphSuffix and filepath.indexOf('Test') == -1
 
 class GraphsStore
     constructor: (@config) ->
@@ -29,36 +31,35 @@ class GraphsStore
         directory = @config.graphdir
         graphs = {}
 
-        fs.readdir directory, (err, files) ->
+        fs.readdir directory, (err, files) =>
             if err
                 callback err, null
 
-            graphfiles = []
+            graphnames = []
             for f in files
-                graphfiles.push path.join directory, f if validGraph f
+                if validGraph f
+                    name = f.replace(graphSuffix, '')
+                    graphnames.push name
 
-            async.map graphfiles, fs.readFile, (err, results) ->
-                if err
-                    return callback err, null
-
+            getGraph = (name, cb) =>
+                @get name, { publicOnly: true }, cb
+            async.map graphnames, getGraph, (err, results) ->
+                return callback err, null if err
+                # return as dictionary
                 for i in [0...results.length]
-                    name = path.basename graphfiles[i]
-                    name = (name.split '.')[0]
-                    def = JSON.parse results[i]
-                    enrichGraphDefinition def, true
-                    graphs[name] = def
-
+                    name = graphnames[i]
+                    graphs[name] = results[i]
                 return callback null, graphs
 
-    get: (name, callback) ->
+    get: (name, options, callback) ->
         # TODO: cache graphs
-        graphPath = path.join @config.graphdir, name + '.json'
+        graphPath = path.join @config.graphdir, name + graphSuffix
         return new Error "Invalid processing graph '#{name}'" if not validGraph graphPath
 
         fs.readFile graphPath, (err, contents) =>
             return callback err, null if err
             def = JSON.parse contents
-            enrichGraphDefinition def
+            enrichGraphDefinition def, options.publicOnly
             return callback null, def
 
 module.exports = GraphsStore

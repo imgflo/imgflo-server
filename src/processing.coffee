@@ -125,7 +125,7 @@ class JobExecutor extends EventEmitter
         @options = config
 
     getGraph: (name, callback) ->
-        @graphs.get name, callback
+        @graphs.get name, {}, callback
 
     logEvent: (id, data) ->
         @emit 'logevent', id, data
