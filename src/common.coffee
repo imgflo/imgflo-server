@@ -119,6 +119,9 @@ clone = (obj) ->
 
   return newInstance
 
+exports.endsWith = (subject, search) ->
+    lastIndex = subject.indexOf(search);
+    return lastIndex != -1 && lastIndex == subject.length-search.length
 
 gitDescribe = (path, callback) ->
     cmd = 'git describe --tags'
