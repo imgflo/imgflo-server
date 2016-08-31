@@ -282,7 +282,7 @@ describe 'Server', ->
 
     describe 'List graphs', ->
         expected = []
-        graphSuffix = '.json'
+        graphSuffix = '.json.info'
         for g in fs.readdirSync './graphs'
             expected.push g.replace graphSuffix, '' if common.endsWith(g, graphSuffix)
         responseData = ""

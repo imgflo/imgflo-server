@@ -17,10 +17,11 @@ enrichGraphDefinition = (graph, publicOnly) ->
     else if (runtime.indexOf 'imgflo') != -1
         imgflo.enrichGraphDefinition graph, publicOnly
 
-graphSuffix = '.json'
+graphSuffix = '.json.info'
 
 validGraph = (filepath) ->
-    return path.extname(filepath) == graphSuffix and filepath.indexOf('Test') == -1
+    rightSuffix = common.endsWith filepath, graphSuffix
+    return rightSuffix and filepath.indexOf('Test') == -1
 
 class GraphsStore
     constructor: (@config) ->
