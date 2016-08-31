@@ -17,7 +17,7 @@ JSON_GRAPHS = $(wildcard ./graphs/*.json)
 GRAPHS=$(FBP_GRAPHS:%.fbp=%.json.info)
 GRAPHS+=$(JSON_GRAPHS:%.json=%.json.info)
 
-INTERNAL_GRAPHS=./graphs/imgflo-server.json.info
+INTERNAL_GRAPHS=./graphs/imgflo-server.json.info ./graphs/performance.json.info
 
 PROCESSING_GRAPHS:=$(filter-out $(INTERNAL_GRAPHS),$(GRAPHS))
 
