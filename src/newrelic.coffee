@@ -44,6 +44,8 @@ prepareEvent = (job) ->
         stating: steps.stats
         uploading: steps.upload
         slush: slush
+        # detailed
+        init_processing: job.init_processing
         # image metrics
         input_bytes: job.input_bytes
         output_bytes: job.output_bytes

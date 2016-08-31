@@ -26,17 +26,23 @@ supportedTypes = ['jpg', 'jpeg', 'png', null].concat(supportedVideoTypes)
 extractMetadata = (stdout) ->
     data = {}
     lines = stdout.split '\n'
+    initInfo = null
     nodeInfo = {}
     for line in lines
         if line.indexOf('NodeInfo: ') == 0
             json = line.replace('NodeInfo: ', '')
             info = JSON.parse json
             nodeInfo[info.name] = info
+        if line.indexOf('GeglInit: ') == 0
+            json = line.replace('GeglInit: ', '')
+            info = JSON.parse json
+            initInfo = info
         else
             #console.log 'unknown line', line
 
     data.input = nodeInfo.load
     data.output = nodeInfo.save
+    data.init = initInfo
     return data
 
 typeIsVideo = (type) ->
