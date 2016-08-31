@@ -221,6 +221,7 @@ class JobExecutor extends EventEmitter
                     job.input_height = metadata.input?.height
                     job.output_width = metadata.output?.width
                     job.output_height = metadata.output?.height
+                    job.init_processing = metadata.init?.duration
                     @collectImageStats inputFile, (err, inStats) =>
                         @logEvent 'image-stats-error', { request: request_url, err: err } if err
                         @collectImageStats outf, (err, outStats) =>
