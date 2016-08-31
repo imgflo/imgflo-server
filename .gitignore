@@ -20,3 +20,4 @@ testout.png
 *.autosave
 .noflo.json
 *.db
+graphs/*.json.info

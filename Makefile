@@ -12,6 +12,15 @@ endif
 
 TRAVIS_DEPENDENCIES=$(shell echo `cat .vendor_urls | sed -e "s/heroku/travis-${TRAVIS_OS_NAME}/" | tr -d '\n'`)
 
+FBP_GRAPHS = $(wildcard ./graphs/*.fbp)
+JSON_GRAPHS = $(wildcard ./graphs/*.json)
+GRAPHS=$(FBP_GRAPHS:%.fbp=%.json.info)
+GRAPHS+=$(JSON_GRAPHS:%.json=%.json.info)
+
+INTERNAL_GRAPHS=./graphs/imgflo-server.json.info
+
+PROCESSING_GRAPHS:=$(filter-out $(INTERNAL_GRAPHS),$(GRAPHS))
+
 all: install
 
 run: install
@@ -25,7 +34,7 @@ runtime:
 version:
 	echo 'No version info installed'
 
-install: env version procfile runtime components webpack
+install: env version procfile runtime components graphs webpack
 
 env:
 	mkdir -p $(PREFIX) || true
@@ -46,6 +55,14 @@ component: env
 		COMPONENTDIR=$(COMPONENTDIR) \
 		COMPONENT_NAME_PREFIX=$(COMPONENT_NAME_PREFIX) \
 		COMPONENT_NAME_SUFFIX=$(COMPONENT_NAME_SUFFIX)
+
+%.json: %.fbp
+	./node_modules/.bin/fbp $< > $@
+
+%.json.info: %.json
+	$(PREFIX)/env.sh imgflo-graphinfo --graph $< > $@
+
+graphs: $(PROCESSING_GRAPHS)
 
 procfile:
 	./node_modules/.bin/msgflo-procfile --ignore imgflo_api --ignore pubsub --ignore pubsub_noflo --include 'web: node index.js' ./graphs/imgflo-server.fbp > Procfile
@@ -78,4 +95,4 @@ clean:
 release: check
 	cd $(PREFIX) && tar -caf ../imgflo-$(VERSION).tgz ./
 
-.PHONY:all run dependencies runtime
+.PHONY:all run dependencies runtime graphs
