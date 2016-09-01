@@ -107,8 +107,33 @@ createGraphProperties = (container, name, graph, values) ->
     portInput.name = name
     portInput.className = 'portInput'
 
-    # show default value
-    portInput.placeholder = port.metadata.default if port.metadata?.default?
+    # set an appropriate type
+    # TODO: set min and max, if exists. Maybe use range??
+    def = port.metadata?.default
+    type = port.metadata?.type
+    if type == 'int'
+      portInput.type = 'number'
+      portInput.step = 1.0
+    else if type == 'number'
+      portInput.type = 'number'
+      portInput.step = 0.25
+    else if type == 'boolean'
+      portInput.type = 'checkbox'
+      portInput.value = if def then 'on' else 'off' if def?
+    else if type == 'color'
+      # TODO: also support opacity in colors. Needs to be a separate widget, 0-100% maybe.
+      portInput.type = 'color'
+      if def
+        def = def.substring(0, 7) if def.length == 9
+        portInput.value = def
+    else if type == 'buffer'
+      # Ignored
+    else if type
+      console.log 'Warking: Unknown port type', type
+      portInput.type = type
+
+    portInput.defaultValue = def if def?
+    portInput.placeholder = def.toString() if def?
 
     # show current value
     if typeof value != 'undefined'
@@ -169,8 +194,12 @@ getGraphProperties = (container, name, graphdef) ->
   i = 0
   while i < inputs.length
     input = inputs[i]
-    if input.value != ''
-      props[input.name] = input.value
+    type = graphdef.inports[input.name]
+    if input.type == 'checkbox'
+      val = input.checked.toString()
+      props[input.name] = val if val != input.defaultValue
+    else if input.value?
+      props[input.name] = input.value if input.value != input.defaultValue
     i++
   props
 
