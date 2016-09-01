@@ -113,10 +113,20 @@ createGraphProperties = (container, name, graph, values) ->
     type = port.metadata?.type
     if type == 'int'
       portInput.type = 'number'
-      portInput.step = 1.0
+      if port.metadata.minimum? and port.metadata.maximum?
+        portInput.step = (port.metadata.maximum - port.metadata.minimum)/20
+        portInput.min = port.metadata.minimum
+        portInput.max = port.metadata.maximum
+      else
+        portInput.step = 1.0
     else if type == 'number'
       portInput.type = 'number'
-      portInput.step = 0.25
+      if port.metadata.minimum? and port.metadata.maximum?
+        portInput.min = port.metadata.minimum
+        portInput.max = port.metadata.maximum
+        portInput.step = (port.metadata.maximum - port.metadata.minimum)/20
+      else
+        portInput.step = 0.25
     else if type == 'boolean'
       portInput.type = 'checkbox'
       portInput.value = if def then 'on' else 'off' if def?
