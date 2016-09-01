@@ -2,6 +2,10 @@
 
 
 /* Style */
+* {
+    box-sizing: border-box;
+}
+
 img {
    padding:1px;
    border:1px solid #021a40;
@@ -11,11 +15,11 @@ img {
     color: #333333;
 }
 
-label {
+.portLabel {
     text-align: right;
     padding-right: 10px;
 }
-label span {
+.portLabel span {
     width: 100px;
     display: inline-block;
     padding-right: 10px;
@@ -33,6 +37,25 @@ ul {
 
 input {
     text-align: center;
+}
+
+.portInput {
+    width: 75px;
+}
+
+.portDescription {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 300px;
+}
+.portDescription span {
+    text-overflow: ellipsis;
+    display: inline-block;
+    overflow: hidden;
+    width: 300px;
+    font-size: 10px;
+    height: 12px;
+    padding-right: 15px;
 }
 
 .graphEntry label {
@@ -64,10 +87,6 @@ input {
 
 #graphsSection button {
     display: none;
-}
-
-* {
-    box-sizing: border-box;
 }
 
 #version {

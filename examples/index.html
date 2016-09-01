@@ -8,17 +8,20 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/core.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/components/md5.js"></script>
     <script src="https://rawgit.com/gss/engine/2.1.x/dist/gss.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.7.1/coffee-script.min.js"></script>
+
+    <script src="/files/demo.coffee" type="text/coffeescript"></script>
   </head>
   <body>
     <div id="app">
         <section id="apiSection">
             <fieldset class="line" id="lineOne">
                 <label for="apiKey" class="portLabel">Key</label>
-                <input id="apiKey" class="portInput"></input>
+                <input id="apiKey" class="apiInput"></input>
             </fieldset>
             <fieldset class="line" id="lineTwo" >
                 <label for="apiSecret" class="portLabel">Secret</label>
-                <input id="apiSecret" type="password" class="portInput"></input>
+                <input id="apiSecret" type="password" class="apiInput"></input>
             </fieldset>
             <button id="clearApiInfo">Clear</button>
 
@@ -52,9 +55,6 @@
         <div id="historySection"></div>
     </div>
 
-
-
-    <script src="/files/demo.js"></script>
     <script type="text/javascript">
       window.engine = new GSS(document);
     </script>

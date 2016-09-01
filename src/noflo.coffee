@@ -16,9 +16,19 @@ enrichGraphDefinition = (graph, publicOnly) ->
     graph.inports.height =
         process: 'canvas'
         port: 'height'
+        metadata:
+            description: "Requested output height"
+            type: 'int'
+            maximum: 2000 # just a hint
+            minimum: 0
     graph.inports.width =
         process: 'canvas'
         port: 'width'
+        metadata:
+            description: "Requested output width"
+            type: 'int'
+            maximum: 2000 # just a hint
+            minimum: 0
     graph.inports.input = {}
 
 supportedTypes = ['jpg', 'jpeg', 'png', null]
