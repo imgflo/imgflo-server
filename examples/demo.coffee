@@ -104,8 +104,6 @@ createGraphProperties = (container, name, graph, values) ->
     portName.className = 'portLabel'
     portInput = document.createElement('input')
     portName.innerHTML = '<span>' + name + '</span>'
-    portInput.name = name
-    portInput.className = 'portInput'
 
     # set an appropriate type
     # TODO: set min and max, if exists. Maybe use range??
@@ -127,6 +125,17 @@ createGraphProperties = (container, name, graph, values) ->
         portInput.step = (port.metadata.maximum - port.metadata.minimum)/20
       else
         portInput.step = 0.25
+    else if type == 'enum' and port.metadata.values?
+      portInput = document.createElement('select')
+      for v in port.metadata.values
+        i = document.createElement('option')
+        i.value = v
+        i.innerHTML = v
+        if v == value
+          i.selected = true
+        else if v == def
+          i.selected = true
+        portInput.appendChild i
     else if type == 'boolean'
       portInput.type = 'checkbox'
       portInput.value = if def then 'on' else 'off' if def?
@@ -144,6 +153,9 @@ createGraphProperties = (container, name, graph, values) ->
 
     portInput.defaultValue = def if def?
     portInput.placeholder = def.toString() if def?
+
+    portInput.name = name
+    portInput.className = 'portInput'
 
     # show current value
     if typeof value != 'undefined'
@@ -200,18 +212,17 @@ createRequestUrl = (graphname, parameters, apiKey, apiSecret) ->
 
 getGraphProperties = (container, name, graphdef) ->
   props = {}
-  inputs = container.getElementsByTagName('input')
-  i = 0
-  while i < inputs.length
-    input = inputs[i]
+  inputs = Array.prototype.slice.call container.getElementsByTagName('input')
+  inputs = inputs.concat Array.prototype.slice.call container.getElementsByTagName('select')
+  for input in inputs
     type = graphdef.inports[input.name]
     if input.type == 'checkbox'
       val = input.checked.toString()
       props[input.name] = val if val != input.defaultValue
     else if input.value?
       props[input.name] = input.value if input.value != input.defaultValue
-    i++
-  props
+
+  return props
 
 parseQuery = (qstr) ->
   query = {}
