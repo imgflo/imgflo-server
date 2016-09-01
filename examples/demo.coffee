@@ -1,0 +1,300 @@
+hasClassName = (el, name) ->
+  new RegExp('(?:^|\\s+)' + name + '(?:\\s+|$)').test el.className
+
+addClassName = (el, name) ->
+  if !hasClassName(el, name)
+    el.className = if el.className then [
+      el.className
+      name
+    ].join(' ') else name
+  return
+
+removeClassName = (el, name) ->
+  if hasClassName(el, name)
+    c = @className
+    el.className = c.replace(new RegExp('(?:^|\\s+)' + name + '(?:\\s+|$)', 'g'), '')
+  return
+
+### TODO:
+# - make input picking a dialog "paste URL here"
+# - hide output URL, use "copy image link" instead
+# - move execute button down, change to spinner when processing (font-awesome?)
+# - move graph details to below the graph selector
+#
+# - Don't show auth input fields all the time.
+# If authed, checkmark OK. Not authed, allow to drop down to enter.
+# - Allow to register new API keys "apps"
+# - Allow to copy API keys/secret pair out.
+# - Link out to API docs
+#
+# - add selected/deselected indicator to graph list
+# - add invalidated/working/completed indicator on processed image
+# - add API/authentication status element to header, shows when authed correctly
+# -
+# - make images use up available space vertically, centered
+#
+# - use slider for number/integer properties (min, max, default)
+# - use color selector for color type properties
+# - use drop-down selector for enum type properties
+# - use checkbox for boolean
+#
+# Maybe
+# - make HEAD request to check if image is cached,
+# and then show without pressing execute?
+#
+# Later:
+#
+# - Allow sharing an URL to UI, with all image parameters included.
+# Have a standard convention?
+# - Allow to input a processing URL, get the input image+params out
+#
+# - allow to upload image
+# - allow to take picture with webcam
+# - add progress bar for request processing.
+# - add persisted history, with prev/next buttons in pictureSection
+###
+
+getDemoData = (callback) ->
+  req = new XMLHttpRequest
+
+  req.onreadystatechange = ->
+    if req.readyState == 4
+      if req.status == 200
+        d = JSON.parse(req.responseText)
+        return callback(null, d)
+      else
+        e = new Error(req.status)
+        return callback(e, null)
+    return
+
+  req.open 'GET', '/graphs', true
+  req.send()
+  return
+
+getVersionInfo = (callback) ->
+  req = new XMLHttpRequest
+
+  req.onreadystatechange = ->
+    if req.readyState == 4
+      if req.status == 200
+        d = JSON.parse(req.responseText)
+        return callback(null, d)
+      else
+        e = new Error(req.status)
+        return callback(e, null)
+    return
+
+  req.open 'GET', '/version', true
+  req.send()
+  return
+
+createGraphProperties = (container, name, graph, values) ->
+  if typeof graph.inports == 'undefined'
+    return null
+  inports = Object.keys(graph.inports)
+  inports.forEach (name) ->
+    port = inports[name]
+    value = values[name]
+    if name == 'input'
+      return
+    portInfo = document.createElement('li')
+    portInfo.className = 'line'
+    portName = document.createElement('label')
+    portName.className = 'portLabel'
+    portInput = document.createElement('input')
+    portName.innerHTML = '<span>' + name + '</span>'
+    portInput.name = name
+    portInput.className = 'portInput'
+    if typeof value != 'undefined'
+      portInput.value = value
+    # TODO: show information about type,value ranges, default value, description etc
+    portInfo.appendChild portName
+    portName.appendChild portInput
+    container.appendChild portInfo
+    return
+  container
+
+createGraphList = (container, graphs, onClicked) ->
+  Object.keys(graphs).forEach (name) ->
+    if typeof graphs[name].inports != 'undefined'
+      graph = graphs[name]
+      e = document.createElement('li')
+      e.onclick = onClicked
+      displayName = name.replace('_', ' ')
+      e.className = 'graphEntry'
+      p = document.createElement('label')
+      p.innerHTML = displayName
+      e.appendChild p
+      img = document.createElement('img')
+      img.src = graph.thumbnailUrl
+      e.appendChild img
+      e.setAttribute 'data-graph-id', name
+      container.appendChild e
+    return
+  container
+
+createRequestUrl = (graphname, parameters, apiKey, apiSecret) ->
+  hasQuery = Object.keys(parameters).length > 0
+  search = graphname + (if hasQuery then '?' else '')
+  for key of parameters
+    value = encodeURIComponent(parameters[key])
+    search += key + '=' + value + '&'
+  if hasQuery
+    search = search.substring(0, search.length - 1)
+    # strip trailing &
+  url = '/graph/' + search
+  if apiKey or apiSecret
+    base = search + apiSecret
+    token = CryptoJS.MD5(base)
+    url = '/graph/' + apiKey + '/' + token + '/' + search
+  url
+
+getGraphProperties = (container, name, graphdef) ->
+  props = {}
+  inputs = container.getElementsByTagName('input')
+  i = 0
+  while i < inputs.length
+    input = inputs[i]
+    if input.value != ''
+      props[input.name] = input.value
+    i++
+  props
+
+parseQuery = (qstr) ->
+  query = {}
+  a = qstr.substr(1).split('&')
+  i = 0
+  while i < a.length
+    b = a[i].split('=')
+    query[decodeURIComponent(b[0])] = decodeURIComponent(b[1] or '')
+    i++
+  query
+
+startsWith = (str, sub) ->
+  str.indexOf(sub) == 0
+
+main = ->
+
+  id = (n) ->
+    document.getElementById n
+
+  activeGraphName = null
+  availableGraphs = null
+
+  readApiInfo = ->
+    id('apiKey').value = localStorage['imgflo-server-api-key'] or ''
+    id('apiSecret').value = localStorage['imgflo-server-api-secret'] or ''
+    return
+
+  readApiInfo()
+
+  id('clearApiInfo').onclick = ->
+    localStorage['imgflo-server-api-key'] = ''
+    localStorage['imgflo-server-api-secret'] = ''
+    readApiInfo()
+    return
+
+  processCurrent = ->
+    graph = activeGraphName
+    props = getGraphProperties(id('graphProperties'), graph, availableGraphs[graph])
+    props.input = id('inputUrl').value
+    apiKey = id('apiKey').value
+    apiSecret = id('apiSecret').value
+    localStorage['imgflo-server-api-key'] = apiKey
+    localStorage['imgflo-server-api-secret'] = apiSecret
+    url = createRequestUrl(graph, props, apiKey, apiSecret)
+    bg = 'url("' + url + '")'
+    console.log 'processing:', url, bg
+
+    ###
+    id('processedImage').onload = function() {
+        id('processedImage').className = "visible";
+    };
+    id('processedImage').src = u;
+    ###
+
+    id('processedUrl').value = url
+    id('processedImage').style.backgroundImage = bg
+    return
+
+  id('runButton').onclick = processCurrent
+
+  setInputUrl = (url) ->
+    console.log 'setting input', url
+    if !startsWith(url, 'http')
+      # Resolve to fully qualified URL
+      loc = window.location
+      url = loc.protocol + '//' + loc.host + '/' + url
+    if id('inputUrl').value != url
+      id('inputUrl').value = url
+    bg = 'url("' + url + '")'
+    id('originalImage').style.backgroundImage = bg
+    return
+
+  onInputChanged = (event) ->
+    url = id('inputUrl').value
+    setInputUrl url
+    return
+
+  id('inputUrl').onblur = onInputChanged
+  onInputChanged()
+
+  setActiveGraph = (name, properties) ->
+    if typeof availableGraphs[name] == 'undefined'
+      return false
+    activeGraphName = name
+    container = id('graphProperties')
+    len = container.children.length
+    #container.innerHTML = '';
+    i = 0
+    while i < len
+      container.removeChild container.children[0]
+      i++
+    createGraphProperties container, name, availableGraphs[name], properties
+    true
+
+  onGraphClicked = (event) ->
+    name = event.currentTarget.getAttribute('data-graph-id')
+    console.log 'onGraphClicked', name
+    setActiveGraph name, {}
+    return
+
+  getDemoData (err, demo) ->
+    if err
+      throw err
+    availableGraphs = demo.graphs
+    Object.keys(availableGraphs).forEach (name) ->
+      graph = availableGraphs[name]
+      props = 
+        width: 150
+        input: id('inputUrl').value
+      apiKey = id('apiKey').value
+      apiSecret = id('apiSecret').value
+      localStorage['imgflo-server-api-key'] = apiKey
+      localStorage['imgflo-server-api-secret'] = apiSecret
+      graph.thumbnailUrl = createRequestUrl(name, props, apiKey, apiSecret)
+      return
+    if startsWith(window.location.pathname, '/debug')
+      # Set the UI widgets state based on what is in the URL
+      params = parseQuery(window.location.search)
+      parts = window.location.pathname.split('/')
+      graph = parts[3]
+      if parts.length >= 6
+        graph = parts[5]
+      setInputUrl params.input
+      setActiveGraph graph, params
+    else
+      setActiveGraph 'desaturate', {}
+    processCurrent()
+    createGraphList id('graphList'), demo.graphs, onGraphClicked
+    return
+  getVersionInfo (err, res) ->
+    version = 'Unknown'
+    if !err and res.server
+      version = res.server.toString()
+    id('version').innerHTML = 'imgflo-server: ' + version
+    return
+  return
+
+main()
+
