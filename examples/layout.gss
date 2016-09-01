@@ -92,9 +92,9 @@ section {
     ul {
         top: == ^top;
         bottom: == ^bottom;
-        width: == 600;
+        width: == 500;
         li {
-            width: == 600;
+            width: == 500;
             height: == 25;
         }
 
