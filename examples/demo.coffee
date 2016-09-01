@@ -93,7 +93,8 @@ createGraphProperties = (container, name, graph, values) ->
     return null
   inports = Object.keys(graph.inports)
   inports.forEach (name) ->
-    port = inports[name]
+    port = graph.inports[name]
+    console.log 'p', name, port.metadata
     value = values[name]
     if name == 'input'
       return
@@ -105,11 +106,24 @@ createGraphProperties = (container, name, graph, values) ->
     portName.innerHTML = '<span>' + name + '</span>'
     portInput.name = name
     portInput.className = 'portInput'
+
+    # show default value
+    portInput.placeholder = port.metadata.default if port.metadata?.default?
+
+    # show current value
     if typeof value != 'undefined'
       portInput.value = value
     # TODO: show information about type,value ranges, default value, description etc
+
+    # show decription
+    description = port.metadata?.description or ""
+    portDescription = document.createElement('label')
+    portDescription.className = 'portDescription'
+    portDescription.innerHTML = '<span>' + description + '</span>'
+
     portInfo.appendChild portName
     portName.appendChild portInput
+    portInfo.appendChild portDescription
     container.appendChild portInfo
     return
   container
