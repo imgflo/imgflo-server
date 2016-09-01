@@ -16,9 +16,15 @@ enrichGraphDefinition = (graph, publicOnly) ->
     graph.inports.height =
         process: 'rescale'
         port: 'y'
+        metadata:
+            type: 'int'
+            description: "Requested output height"
     graph.inports.width =
         process: 'rescale'
         port: 'x'
+        metadata:
+            type: 'int'
+            description: "Requested output width"
 
 supportedVideoTypes = ['mp4']
 supportedTypes = ['jpg', 'jpeg', 'png', null].concat(supportedVideoTypes)
