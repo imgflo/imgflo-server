@@ -349,7 +349,7 @@ describe 'Server', ->
             data = ""
             it 'should give HTTP 504', (done) ->
                 http.get u, (response) ->
-                    chai.expect(response.statusCode).to.equal 449
+                    chai.expect(response.statusCode).to.equal 504
                     response.on 'data', (chunk) ->
                         data += chunk.toString()
                     response.on 'end', () ->
