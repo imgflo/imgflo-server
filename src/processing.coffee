@@ -47,7 +47,10 @@ downloadFile = (src, out, callback) ->
     requestOptions =
         encoding: null # expect binary
         timeout: 20*1000
-    req = request src, requestOptions
+    try
+        req = request src, requestOptions
+    catch e
+        return callback e
     req.on 'response', (response) ->
         if response.statusCode != 200
             return if not callback
