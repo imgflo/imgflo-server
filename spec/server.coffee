@@ -343,6 +343,18 @@ describe 'Server', ->
                 expected = ['jpg', 'jpeg', 'png', 'mp4', null].sort()
                 chai.expect(supported).to.eql expected
 
+        describe 'with invalid file protocol', ->
+            i = "chrome-search://thumb2/http://index.hu/?fb=https://www.google.com/webpagethumbnail?c=63&d=http://index.hu/&r=4&s=148:94&a=vb60dfqUo9CRCH8ZZ7UDCR6vS_0"
+            u = graph_url 'gradientmap', { input: i }
+            data = ""
+            it 'should give HTTP 504', (done) ->
+                http.get u, (response) ->
+                    chai.expect(response.statusCode).to.equal 449
+                    response.on 'data', (chunk) ->
+                        data += chunk.toString()
+                    response.on 'end', () ->
+                        done()
+
         describe 'Get new image', ->
             u = graph_url 'crop', { height: 110, width: 130, x: 200, y: 230, input: "files/grid-toastybob.jpg" }
             res = null
