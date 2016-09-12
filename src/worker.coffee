@@ -41,6 +41,10 @@ exports.main = ->
   role = process.argv[2]
   participant = exports.getParticipant config, role
 
+  process.on 'uncaughtException', (err) ->
+    console.log 'Uncaught exception: ', err
+    console.log err.stack
+
   participant.executor.on 'logevent', (id, data) ->
     console.log "EVENT: #{id}:", data
 
