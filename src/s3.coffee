@@ -23,6 +23,7 @@ class Cache extends common.CacheServer
 
     keyExists: (key, callback) ->
         @client.headFile @fullKey(key), (err, res) =>
+            return callback err if err
             exists = res.headers['etag']
             cached = if exists then @urlForKey key else null
             return callback null, cached
