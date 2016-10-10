@@ -29,7 +29,7 @@
     "imgflo-server-application-add": "./bin/imgflo-server-application-add"
   },
   "engines": {
-    "node": ">=4.2.0 <4.4.0"
+    "node": ">=4.2.0 <4.7.0"
   },
   "dependencies": {
     "amqplib": "^0.4.1",
