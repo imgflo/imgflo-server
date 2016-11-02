@@ -10,7 +10,7 @@ env:
   - secure: lkm/6WpxNLhqHol6hQ4mkcoezFfrHtcFcD4XeFpLXorQeoZJSQ3e7Jf90t+6TY53rAgsdplCUG1p4Cth6PD6P6fQWpCVIJ2o4dWn6TJLUXLizzGHo8H6pSZclwLWGToKN6Su2i6Ik9t//T0XGzGaKGI3kqrPo3ybCLMtGuQfYIc=
   - secure: sMuerVUrthvDgfNGnWcvE11kKtQUNw8/VvIVAYNiYXKIjhiHKVXOvdLNca3jh1WUE7FM4R9LglqJMhgYmS+MBqY2heYaRb7FUfEk0TzK54qnYkXlEvMwmIzWYShkqqv1hqNCuwfW1IgWcVYSMSeE6JoJx+sSaBXmpYWY8AJ4raM=
 node_js:
-- '4.2'
+- '4.6'
 before_install:
 - sudo apt-get update -qq
 - sudo apt-get --assume-yes install libsdl1.2-dev libgif-dev libjson-glib-dev libglib2.0-dev libpango1.0-dev
