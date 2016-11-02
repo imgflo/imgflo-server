@@ -234,7 +234,7 @@ class Server extends EventEmitter
 
     redirectToCache: (err, target, response, successCode) ->
         if err
-            if err.code?
+            if err.code
                 err.result?.code = err.code if not err.result?.code
                 response.writeHead err.code, { 'Content-Type': 'application/json' }
                 response.end JSON.stringify err.result
