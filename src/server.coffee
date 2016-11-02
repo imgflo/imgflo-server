@@ -82,7 +82,8 @@ parseRequestUrl = (u) ->
         debugUrl: debugUrl
     return out
 
-
+validHttpErrorCode = (code) ->
+    return typeof code == 'number' and code > 200 and code < 600
 
 class Server extends EventEmitter
 
@@ -234,7 +235,8 @@ class Server extends EventEmitter
 
     redirectToCache: (err, target, response, successCode) ->
         if err
-            if err.code
+            if err.code?
+                err.code = 500 if not validHttpErrorCode err.code
                 err.result?.code = err.code if not err.result?.code
                 response.writeHead err.code, { 'Content-Type': 'application/json' }
                 response.end JSON.stringify err.result
