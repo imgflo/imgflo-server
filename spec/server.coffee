@@ -586,6 +586,7 @@ describe 'Applications in database', ->
         applications.add config, addedApp
         .then () -> return done()
         .catch done
+        return null # not a Promise
 
     it 'should be loaded into server on start', (done) ->
         @timeout 8*1000
@@ -601,3 +602,4 @@ describe 'Applications in database', ->
             catch e
                 return done e
             return done()
+        return null # not a Promise
