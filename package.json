@@ -67,7 +67,7 @@
     "simple-statistics": "^0.9.0",
     "chai": "^3.5.0",
     "js-yaml": "^3.0.2",
-    "mocha": "~2.3.3",
+    "mocha": "^3.1.2",
     "coffee-loader": "^0.7.2",
     "json-loader": "^0.5.4",
     "webpack": "^1.12.14",
