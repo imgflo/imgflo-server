@@ -150,9 +150,11 @@ describeSkipPerformance 'Stress', ->
             s.listen config.api_host, config.api_port, done
         else
             done()
+        return null # not a Promise
     after (done) ->
         return done null if not startServer
         s.close done
+        return null # not a Promise
 
 
     describe "Cached graph", ->
