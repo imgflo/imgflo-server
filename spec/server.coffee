@@ -256,8 +256,10 @@ describe 'Server', ->
             s.listen config.api_host, config.api_port, done
         else
             done()
+        return null # not a Promise
     after (done) ->
         s.close done if startServer
+        return null # not a Promise
 
     describe.skip 'Get version info', ->
         info = null
@@ -569,6 +571,7 @@ describe 'Applications in database', ->
         applications.deleteAll(config)
         .then () -> return done()
         .catch(done)
+        return null # not a Promise
 
     after (done) ->
         applications.deleteAll(config).catch(done)
@@ -577,6 +580,7 @@ describe 'Applications in database', ->
                 state.server.close done
             else
                 done()
+        return null # not a Promise
 
     it 'adding an application should succeed', (done) ->
         applications.add config, addedApp

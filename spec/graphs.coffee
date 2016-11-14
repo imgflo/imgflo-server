@@ -50,8 +50,10 @@ describe 'Graphs', ->
             s.listen config.api_host, config.api_port, done
         else
             done()
+        return null # not a Promise
     after (done) ->
         s.close done if startServer
+        return null # not a Promise
 
     testcases.forEach (testcase) ->
         describeOrSkip = if testcase._skip? and testcase._skip then describe.skip else describe
