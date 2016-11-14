@@ -125,6 +125,7 @@
     opacity: 0.8
     srgb: True
 -
+    _skip: "broke some time after gegl 0.3.6"
     _name: gradient_scaled
     _graph: 'gradientmap.png'
     input: "files/gradient-black-white.png"
