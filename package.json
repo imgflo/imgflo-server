@@ -34,11 +34,9 @@
   "dependencies": {
     "amqplib": "^0.4.1",
     "async": "^0.7.0",
-    "coffee-loader": "^0.7.2",
     "coffee-script": "^1.7.1",
     "express": "^4.12.3",
     "fbp": "^1.5.0",
-    "json-loader": "^0.5.4",
     "knex": "^0.7.6",
     "knox": "^0.9.1",
     "mime-types": "^2.1.7",
@@ -63,7 +61,6 @@
     "temp": "^0.8.3",
     "tmp": "0.0.24",
     "uuid": "^2.0.1",
-    "webpack": "^1.12.14",
     "websocket": "~1.0.8"
   },
   "devDependencies": {
@@ -71,6 +68,9 @@
     "chai": "~3.3.0",
     "js-yaml": "^3.0.2",
     "mocha": "~2.3.3",
+    "coffee-loader": "^0.7.2",
+    "json-loader": "^0.5.4",
+    "webpack": "^1.12.14",
     "sqlite3": "^3.0.5"
   },
   "msgflo": {
