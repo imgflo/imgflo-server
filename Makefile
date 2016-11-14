@@ -29,7 +29,7 @@ run-runtime: runtime
 	cd runtime && make PREFIX=$(PREFIX) run
 
 runtime:
-	cd runtime && make PREFIX=$(PREFIX) install
+	cd runtime && npm install && make PREFIX=$(PREFIX) install
 
 version:
 	echo 'No version info installed'
