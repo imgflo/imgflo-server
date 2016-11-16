@@ -112,7 +112,8 @@ able to see a generative image at http://YOURAPP.herokuapp.com/graph/delaunay_tr
 
 Developing and running locally
 ==========================
-Note: imgflo has only been tested on GNU/Linux systems.
+Note: imgflo-server has only been tested on GNU/Linux systems.
+
 _Root is not needed_ for any of the build.
 
 Pre-requisites
@@ -124,10 +125,6 @@ You only need to install the dependencies once, or when they have changed.
 
     git submodule update --init
     make dependencies
-
-_If_ you are on an older distribution, you may also need a newer glib version
-
-    # make glib # only for older distros, where GEGL fails to build due to too old glib
 
 Install node.js dependencies
 
@@ -150,6 +147,5 @@ Running server
     node index.js
 
 You should see your server running at http://localhost:8080
-
 
 
