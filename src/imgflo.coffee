@@ -90,7 +90,7 @@ class ImgfloProcessor extends common.Processor
         process.on 'close', (exitcode) ->
             err = if exitcode then new Error "processor returned exitcode: #{exitcode}" else null
             metadata = extractMetadata stdout
-            return callback err, stderr, metadata
+            return callback err, stderr, stdout, metadata
         process.stdout.on 'data', (d) =>
             console.log d.toString() if @verbose
             stdout += d.toString()

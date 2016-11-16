@@ -162,8 +162,8 @@ class JobExecutor extends EventEmitter
         request_url = job.data.request
 
         workdir_filepath = require('temp').path { dir: @workdir, prefix: key+'-processed-' }
-        @downloadAndRender workdir_filepath, job, (err, stderr) =>
-            @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, file: workdir_filepath }
+        @downloadAndRender workdir_filepath, job, (err, stderr, stdout) =>
+            @logEvent 'process-request-end', { request: request_url, err: err, stderr: stderr, stdout: stdout, file: workdir_filepath }
             return callback err, null if err
 
             @logEvent 'put-into-cache', { request: request_url, path: workdir_filepath, key: key }
@@ -217,7 +217,7 @@ class JobExecutor extends EventEmitter
 
                 inputType = if downloads.input? then common.typeFromMime downloads.input.type else null
                 inputFile = if downloads.input? then downloads.input.path else null
-                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (processingErr, stderr, metadata={}) =>
+                processor.process outf, req.outtype, graph, req.iips, inputFile, inputType, (processingErr, stderr, stdout="", metadata={}) =>
                     job.processed_at = Date.now()
 
                     job.input_width = metadata.input?.width
@@ -235,7 +235,7 @@ class JobExecutor extends EventEmitter
                             maybeUnlink inputFile, (e) =>
                                 @logEvent 'remove-tempfile-error', { request: request_url, file: inputFile, err: e } if e
                             job.stated_at = Date.now()
-                            return callback processingErr, stderr
+                            return callback processingErr, stderr, stdout
 
     collectImageStats: (filepath, callback) ->
         return callback null, {} if not filepath # optional
