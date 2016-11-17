@@ -277,7 +277,7 @@ main = ->
   id('runButton').onclick = processCurrent
 
   showUrl = () ->
-    alert(processedUrl)
+    prompt "Request URL:", processedUrl
   id('processedUrl').onclick = showUrl
 
   setInputUrl = (url) ->
