@@ -65,7 +65,7 @@ component: env
 graphs: $(PROCESSING_GRAPHS)
 
 procfile:
-	./node_modules/.bin/msgflo-procfile --ignore imgflo_api --ignore pubsub --ignore pubsub_noflo --include 'web: node index.js' ./graphs/imgflo-server.fbp > Procfile
+	./node_modules/.bin/msgflo-procfile --ignore imgflo_api --ignore pubsub --ignore pubsub_noflo --ignore pubsub_video --include 'web: node index.js' ./graphs/imgflo-server.fbp > Procfile
 webpack:
 	./node_modules/.bin/webpack
 

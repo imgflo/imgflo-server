@@ -10,3 +10,7 @@ imgflo_urgent_noflo JOBRESULT -> IN pubsub_noflo(msgflo/PubSub) OUT -> JOBRESULT
 # background processing
 imgflo_api BACKGROUNDJOB -> JOB imgflo_backgroundworker(imgflo-server/ProcessImage)
 imgflo_api BACKGROUNDJOBNOFLO -> JOB imgflo_background_noflo(imgflo-server/ProcessImage)
+
+# video processing
+imgflo_api VIDEOJOB -> JOB imgflo_video(imgflo-server/ProcessImage)
+imgflo_video JOBRESULT -> IN pubsub_video(msgflo/PubSub) OUT -> JOBRESULT imgflo_api
