@@ -40,7 +40,7 @@ enrichGraphDefinition = (graph, publicOnly) ->
             minimum: 100
     graph.inports.video_framerate =
         process: 'save'
-        port: 'framerate'
+        port: 'frame-rate'
         metadata:
             description: "Frames per second in output video"
             type: 'number'
