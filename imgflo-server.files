@@ -61,3 +61,4 @@ graphs/imgflo-server.fbp
 webpack.config.js
 src/newrelic.coffee
 src/applications.coffee
+examples/demo.coffee

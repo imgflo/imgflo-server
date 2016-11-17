@@ -29,6 +29,24 @@ enrichGraphDefinition = (graph, publicOnly) ->
             type: 'int'
             maximum: 2000 # just a hint
             minimum: 0
+    graph.inports.video_bitrate =
+        process: 'save'
+        port: 'video-bit-rate'
+        metadata:
+            description: "Bitrate of output video (kb/s)"
+            type: 'int'
+            maximum: 10000 # just a hint
+            default: 100
+            minimum: 100
+    graph.inports.video_framerate =
+        process: 'save'
+        port: 'framerate'
+        metadata:
+            description: "Frames per second in output video"
+            type: 'number'
+            maximum: 100
+            default: 25
+            minimum: 1
 
 supportedVideoTypes = ['mp4']
 supportedTypes = ['jpg', 'jpeg', 'png', null].concat(supportedVideoTypes)
@@ -153,7 +171,6 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     if isVideo
         def.connections.push { src: out, tgt: { process: '_store_buf', port: 'input' } }
         def.connections.push fbpConn "_load_buf OUTPUT -> INPUT save"
-        def.connections.push { data: outtype, tgt: { process: 'save', port: 'container-format' } }
     else
         def.connections.push { src: out, tgt: {process: 'save', port: 'input'} }
         def.connections.push fbpConn "save OUTPUT -> NODE proc"
@@ -169,6 +186,9 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
         def.connections.push { data: '9', tgt: { process: 'save', port: 'compression' } }
         def.connections.push { data: '8', tgt: { process: 'save', port: 'bitdepth' } }
 
+    if isVideo
+        def.connections.push { data: outtype, tgt: { process: 'save', port: 'container-format' } }
+
     # Attach processing parameters as IIPs
     for k, v of attributes
         tgt = def.inports[k]
@@ -183,3 +203,4 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
 exports.Processor = ImgfloProcessor
 exports.enrichGraphDefinition = enrichGraphDefinition
 exports.supportedTypes = supportedTypes
+exports.typeIsVideo = typeIsVideo

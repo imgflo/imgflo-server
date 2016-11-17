@@ -246,3 +246,4 @@ class JobExecutor extends EventEmitter
 
 exports.JobExecutor = JobExecutor
 exports.runtimeSupportsType = runtimeSupportsType
+exports.typeIsVideo = imgflo.typeIsVideo

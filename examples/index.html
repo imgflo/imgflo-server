@@ -34,9 +34,16 @@
                     <input id="inputUrl" value="files/grid-toastybob.jpg"></input>
                 </fieldset>
             </div>
-            <div id="processedImage" class="bgSizeContain"></img>
-                <fieldset>
-                    <input id="processedUrl"></input>
+            <div id="processedImage" class="bgSizeContain">
+                <fieldset class="line">
+                    <label for="outputFormat">Output</label>
+                    <select id="outputFormat">
+                        <option value="" selected>Default</option>
+                        <option value="jpg">JPEG image</option>
+                        <option value="png">PNG image</option>
+                        <option value="mp4">MPEG4 video</option>
+                    </select>
+                    <button id="processedUrl">Get URL</button>
                 </fieldset>
             </div>
         </section>
