@@ -1,0 +1,160 @@
+{
+    "properties": {
+        "name": "vignette",
+        "id": "imgflo-server_graphs_vignette",
+        "project": "imgflo-server",
+        "environment": {
+            "type": "noflo-nodejs"
+        }
+    },
+    "inports": {
+        "canvas": {
+            "process": "SetContrast",
+            "port": "canvas",
+            "metadata": {
+                "x": -108,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "contrast": {
+            "process": "SetContrast",
+            "port": "level",
+            "metadata": {
+                "x": -108,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "brightness": {
+            "process": "SetBrightness",
+            "port": "level",
+            "metadata": {
+                "x": -108,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "saturation": {
+            "process": "SetSaturation",
+            "port": "level",
+            "metadata": {
+                "x": -108,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "outports": {
+        "output": {
+            "process": "SetVignette",
+            "port": "canvas",
+            "metadata": {
+                "x": 828,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "groups": [],
+    "processes": {
+        "SetContrast": {
+            "component": "image/AdjustContrast",
+            "metadata": {
+                "label": "SetContrast",
+                "x": 72,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "SetBrightness": {
+            "component": "image/AdjustBrightness",
+            "metadata": {
+                "label": "SetBrightness",
+                "x": 216,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "SetSaturation": {
+            "component": "image/AdjustSaturation",
+            "metadata": {
+                "label": "SetSaturation",
+                "x": 360,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        },
+        "SetVignette": {
+            "component": "image/ApplyVignette",
+            "metadata": {
+                "label": "SetVignette",
+                "x": 648,
+                "y": 252,
+                "width": 72,
+                "height": 72
+            }
+        }
+    },
+    "connections": [
+        {
+            "src": {
+                "process": "SetContrast",
+                "port": "canvas"
+            },
+            "tgt": {
+                "process": "SetBrightness",
+                "port": "canvas"
+            }
+        },
+        {
+            "src": {
+                "process": "SetBrightness",
+                "port": "canvas"
+            },
+            "tgt": {
+                "process": "SetSaturation",
+                "port": "canvas"
+            }
+        },
+        {
+            "src": {
+                "process": "SetSaturation",
+                "port": "canvas"
+            },
+            "tgt": {
+                "process": "SetVignette",
+                "port": "canvas"
+            }
+        },
+        {
+            "data": 1.0,
+            "tgt": {
+                "process": "SetSaturation",
+                "port": "level"
+            }
+        },
+        {
+            "data": 1.0,
+            "tgt": {
+                "process": "SetBrightness",
+                "port": "level"
+            }
+        },
+        {
+            "data": 1.0,
+            "tgt": {
+                "process": "SetContrast",
+                "port": "level"
+            }
+        }
+    ]
+}

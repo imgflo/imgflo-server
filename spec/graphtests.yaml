@@ -25,6 +25,11 @@
     width: 100
     height: 100
 -
+    _name: 'noflo_input_vignette'
+    _graph: 'vignette.jpg'
+    height: 200
+    input: "files/grid-toastybob.jpg"
+-
     _name: 'crop_all_options'
     _graph: "crop.png"
     input: "files/grid-toastybob.jpg"
