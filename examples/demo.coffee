@@ -33,20 +33,11 @@ removeClassName = (el, name) ->
 # -
 # - make images use up available space vertically, centered
 #
-# - use slider for number/integer properties (min, max, default)
-# - use color selector for color type properties
-# - use drop-down selector for enum type properties
-# - use checkbox for boolean
-#
 # Maybe
 # - make HEAD request to check if image is cached,
 # and then show without pressing execute?
 #
 # Later:
-#
-# - Allow sharing an URL to UI, with all image parameters included.
-# Have a standard convention?
-# - Allow to input a processing URL, get the input image+params out
 #
 # - allow to upload image
 # - allow to take picture with webcam
