@@ -17,7 +17,6 @@ removeClassName = (el, name) ->
 
 ### TODO:
 # - make input picking a dialog "paste URL here"
-# - hide output URL, use "copy image link" instead
 # - move execute button down, change to spinner when processing (font-awesome?)
 # - move graph details to below the graph selector
 #
@@ -151,7 +150,6 @@ createGraphProperties = (container, name, graph, values) ->
     # show current value
     if typeof value != 'undefined'
       portInput.value = value
-    # TODO: show information about type,value ranges, default value, description etc
 
     # show decription
     description = port.metadata?.description or ""
@@ -185,9 +183,10 @@ createGraphList = (container, graphs, onClicked) ->
     return
   container
 
-createRequestUrl = (graphname, parameters, apiKey, apiSecret) ->
+createRequestUrl = (graphname, parameters, apiKey, apiSecret, format=null) ->
+  formatExtension = if format then ".#{format}" else ''
   hasQuery = Object.keys(parameters).length > 0
-  search = graphname + (if hasQuery then '?' else '')
+  search = graphname + formatExtension + (if hasQuery then '?' else '')
   for key of parameters
     value = encodeURIComponent(parameters[key])
     search += key + '=' + value + '&'
@@ -235,6 +234,7 @@ main = ->
 
   activeGraphName = null
   availableGraphs = null
+  processedUrl = ''
 
   readApiInfo = ->
     id('apiKey').value = localStorage['imgflo-server-api-key'] or ''
@@ -257,7 +257,8 @@ main = ->
     apiSecret = id('apiSecret').value
     localStorage['imgflo-server-api-key'] = apiKey
     localStorage['imgflo-server-api-secret'] = apiSecret
-    url = createRequestUrl(graph, props, apiKey, apiSecret)
+    format = id('outputFormat').value
+    url = createRequestUrl(graph, props, apiKey, apiSecret, format)
     bg = 'url("' + url + '")'
     console.log 'processing:', url, bg
 
@@ -268,11 +269,16 @@ main = ->
     id('processedImage').src = u;
     ###
 
-    id('processedUrl').value = url
+    loc = window.location
+    processedUrl = loc.protocol + '//' + loc.host + url
     id('processedImage').style.backgroundImage = bg
     return
 
   id('runButton').onclick = processCurrent
+
+  showUrl = () ->
+    alert(processedUrl)
+  id('processedUrl').onclick = showUrl
 
   setInputUrl = (url) ->
     console.log 'setting input', url
@@ -320,7 +326,7 @@ main = ->
     availableGraphs = demo.graphs
     Object.keys(availableGraphs).forEach (name) ->
       graph = availableGraphs[name]
-      props = 
+      props =
         width: 150
         input: id('inputUrl').value
       apiKey = id('apiKey').value
