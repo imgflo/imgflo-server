@@ -10,49 +10,6 @@
     cropheight: 65
     input: 'files/gridbear.jpg'
 -
-    _name: 'insta_1977'
-    _graph: 'insta_1977.png'
-    _timeout: 18000
-    input: 'files/gridbear.jpg'
--
-    _skip: true
-    _name: 'insta_1977_resized'
-    _graph: 'insta_1977.png'
-    height: 100
-    width: 100
-    input: 'files/gridbear.jpg'
--
-    _name: 'insta_brannan'
-    _graph: 'insta_brannan.png'
-    _timeout: 18000
-    input: 'files/gridbear.jpg'
--
-    _name: 'insta_hefe'
-    _graph: 'insta_hefe.png'
-    _timeout: 18000
-    input: 'files/gridbear.jpg'
--
-    _name: 'insta_lordkelvin'
-    _graph: 'insta_lordkelvin.png'
-    _timeout: 18000
-    input: 'files/gridbear.jpg'
--
-    _name: 'insta_nashville'
-    _graph: 'insta_nashville.png'
-    _timeout: 18000
-    input: 'files/gridbear.jpg'
--
-    _name: 'insta_xproii'
-    _graph: 'insta_xproii.png'
-    _timeout: 180000
-    input: 'files/gridbear.jpg'
--
-    _name: 'noflo_resize_heightonly'
-    _graph: 'insta_brannan.png'
-    _timeout: 18000
-    height: 300
-    input: "files/gridbear.jpg"
--
     _name: 'imgflo_resize_heightonly'
     _graph: 'desaturate'
     _tolerance: 100
