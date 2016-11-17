@@ -90,7 +90,7 @@ class ImgfloProcessor extends common.Processor
         process.on 'close', (exitcode) ->
             err = if exitcode then new Error "processor returned exitcode: #{exitcode}" else null
             metadata = extractMetadata stdout
-            return callback err, stderr, metadata
+            return callback err, stderr, stdout, metadata
         process.stdout.on 'data', (d) =>
             console.log d.toString() if @verbose
             stdout += d.toString()
@@ -153,7 +153,7 @@ prepareImgfloGraph = (basegraph, attributes, inpath, outpath, type, outtype) ->
     if isVideo
         def.connections.push { src: out, tgt: { process: '_store_buf', port: 'input' } }
         def.connections.push fbpConn "_load_buf OUTPUT -> INPUT save"
-        #outpath += '.mp4'
+        def.connections.push { data: outtype, tgt: { process: 'save', port: 'container-format' } }
     else
         def.connections.push { src: out, tgt: {process: 'save', port: 'input'} }
         def.connections.push fbpConn "save OUTPUT -> NODE proc"

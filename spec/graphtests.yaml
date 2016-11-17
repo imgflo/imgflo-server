@@ -183,6 +183,12 @@
     _graph: 'noop.gif'
     input: "files/time.gif"
 -
+    _name: mp4_video
+    _graph: 'customgrey.mp4'
+    _skipcompare: true
+    _skiperrors: true
+    input: "files/video-3dpmic.mp4"
+-
     _name: regcheck_nocontenttype_queryparams
     _graph: passthrough.jpg
     input: http://www.sgvtribune.com/apps/pbcsi.dll/storyimage/LC/20160124/NEWS/160129737/AR/0/AR-160129737.jpg?Maxh=1500&Maxw=1500
@@ -193,4 +199,3 @@
 -
     _name: regcheck_noop_wrong_contenttype
     _url: /graph/vahj1ThiexotieMo/74b71b798bafb52190873b1150cfc0f0/noop.jpg?input=https%3A%2F%2Fi.imgur.com%2FaK4RY7Dh.jpg
-
