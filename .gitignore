@@ -21,3 +21,4 @@ testout.png
 .noflo.json
 *.db
 graphs/*.json.info
+build/
