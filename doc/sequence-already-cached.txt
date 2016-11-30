@@ -1,0 +1,10 @@
+# Part of: imgflo-server
+# DSL used: https://bramp.github.io/js-sequence-diagrams/
+title: Scenario: Image already in cache
+
+Client->web: HTTP GET\n/graph/passthrough?input=http://someimage...
+web->Redis: Is a1b2c3d4e5 cached?
+Redis->web: Yes, at https:/....
+web->Client: HTTP 301 redirect\nLocation: https://s3.../processedimage.png
+Client->S3: GET processedimage.png
+

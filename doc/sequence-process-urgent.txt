@@ -1,0 +1,31 @@
+# Part of: imgflo-server
+# DSL used: https://bramp.github.io/js-sequence-diagrams/
+title: Scenario: Image not cached
+
+Client->web: HTTP GET\n/graph/passthrough\n?input=http://someimage...
+web->Redis: Is a1b2c3d4e5 cached?
+Redis->web: No
+web->RabbitMQ: Urgent job for imgflo:\n { id: 123, graph: passthrough... }
+RabbitMQ->urgentworker: { id: 123... }
+
+Note right of Redis: image could be produced while queueing\nby another job/request 
+urgentworker->Redis: is a1b2c3d4e5 cached?
+Redis->urgentworker: No
+
+Note right of urgentworker: Get input image
+urgentworker->OriginalServer: HTTP GET\nhttp://someimage...
+OriginalServer->urgentworker: HTTP response\nContent-Type:image/png
+Note right of urgentworker: Process image
+urgentworker->subprocess: EXEC imgflo < 123.fbp.json
+subprocess->urgentworker: EXIT 0 (success)
+
+Note right of urgentworker: Upload output image
+urgentworker->S3: HTTP POST\nhttps://s3.../processedimage.png
+S3->urgentworker: HTTP 200 OK
+
+urgentworker->RabbitMQ: Job completed\n{ id: 123.. }
+RabbitMQ->web: { id: 123..., error: null, output: https://s3... }
+
+web->Client: HTTP 301 redirect\nLocation: \nhttps://s3.../processedimage.png
+Client->S3: GET processedimage.png
+
