@@ -1,0 +1,41 @@
+	# Part of: imgflo-server
+# DSL used: https://bramp.github.io/js-sequence-diagrams/
+title: Scenario: Processing image without waiting for result
+
+participant Client
+participant OriginalServer
+participant web
+participant RabbitMQ
+participant Redis
+participant S3
+participant backgroundworker
+participant subprocess
+participant urgentworker
+
+Client->web: HTTP GET\n/graph/passthrough\n?input=http://someimage...
+web->Redis: Is a1b2c3d4e5 cached?
+Redis->web: No
+web->RabbitMQ: Background job for imgflo:\n { id: 123, graph: passthrough... }
+web->Client: HTTP 202 accept\nLocation: \nhttps://s3.../processedimage.png
+
+Note right of Client: Request is now "done"\nfrom Client perspective.\nAsset pointed to in `Location`\n is however not ready at this time.
+
+RabbitMQ->backgroundworker: { id: 123... }
+Note left of backgroundworker: image could be produced while queueing\nby another job/request 
+backgroundworker->Redis: is a1b2c3d4e5 cached?
+Redis->backgroundworker: No
+
+Note left of backgroundworker: Get input image
+backgroundworker->OriginalServer: HTTP GET\nhttp://someimage...
+OriginalServer->backgroundworker: HTTP response\nContent-Type:image/png
+Note right of backgroundworker: Process image
+backgroundworker->subprocess: EXEC imgflo < 123.fbp.json
+subprocess->backgroundworker: EXIT 0 (success)
+
+Note left of backgroundworker: Upload output image
+backgroundworker->S3: HTTP POST\nhttps://s3.../processedimage.png
+S3->backgroundworker: HTTP 200 OK
+
+backgroundworker->RabbitMQ: Job completed\n{ id: 123.. }
+RabbitMQ->web: { id: 123..., error: null, output: https://s3... }
+

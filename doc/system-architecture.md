@@ -72,4 +72,9 @@ Client response `within 30 seconds` is available for `>99%` of requests.
 
 Client requests an image to be processed, without waiting for the result.
 
-`TODO: illustrate`
+[DSL](./process-background.sequence.txt)|
+[.SVG](./process-background.sequence.svg)
+![Sequence diagram for already cached images](./process-background.sequence.png)
+
+Processing is done by worker in the same manner as for urgent requests,
+but uses a separate queue and worker role, to not interfere with urgent requests.
