@@ -2,24 +2,32 @@
 # DSL used: https://bramp.github.io/js-sequence-diagrams/
 title: Scenario: Image not cached
 
+participant Client
+participant OriginalServer
+participant web
+participant RabbitMQ
+participant Redis
+participant S3
+participant urgentworker
+
 Client->web: HTTP GET\n/graph/passthrough\n?input=http://someimage...
 web->Redis: Is a1b2c3d4e5 cached?
 Redis->web: No
 web->RabbitMQ: Urgent job for imgflo:\n { id: 123, graph: passthrough... }
 RabbitMQ->urgentworker: { id: 123... }
 
-Note right of Redis: image could be produced while queueing\nby another job/request 
+Note left of urgentworker: image could be produced while queueing\nby another job/request 
 urgentworker->Redis: is a1b2c3d4e5 cached?
 Redis->urgentworker: No
 
-Note right of urgentworker: Get input image
+Note left of urgentworker: Get input image
 urgentworker->OriginalServer: HTTP GET\nhttp://someimage...
 OriginalServer->urgentworker: HTTP response\nContent-Type:image/png
 Note right of urgentworker: Process image
 urgentworker->subprocess: EXEC imgflo < 123.fbp.json
 subprocess->urgentworker: EXIT 0 (success)
 
-Note right of urgentworker: Upload output image
+Note left of urgentworker: Upload output image
 urgentworker->S3: HTTP POST\nhttps://s3.../processedimage.png
 S3->urgentworker: HTTP 200 OK
 
