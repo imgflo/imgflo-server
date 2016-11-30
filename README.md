@@ -18,30 +18,99 @@ License
 Note: GEGL itself is under LGPLv3.
 
 
-About
--------
-The imgflo server provides a HTTP API for processing images: 
+# API
+
+imgflo-server provides a HTTP API for processing images.
+The entire processing request is described using an URL, and the processing can be triggered by a HTTP GET.
+This means no special integration is needed in order to use an image processed by imgflo-server in an application.
+
+## Process image and get results
+
+Request
 
     GET /graphs/mygraph?input=http://example.com/input-image.png&attr1=value1&....
 
-When the server gets the request, it will:
+Response
 
-1. Download the specified `input` image over HTTP(s)
-2. Find and load the graph `mygraph`
-3. Set attribute,value pairs as IIPs to the exported ports of the graph
-4. Processes the graph using a runtime`*`
-5. Stores the output image to disk
-6. Serve the output image over HTTP
+    HTTP 301
+    Location: https://s3.aws.com/bucket/er132123sder12.png
 
-Note: In step 4, currently a new runtime is spawned for each request, and communication done through stdin.
-In the future, the runtime will be a long-running worker, and communication done using the FBP runtime protocol.
+If the image has been processed before, it will come straight from cache (fast).
 
-`*`In addition to supporting the native imgflo runtime,
-the server can also execute graphs built with NoFlo w/ noflo-canvas.
+## Process image without waiting for result
+
+Request
+
+    POST /graphs/mygraph?input=http://example.com/input-image.png&attr1=value1&....
+
+Response
+
+    HTTP 301
+    Location: https://s3.aws.com/bucket/er132123sder12.png
+
+Since the image is not processed by the time the response arrives,
+accessing the `Location` immediately will likely fail (with a 404 or 403).
+If the image processing failed, it may fail forever.
+Use a `GET` with the same imgflo URL to get the error.
+
+## Get available image processing graphs
+
+The `inports` describe which parameters are available for each graph.
+
+Request
+
+    GET /graphs
+
+Response
+
+    HTTP 200 application/json
+```json
+{
+  "graphs": {
+    "customgrey": {
+      "inports": {
+        "input": {
+        },
+        "height": {
+          "metadata": {
+            "description": "Requested output height",
+            "type": "int",
+            "maximum": 2000,
+            "minimum": 0
+          }
+        },
+        "width": {
+          "metadata": {
+            "description": "Requested output width",
+            "type": "int",
+            "maximum": 2000,
+            "minimum": 0
+          }
+        }
+      },
+      "outports": {
+        "output": {
+        }
+      }
+    }
+}
+```
+
+## Authentication
+
+To prevent people from using your deployment to process their images, there exists a version of the
+processing URLs which has an encrypted token in it.
 
 
-API usage
-======================
+
+## Errors
+
+* 504: Unable to fetch the specified `input` URL 
+* ...
+
+# API client libraries
+
+These make it easier to use the API, by providing
 
 ## JavaScript / node.js / browser
 --------------------
@@ -58,6 +127,19 @@ API usage
 [ImgFlo.swift](https://github.com/the-grid/ImgFlo.swift)
 
 
+# Testing UI
+
+imgflo-server ships with a simple testing UI served at `/`.
+It can be used to see the available graphs, and make test requests and see the results.
+
+`TODO: add picture`
+
+## Use for debugging a request
+
+Given a regular imgflo URL, you can add `&debug=1` at the end to open it in the UI.
+It will extract the parameters, including removing the urlencoding on the `input` URL.
+
+
 Creating new image processing graphs
 =====================
 imgflo-server can easily be extended with new image processing pipelines,
@@ -65,10 +147,14 @@ either using a text-based DSL or Flowhub node-based visual IDE.
 
 See [Adding Graphs](./doc/adding-graphs.md)
 
+# System architecture
+
+For an in-depth look at how the system is implemented, see [system architecture](./doc/system-architecture.md)
+
 Hosted public instance
 ======================
 
-Currently our [deployed instance](http://imgflo.herokuapp.com) is only for [The Grid](http://thegrid.io).
+Currently our [deployed instance](https://imgflo.herokuapp.com) is only for [The Grid](http://thegrid.io).
 If you are interested in access to hosted version, send us an email: [support@thegrid.io](mailto://support@thegrid.io)
 
 
@@ -112,7 +198,9 @@ able to see a generative image at http://YOURAPP.herokuapp.com/graph/delaunay_tr
 
 Developing and running locally
 ==========================
-Note: imgflo-server has only been tested on GNU/Linux systems.
+Note: imgflo-server is only tested on GNU/Linux systems.
+imgflo (the runtime) has experimental support for OSX.
+However, all underlying dependencies (node.js, RabbitMQ, GEGL etc) are commonly used also on other platforms, like Windows. 
 
 _Root is not needed_ for any of the build.
 
@@ -123,7 +211,7 @@ It is recommended to let make setup this for you, but you can use existing check
 by customizing PREFIX.
 You only need to install the dependencies once, or when they have changed.
 
-    git submodule update --init
+    git submodule update --init --recursive
     make dependencies
 
 Install node.js dependencies
@@ -132,7 +220,7 @@ Install node.js dependencies
 
 Build
 -------
-Now you can build & install imgflo itself
+Now you can build & install imgflo-server itself
 
     make install
 
