@@ -96,11 +96,52 @@ Response
 }
 ```
 
+## Specifying output format
+
+By specifying an extension on the graph, you can
+
+    /graph/gradientmap.png?width=300....
+    
+If the extension is omitted, a default image format is inferred.
+This is currently the same image format as the input.
+
 ## Authentication
 
 To prevent people from using your deployment to process their images, there exists a version of the
-processing URLs which has an encrypted token in it.
+processing URL scheme which uses encryption to secure it.
+Note that this only prevents people from forming new image processing requests.
+It does not prevent them from requesting an already processed image.
 
+Each client has its own `KEY` and `SECRET`.
+
+Given a request with a set of `parameters` (like `gradientmap.png&width=300&input=...`),
+a `token` is constructed by taking the md5sum of the `SECRET` concatenated with the `parameters`:
+
+    token=md5(parameters+secret)
+    GET /graph/$KEY/$token/$params
+
+Upon getting such a request, the server will use the `KEY` to find the matching `SECRET`,
+do the same construction of `token`, and validate that there is a match.
+If not, request will fail with a `403 Permission Denied`.
+
+### Adding new tokens for a client/application
+
+Use the helper script
+
+    ./bin/imgflo-server-application-add
+
+It will generate client key and secret, insert it to the database, and output the details to stdout.
+
+### Changing quotas
+
+If `processing_quota` field is `0`, the client cannot process new images,
+but can still request existing cached/processed images.
+
+Currently processing quota is not otherwise enforced.
+
+To disallow clients from also accessing cache/processed images, set `enabled` to false/`0`.
+
+There is currently no tools for manipulating quota, have to use `SQL` on the `applications` table.
 
 
 ## Errors
@@ -110,7 +151,9 @@ processing URLs which has an encrypted token in it.
 
 # API client libraries
 
-These make it easier to use the API, by providing
+These libraries make it it easier to use imgflo-server,
+by providing a programmatic API which handles the details of constructing authenticated URLs. 
+
 
 ## JavaScript / node.js / browser
 --------------------
