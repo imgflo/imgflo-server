@@ -29,33 +29,7 @@ switch dbConfig.protocol
         tableName: 'knex_migrations'
 
 module.exports =
-
   development: cfg
+  staging: cfg
+  production: cfg
 
-  staging:
-    client: 'postgresql'
-    connection:
-      host: dbConfig.hostname
-      port: dbConfig.port
-      database: dbConfig.path.substr 1
-      user:     user
-      password: pass
-    pool:
-      min: 2
-      max: 10
-    migrations:
-      tableName: 'knex_migrations'
-
-  production:
-    client: 'postgresql'
-    connection:
-      host: dbConfig.hostname
-      port: dbConfig.port
-      database: dbConfig.path.substr 1
-      user:     user
-      password: pass
-    pool:
-      min: 2
-      max: 10
-    migrations:
-      tableName: 'knex_migrations'
