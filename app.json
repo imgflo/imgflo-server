@@ -8,5 +8,10 @@
   ],
   "scripts": {
     "postdeploy": "./node_modules/.bin/knex migrate:latest"
-  }
+  },
+  "addon": [
+    {
+      "plan": "heroku-postgresql"
+    }
+  ]
 }
