@@ -12,6 +12,15 @@
   "addon": [
     {
       "plan": "heroku-postgresql"
+    },
+    {
+      "plan": "cloudamqp"
     }
-  ]
+  ],
+  "env": {
+    "IMGFLO_WORKER": {
+      "description": "Type of workers to use",
+      "value": "amqp"
+    }
+  }
 }
