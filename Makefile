@@ -10,7 +10,9 @@ ifdef TESTS
 TEST_ARGUMENTS=--grep "$(TESTS)"
 endif
 
-TRAVIS_DEPENDENCIES=$(shell echo `cat .vendor_urls | sed -e "s/heroku/travis-${TRAVIS_OS_NAME}/" | tr -d '\n'`)
+DEPS_VERSION=112
+TRAVIS_DEPENDENCIES="https://github.com/imgflo/imgflo-dependencies/releases/download/${DEPS_VERSION}/imgflo-dependencies-travis-${TRAVIS_OS_NAME}.tgz"
+
 
 FBP_GRAPHS = $(wildcard ./graphs/*.fbp)
 JSON_GRAPHS = $(wildcard ./graphs/*.json)
