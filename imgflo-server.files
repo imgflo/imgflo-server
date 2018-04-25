@@ -49,12 +49,6 @@ graphs/desaturate.fbp
 graphs/desaturate.json
 graphs/gaussianblur.json
 graphs/gradientmap.json
-graphs/insta_1977.json
-graphs/insta_brannan.json
-graphs/insta_hefe.json
-graphs/insta_lordkelvin.json
-graphs/insta_nashville.json
-graphs/insta_xproii.json
 graphs/passthrough.fbp
 graphs/passthrough.json
 graphs/imgflo-server.fbp
