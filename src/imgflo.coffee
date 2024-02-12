@@ -40,7 +40,7 @@ enrichGraphDefinition = (graph, publicOnly) ->
             minimum: 100
     graph.inports.video_framerate =
         process: 'save'
-        port: 'framerate'
+        port: 'frame-rate'
         metadata:
             description: "Frames per second in output video"
             type: 'number'
@@ -49,6 +49,7 @@ enrichGraphDefinition = (graph, publicOnly) ->
             minimum: 1
 
 supportedVideoTypes = ['mp4']
+supportedVideoInputTypes = ['mp4', 'gif']
 supportedTypes = ['jpg', 'jpeg', 'png', null].concat(supportedVideoTypes)
 
 extractMetadata = (stdout) ->
@@ -83,8 +84,11 @@ class ImgfloProcessor extends common.Processor
         @installdir = installdir
 
     process: (outputFile, outputType, graph, iips, inputFile, inputType, callback) ->
-        return callback new errors.UnsupportedImageType inputType, supportedTypes if inputType not in supportedTypes
         return callback new errors.UnsupportedImageType outputType, supportedTypes if outputType not in supportedTypes
+        if typeIsVideo outputType
+            return callback new errors.UnsupportedImageType inputType, supportedTypes if inputType not in supportedVideoInputTypes
+        else
+            return callback new errors.UnsupportedImageType inputType, supportedTypes if inputType not in supportedTypes
         return callback new Error 'Requested graph has no "output" outport defined' if not graph.outports?.output
 
         g = prepareImgfloGraph graph, iips, inputFile, outputFile, inputType, outputType

@@ -146,6 +146,12 @@
     _skiperrors: true
     input: "files/video-3dpmic.mp4"
 -
+    _name: gif_to_mp4
+    _graph: 'passthrough.mp4'
+    _skipcompare: true
+    _skiperrors: true
+    input: "files/dracula.gif"
+-
     _name: regcheck_nocontenttype_queryparams
     _graph: passthrough.jpg
     input: http://www.sgvtribune.com/apps/pbcsi.dll/storyimage/LC/20160124/NEWS/160129737/AR/0/AR-160129737.jpg?Maxh=1500&Maxw=1500
